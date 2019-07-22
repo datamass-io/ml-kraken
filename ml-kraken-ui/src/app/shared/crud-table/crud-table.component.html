@@ -1,0 +1,40 @@
+<p-table #dt 
+[columns]="config['cols']" 
+[value]="data" 
+[paginator]="config['paging']" 
+[rows]="10">
+
+    <ng-template pTemplate="caption">  
+        <div class="caption">
+            <span>{{ config['header'] }}</span>
+            <input type="text" 
+            pInputText 
+            size="20" 
+            placeholder="Szukaj" 
+            (input)="dt.filterGlobal($event.target.value, 'contains')" 
+            style="width:auto; margin-left: 10px"
+            *ngIf="config['withFilter']">
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th *ngFor="let col of columns">
+                    {{col.header}}
+                </th>
+            </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+            <tr [pSelectableRow]="rowData">
+                <td *ngFor="let col of columns">
+                    {{rowData[col.field]}}
+                </td>
+            </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td [attr.colspan]="columns.length">
+                    {{config['emptyMessage']}}
+                </td>
+            </tr>
+        </ng-template>
+</p-table>
