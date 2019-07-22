@@ -1,0 +1,4 @@
+/.idea
+/ml-kraken-api/.dynamodb
+/.dynamodb
+/ml-kraken-api/node_modules
