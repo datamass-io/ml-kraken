@@ -1,0 +1,17 @@
+{
+  "name": "ml-kraken-api",
+  "version": "1.0.0",
+  "description": "Serverless REST API with DynamoDB and offline support",
+  "repository": "",
+  "author": "Jakub Wszolek <j.wszolek@datamass.io>",
+  "license": "MIT",
+  "dependencies": {
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.496.0",
+    "serverless-aws-documentation": "^1.1.0",
+    "serverless-dynamodb-local": "^0.2.38",
+    "serverless-offline": "^5.8.0"
+  }
+}
