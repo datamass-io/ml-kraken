@@ -42,9 +42,17 @@ custom:
         schema:
           type: object
           properties:
-            message:
-              type: string
             id:
+              type: string
+            ver:
+              type: string
+            name:
+              type: string
+            user:
+              type: string
+            createdAt:
+              type: string
+            updatedAt:
               type: string
 
 provider:
@@ -76,22 +84,23 @@ functions:
           cors: true
           documentation:
             summary: Post a model definition
-            description: >
-              Demonstrates a POST method.
+#            description: >
+#              Demonstrates a POST method.
             queryParams:
-              - name: firstParam
-                description: The first param that we want, you MUST pass it
+              - name: name
                 required: true
-              - name: secondParam
-                description: The second param. This one is optional
+              - name: ver
+                #description: The second param. This one is optional
+                required: true
+              - name: uri
+                required: true
+              - name: user
+                required: true
             methodResponses:
               - statusCode: '200'
                 responseModels:
                   "application/json": MessageResponse
-                responseHeaders:
-                  - name: link
-                    description: describes other actions that can be taken
-                    type: string
+
 
   model-meta-list:
     handler: model-meta/list.list
@@ -100,6 +109,15 @@ functions:
           path: api/v1/model-meta
           method: get
           cors: true
+          documentation:
+            summary: Get all models
+#            description: >
+#              Demonstrates a POST method.
+            methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": MessageResponse
+
 
   model-meta-get:
     handler: model-meta/get.get
@@ -108,6 +126,18 @@ functions:
           path: api/v1/model-meta/{id}
           method: get
           cors: true
+          documentation:
+            summary: Get all models
+            #            description: >
+            #              Demonstrates a POST method.
+            queryParams:
+              - id: name
+                required: true
+            methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": MessageResponse
+
 
   model-meta-update:
     handler: model-meta/update.update
@@ -116,6 +146,15 @@ functions:
           path: api/v1/model-meta/{id}
           method: put
           cors: true
+          documentation:
+            summary: Update model.
+            #            description: >
+            #              Demonstrates a POST method.
+            methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": MessageResponse
+
 
   model-meta-delete:
     handler: model-meta/delete.delete
@@ -124,6 +163,15 @@ functions:
           path: api/v1/model-meta/{id}
           method: delete
           cors: true
+          documentation:
+            summary: Delete model.
+            #            description: >
+            #              Demonstrates a POST method.
+            methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": MessageResponse
+
 
 resources:
   Resources:

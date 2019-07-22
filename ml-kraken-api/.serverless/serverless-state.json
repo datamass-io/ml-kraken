@@ -164,7 +164,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1563795410067-2019-07-22T11:36:50.067Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1563825819052-2019-07-22T20:03:39.052Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-create",
               "Handler": "model-meta/create.create",
@@ -188,14 +188,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashcreateLambdaVersion3myBcGZDlBUQsDLXpgSFRlVU87DOgx3t8GXIakPMc": {
+          "ModelDashmetaDashcreateLambdaVersionvtmL3VMZM5VBc8Xdz4MpIZHPpG9ge3WaLdB1DRceCs": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashcreateLambdaFunction"
               },
-              "CodeSha256": "vGFHRbySk6PIlATiKFAFgJHciw1FFIC0gocTEEcXV2Q="
+              "CodeSha256": "r9dFnVeVZFgp4G8taeDYQtbuyo/ft/r9htUCF8zlPGA="
             }
           },
           "ModelDashmetaDashlistLambdaFunction": {
@@ -205,7 +205,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1563795410067-2019-07-22T11:36:50.067Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1563825819052-2019-07-22T20:03:39.052Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-list",
               "Handler": "model-meta/list.list",
@@ -229,14 +229,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashlistLambdaVersionCNJyI2s306uCmv5Tj9jxAkJM2z4wyyyv3TZVvHcsk": {
+          "ModelDashmetaDashlistLambdaVersionrrb9C3acoNHldjoZNXqs9MdbVw3IVwQIzeAUIYZvxs": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashlistLambdaFunction"
               },
-              "CodeSha256": "vGFHRbySk6PIlATiKFAFgJHciw1FFIC0gocTEEcXV2Q="
+              "CodeSha256": "r9dFnVeVZFgp4G8taeDYQtbuyo/ft/r9htUCF8zlPGA="
             }
           },
           "ModelDashmetaDashgetLambdaFunction": {
@@ -246,7 +246,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1563795410067-2019-07-22T11:36:50.067Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1563825819052-2019-07-22T20:03:39.052Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-get",
               "Handler": "model-meta/get.get",
@@ -270,14 +270,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashgetLambdaVersionIr1HL19ae4Dhy13Yo2xl6SPYg5nG9wzLryv2thRaVg": {
+          "ModelDashmetaDashgetLambdaVersionwpwS2BtPsi6FIVn2cQTZnk3DfWy3VkLKhEzvJC3HGW0": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashgetLambdaFunction"
               },
-              "CodeSha256": "vGFHRbySk6PIlATiKFAFgJHciw1FFIC0gocTEEcXV2Q="
+              "CodeSha256": "r9dFnVeVZFgp4G8taeDYQtbuyo/ft/r9htUCF8zlPGA="
             }
           },
           "ModelDashmetaDashupdateLambdaFunction": {
@@ -287,7 +287,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1563795410067-2019-07-22T11:36:50.067Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1563825819052-2019-07-22T20:03:39.052Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-update",
               "Handler": "model-meta/update.update",
@@ -311,14 +311,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashupdateLambdaVersionwE6BD2CSCftgfKPNXKNH654127JIJQR1VyNxgPH7K0": {
+          "ModelDashmetaDashupdateLambdaVersioneAzDntuTgqps0zgauROXd860ojbYlXID4KkDXzkY6A": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashupdateLambdaFunction"
               },
-              "CodeSha256": "vGFHRbySk6PIlATiKFAFgJHciw1FFIC0gocTEEcXV2Q="
+              "CodeSha256": "r9dFnVeVZFgp4G8taeDYQtbuyo/ft/r9htUCF8zlPGA="
             }
           },
           "ModelDashmetaDashdeleteLambdaFunction": {
@@ -328,7 +328,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1563795410067-2019-07-22T11:36:50.067Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1563825819052-2019-07-22T20:03:39.052Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-delete",
               "Handler": "model-meta/delete.delete",
@@ -352,14 +352,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashdeleteLambdaVersionY35vRBtdDtjPtUVxgKSwTXj5eSIVCCns49hL8Wftc": {
+          "ModelDashmetaDashdeleteLambdaVersionldonssmJrypYCd5uz6Cffwx8VxIJnH93cknXyOcBQ": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashdeleteLambdaFunction"
               },
-              "CodeSha256": "vGFHRbySk6PIlATiKFAFgJHciw1FFIC0gocTEEcXV2Q="
+              "CodeSha256": "r9dFnVeVZFgp4G8taeDYQtbuyo/ft/r9htUCF8zlPGA="
             }
           },
           "ApiGatewayRestApi": {
@@ -501,7 +501,7 @@
                     "ResponseParameters": {
                       "method.response.header.Access-Control-Allow-Origin": "'*'",
                       "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,DELETE,GET'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,DELETE,PUT,GET'",
                       "method.response.header.Access-Control-Allow-Credentials": "'false'"
                     },
                     "ResponseTemplates": {
@@ -523,8 +523,10 @@
             "Properties": {
               "HttpMethod": "POST",
               "RequestParameters": {
-                "method.request.querystring.firstParam": true,
-                "method.request.querystring.secondParam": false
+                "method.request.querystring.name": true,
+                "method.request.querystring.ver": true,
+                "method.request.querystring.uri": true,
+                "method.request.querystring.user": true
               },
               "ResourceId": {
                 "Ref": "ApiGatewayResourceApiV1ModelDashmeta"
@@ -564,9 +566,6 @@
               "MethodResponses": [
                 {
                   "StatusCode": "200",
-                  "ResponseParameters": {
-                    "method.response.header.link": true
-                  },
                   "ResponseModels": {
                     "application/json": "MessageResponse"
                   }
@@ -617,13 +616,78 @@
                   ]
                 }
               },
-              "MethodResponses": []
-            }
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseModels": {
+                    "application/json": "MessageResponse"
+                  }
+                }
+              ]
+            },
+            "DependsOn": [
+              "MessageResponseModel"
+            ]
           },
           "ApiGatewayMethodApiV1ModelDashmetaIdVarGet": {
             "Type": "AWS::ApiGateway::Method",
             "Properties": {
               "HttpMethod": "GET",
+              "RequestParameters": {
+                "method.request.querystring.undefined": true
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceApiV1ModelDashmetaIdVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "ModelDashmetaDashgetLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseModels": {
+                    "application/json": "MessageResponse"
+                  }
+                }
+              ]
+            },
+            "DependsOn": [
+              "MessageResponseModel"
+            ]
+          },
+          "ApiGatewayMethodApiV1ModelDashmetaIdVarPut": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "PUT",
               "RequestParameters": {},
               "ResourceId": {
                 "Ref": "ApiGatewayResourceApiV1ModelDashmetaIdVar"
@@ -660,8 +724,18 @@
                   ]
                 }
               },
-              "MethodResponses": []
-            }
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseModels": {
+                    "application/json": "MessageResponse"
+                  }
+                }
+              ]
+            },
+            "DependsOn": [
+              "MessageResponseModel"
+            ]
           },
           "ApiGatewayMethodApiV1ModelDashmetaIdVarDelete": {
             "Type": "AWS::ApiGateway::Method",
@@ -703,10 +777,20 @@
                   ]
                 }
               },
-              "MethodResponses": []
-            }
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseModels": {
+                    "application/json": "MessageResponse"
+                  }
+                }
+              ]
+            },
+            "DependsOn": [
+              "MessageResponseModel"
+            ]
           },
-          "ApiGatewayDeployment1563795405554": {
+          "ApiGatewayDeployment1563825814666": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -720,7 +804,7 @@
               "ApiGatewayMethodApiV1ModelDashmetaPost",
               "ApiGatewayMethodApiV1ModelDashmetaGet",
               "ApiGatewayMethodApiV1ModelDashmetaIdVarGet",
-              "ApiGatewayMethodApiV1ModelDashmetaIdVarGet",
+              "ApiGatewayMethodApiV1ModelDashmetaIdVarPut",
               "ApiGatewayMethodApiV1ModelDashmetaIdVarDelete"
             ]
           },
@@ -920,10 +1004,22 @@
               "Schema": {
                 "type": "object",
                 "properties": {
-                  "message": {
+                  "id": {
                     "type": "string"
                   },
-                  "id": {
+                  "ver": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "user": {
+                    "type": "string"
+                  },
+                  "createdAt": {
+                    "type": "string"
+                  },
+                  "updatedAt": {
                     "type": "string"
                   }
                 }
@@ -963,31 +1059,31 @@
           "ModelDashmetaDashcreateLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashcreateLambdaVersion3myBcGZDlBUQsDLXpgSFRlVU87DOgx3t8GXIakPMc"
+              "Ref": "ModelDashmetaDashcreateLambdaVersionvtmL3VMZM5VBc8Xdz4MpIZHPpG9ge3WaLdB1DRceCs"
             }
           },
           "ModelDashmetaDashlistLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashlistLambdaVersionCNJyI2s306uCmv5Tj9jxAkJM2z4wyyyv3TZVvHcsk"
+              "Ref": "ModelDashmetaDashlistLambdaVersionrrb9C3acoNHldjoZNXqs9MdbVw3IVwQIzeAUIYZvxs"
             }
           },
           "ModelDashmetaDashgetLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashgetLambdaVersionIr1HL19ae4Dhy13Yo2xl6SPYg5nG9wzLryv2thRaVg"
+              "Ref": "ModelDashmetaDashgetLambdaVersionwpwS2BtPsi6FIVn2cQTZnk3DfWy3VkLKhEzvJC3HGW0"
             }
           },
           "ModelDashmetaDashupdateLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashupdateLambdaVersionwE6BD2CSCftgfKPNXKNH654127JIJQR1VyNxgPH7K0"
+              "Ref": "ModelDashmetaDashupdateLambdaVersioneAzDntuTgqps0zgauROXd860ojbYlXID4KkDXzkY6A"
             }
           },
           "ModelDashmetaDashdeleteLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashdeleteLambdaVersionY35vRBtdDtjPtUVxgKSwTXj5eSIVCCns49hL8Wftc"
+              "Ref": "ModelDashmetaDashdeleteLambdaVersionldonssmJrypYCd5uz6Cffwx8VxIJnH93cknXyOcBQ"
             }
           },
           "ServiceEndpoint": {
@@ -1128,16 +1224,22 @@
               },
               "documentation": {
                 "summary": "Post a model definition",
-                "description": "Demonstrates a POST method.\n",
                 "queryParams": [
                   {
-                    "name": "firstParam",
-                    "description": "The first param that we want, you MUST pass it",
+                    "name": "name",
                     "required": true
                   },
                   {
-                    "name": "secondParam",
-                    "description": "The second param. This one is optional"
+                    "name": "ver",
+                    "required": true
+                  },
+                  {
+                    "name": "uri",
+                    "required": true
+                  },
+                  {
+                    "name": "user",
+                    "required": true
                   }
                 ],
                 "methodResponses": [
@@ -1145,14 +1247,7 @@
                     "statusCode": "200",
                     "responseModels": {
                       "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"ApiGatewayMethodApiV1ModelDashmetaPost\"][\"Properties\"][\"MethodResponses\"][0][\"ResponseModels\"]"
-                    },
-                    "responseHeaders": [
-                      {
-                        "name": "link",
-                        "description": "describes other actions that can be taken",
-                        "type": "string"
-                      }
-                    ]
+                    }
                   }
                 ]
               },
@@ -1193,6 +1288,17 @@
                 ],
                 "allowCredentials": false
               },
+              "documentation": {
+                "summary": "Get all models",
+                "methodResponses": [
+                  {
+                    "statusCode": "200",
+                    "responseModels": {
+                      "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"ApiGatewayMethodApiV1ModelDashmetaGet\"][\"Properties\"][\"MethodResponses\"][0][\"ResponseModels\"]"
+                    }
+                  }
+                ]
+              },
               "integration": "AWS_PROXY"
             }
           }
@@ -1230,6 +1336,23 @@
                 ],
                 "allowCredentials": false
               },
+              "documentation": {
+                "summary": "Get all models",
+                "queryParams": [
+                  {
+                    "id": "name",
+                    "required": true
+                  }
+                ],
+                "methodResponses": [
+                  {
+                    "statusCode": "200",
+                    "responseModels": {
+                      "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"ApiGatewayMethodApiV1ModelDashmetaIdVarGet\"][\"Properties\"][\"MethodResponses\"][0][\"ResponseModels\"]"
+                    }
+                  }
+                ]
+              },
               "integration": "AWS_PROXY"
             }
           }
@@ -1247,7 +1370,7 @@
           {
             "http": {
               "path": "api/v1/model-meta/{id}",
-              "method": "get",
+              "method": "put",
               "cors": {
                 "origins": [
                   "*"
@@ -1255,7 +1378,7 @@
                 "origin": "*",
                 "methods": [
                   "OPTIONS",
-                  "GET"
+                  "PUT"
                 ],
                 "headers": [
                   "Content-Type",
@@ -1266,6 +1389,17 @@
                   "X-Amz-User-Agent"
                 ],
                 "allowCredentials": false
+              },
+              "documentation": {
+                "summary": "Update model.",
+                "methodResponses": [
+                  {
+                    "statusCode": "200",
+                    "responseModels": {
+                      "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"ApiGatewayMethodApiV1ModelDashmetaIdVarPut\"][\"Properties\"][\"MethodResponses\"][0][\"ResponseModels\"]"
+                    }
+                  }
+                ]
               },
               "integration": "AWS_PROXY"
             }
@@ -1303,6 +1437,17 @@
                   "X-Amz-User-Agent"
                 ],
                 "allowCredentials": false
+              },
+              "documentation": {
+                "summary": "Delete model.",
+                "methodResponses": [
+                  {
+                    "statusCode": "200",
+                    "responseModels": {
+                      "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"ApiGatewayMethodApiV1ModelDashmetaIdVarDelete\"][\"Properties\"][\"MethodResponses\"][0][\"ResponseModels\"]"
+                    }
+                  }
+                ]
               },
               "integration": "AWS_PROXY"
             }
@@ -1349,7 +1494,7 @@
     "artifact": "/Users/jwszol/Documents/workspace-git/ml-kraken/ml-kraken-api/.serverless/ml-kraken-api.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/ml-kraken-api/dev/1563795410067-2019-07-22T11:36:50.067Z",
+    "artifactDirectoryName": "serverless/ml-kraken-api/dev/1563825819052-2019-07-22T20:03:39.052Z",
     "artifact": "ml-kraken-api.zip"
   }
 }

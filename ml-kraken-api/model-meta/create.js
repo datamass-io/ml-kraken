@@ -5,7 +5,6 @@ const dynamodb = require('../dynamo-utils/dynamodb');
 var MlModel = require('../models/ml-model');
 
 module.exports.create = (event, context, callback) => {
-    const timestamp = new Date().getTime();
     console.log(event.body);
     const data = JSON.parse(event.body);
     if (typeof data.name !== 'string') {
