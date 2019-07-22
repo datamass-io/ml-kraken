@@ -1,5 +1,5 @@
 ## Build 
 
-``` npm install
+`npm install
 sls dynamodb install
-serverless offline start ```
+serverless offline start`
