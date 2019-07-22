@@ -18,21 +18,61 @@ custom:
     migration:
       dir: offline/migrations
 
+  # You must have the documentation object
+  documentation:
+    api:
+      info:
+        version: '1'
+        title: ML-Kraken-API
+        description: API for ML-Kraken
+        termsOfService: https://www.google.com
+        contact:
+          name: Jakub Wszolek
+          url: https://github.com/datamass-io/ml-kraken
+          email: j.wszolek@datamass.io
+        license:
+          name: The license
+          url: https://www.github.com
+    # Now we describe all the models that we use
+    models:
+      -
+        name: MessageResponse
+        contentType: "application/json"
+#        schema: ${file(models/error.json)}
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+            ver:
+              type: string
+            name:
+              type: string
+            user:
+              type: string
+            createdAt:
+              type: string
+            updatedAt:
+              type: string
+
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
+  region: eu-west-1
   environment:
-    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    DYNAMODB_TABLE: ModelMetaDynamoDbTable
   iamRoleStatements:
     - Effect: Allow
       Action:
+        - dynamodb:DescribeTable
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+      Resource: "arn:aws:dynamodb:eu-west-1:*:*"
+
 
 functions:
   model-meta-create:
@@ -42,6 +82,25 @@ functions:
           path: api/v1/model-meta
           method: post
           cors: true
+          documentation:
+            summary: Post a model definition
+#            description: >
+#              Demonstrates a POST method.
+            queryParams:
+              - name: name
+                required: true
+              - name: ver
+                #description: The second param. This one is optional
+                required: true
+              - name: uri
+                required: true
+              - name: user
+                required: true
+            methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": MessageResponse
+
 
   model-meta-list:
     handler: model-meta/list.list
@@ -50,6 +109,15 @@ functions:
           path: api/v1/model-meta
           method: get
           cors: true
+          documentation:
+            summary: Get all models
+#            description: >
+#              Demonstrates a POST method.
+            methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": MessageResponse
+
 
   model-meta-get:
     handler: model-meta/get.get
@@ -58,6 +126,18 @@ functions:
           path: api/v1/model-meta/{id}
           method: get
           cors: true
+          documentation:
+            summary: Get all models
+            #            description: >
+            #              Demonstrates a POST method.
+            queryParams:
+              - id: name
+                required: true
+            methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": MessageResponse
+
 
   model-meta-update:
     handler: model-meta/update.update
@@ -66,6 +146,15 @@ functions:
           path: api/v1/model-meta/{id}
           method: put
           cors: true
+          documentation:
+            summary: Update model.
+            #            description: >
+            #              Demonstrates a POST method.
+            methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": MessageResponse
+
 
   model-meta-delete:
     handler: model-meta/delete.delete
@@ -74,10 +163,19 @@ functions:
           path: api/v1/model-meta/{id}
           method: delete
           cors: true
+          documentation:
+            summary: Delete model.
+            #            description: >
+            #              Demonstrates a POST method.
+            methodResponses:
+              - statusCode: '200'
+                responseModels:
+                  "application/json": MessageResponse
+
 
 resources:
   Resources:
-    TodosDynamoDbTable:
+    ModelMetaDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
