@@ -1,3 +1,7 @@
+/ml-kraken-ui/package-lock.json
+.DS_Store
+/ml-kraken-ui/.serverless
+/ml-kraken-api/.serverless
 /.idea
 /ml-kraken-api/.dynamodb
 /.dynamodb
