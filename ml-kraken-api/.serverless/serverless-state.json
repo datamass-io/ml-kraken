@@ -164,7 +164,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1563825819052-2019-07-22T20:03:39.052Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1563867770189-2019-07-23T07:42:50.189Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-create",
               "Handler": "model-meta/create.create",
@@ -205,7 +205,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1563825819052-2019-07-22T20:03:39.052Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1563867770189-2019-07-23T07:42:50.189Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-list",
               "Handler": "model-meta/list.list",
@@ -246,7 +246,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1563825819052-2019-07-22T20:03:39.052Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1563867770189-2019-07-23T07:42:50.189Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-get",
               "Handler": "model-meta/get.get",
@@ -287,7 +287,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1563825819052-2019-07-22T20:03:39.052Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1563867770189-2019-07-23T07:42:50.189Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-update",
               "Handler": "model-meta/update.update",
@@ -328,7 +328,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1563825819052-2019-07-22T20:03:39.052Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1563867770189-2019-07-23T07:42:50.189Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-delete",
               "Handler": "model-meta/delete.delete",
@@ -790,7 +790,7 @@
               "MessageResponseModel"
             ]
           },
-          "ApiGatewayDeployment1563825814666": {
+          "ApiGatewayDeployment1563867765493": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -1494,7 +1494,7 @@
     "artifact": "/Users/jwszol/Documents/workspace-git/ml-kraken/ml-kraken-api/.serverless/ml-kraken-api.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/ml-kraken-api/dev/1563825819052-2019-07-22T20:03:39.052Z",
+    "artifactDirectoryName": "serverless/ml-kraken-api/dev/1563867770189-2019-07-23T07:42:50.189Z",
     "artifact": "ml-kraken-api.zip"
   }
 }
