@@ -2,7 +2,7 @@
 
 const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
 
-let options = {};
+let options = {api_version: '2012-08-10'};
 
 // connect to local DB if running offline
 if (process.env.IS_OFFLINE) {
