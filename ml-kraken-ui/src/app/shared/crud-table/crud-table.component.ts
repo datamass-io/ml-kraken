@@ -20,7 +20,6 @@ export class CrudTableComponent implements OnInit {
 
   loadData() {
     this.config.subscriber.subscribe(items => {
-      console.log('get');
       this.data = JSON.parse(items.body);
       this.data = [...this.data];
       this.table.reset();

@@ -29,8 +29,18 @@
   </ng-template>
   <ng-template pTemplate="header" let-columns>
     <tr>
-      <th *ngFor="let col of columns">
+      <th
+        *ngFor="let col of columns"
+        [pSortableColumn]="col.sortable ? col.field : ''"
+      >
         {{ col.header }}
+        <p-sortIcon
+          [field]="col.field"
+          ariaLabel="Activate to sort"
+          ariaLabelDesc="Activate to sort in descending order"
+          ariaLabelAsc="Activate to sort in ascending order"
+          *ngIf="col.sortable"
+        ></p-sortIcon>
       </th>
     </tr>
   </ng-template>

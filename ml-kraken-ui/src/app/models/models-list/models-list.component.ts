@@ -36,6 +36,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           header: 'Name',
           type: 'string',
           withFilter: false,
+          sortable: true,
           icon: undefined
         },
         {
@@ -43,6 +44,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           header: 'Version',
           type: 'string',
           withFilter: false,
+          sortable: true,
           icon: undefined
         },
         {
@@ -50,6 +52,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           header: 'URI',
           type: 'string',
           withFilter: false,
+          sortable: true,
           icon: undefined
         },
         {
@@ -57,6 +60,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           header: 'Created by',
           type: 'string',
           withFilter: false,
+          sortable: true,
           icon: undefined
         },
         {
@@ -64,6 +68,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           header: 'Date of creation',
           type: 'unix',
           withFilter: false,
+          sortable: true,
           icon: undefined
         },
         {
@@ -71,6 +76,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           header: 'Date of update',
           type: 'unix',
           withFilter: false,
+          sortable: true,
           icon: undefined
         },
         {
@@ -78,6 +84,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           header: 'Status',
           type: 'status',
           withFilter: false,
+          sortable: false,
           icon: {
             class: 'fas fa-circle',
             style: { color: 'red' },
@@ -90,6 +97,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           header: '',
           type: 'button',
           withFilter: false,
+          sortable: false,
           icon: {
             class: 'fas fa-play',
             style: { color: 'green' },

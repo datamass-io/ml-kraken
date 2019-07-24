@@ -7,6 +7,7 @@ export interface TableConfig {
     header: string;
     type: string;
     withFilter: boolean;
+    sortable: boolean;
     icon: {
       class: string;
       style: { color: string };
