@@ -2,8 +2,10 @@
 
 const dynamodb = require('../dynamo-utils/dynamodb');
 let MlModel = require('../models/ml-model');
+const middy = require('middy');
+const { cors } = require('middy/middlewares');
 
-module.exports.update = (event, context, callback) => {
+const updateModel = (event, context, callback) => {
     const timestamp = new Date().getTime();
     const data = JSON.parse(event.body);
     let model = new MlModel(data);
@@ -60,3 +62,7 @@ module.exports.update = (event, context, callback) => {
         callback(null, response);
     });
 };
+
+// Adds CORS headers to responses
+const update = middy(updateModel).use(cors())
+module.exports = {update}

@@ -1,8 +1,10 @@
 'use strict';
 
 const dynamodb = require('../dynamo-utils/dynamodb');
+const middy = require('middy');
+const { cors } = require('middy/middlewares');
 
-module.exports.list = (event, context, callback) => {
+const listModels = (event, context, callback) => {
     const params = {
         TableName: process.env.DYNAMODB_TABLE,
     };
@@ -28,3 +30,7 @@ module.exports.list = (event, context, callback) => {
         callback(null, response);
     });
 };
+
+// Adds CORS headers to responses
+const list = middy(listModels).use(cors())
+module.exports = {list}
