@@ -61,6 +61,8 @@ provider:
   region: eu-west-1
   environment:
     DYNAMODB_TABLE: ModelMetaDynamoDbTable
+    DYNAMODB_MSTATUS: ModelStatusTbl
+    ACTION_QUEUE: !Ref ActionQueue
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -72,9 +74,24 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:eu-west-1:*:*"
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+        - sqs:GetQueueUrl
+        - sqs:ListQueues
+      Resource: "arn:aws:sqs:eu-west-1:*:*"
 
 
 functions:
+  model-action-run:
+    handler: model-action/takeAction.takeAction
+    events:
+      - http:
+          path: api/v1/model-action
+          method: post
+          integration: lambda
+          cors: true
+
   model-meta-create:
     handler: model-meta/create.create
     events:
@@ -196,4 +213,22 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.DYNAMODB_TABLE}
+    ModelStatusTbl:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_MSTATUS}
+    ActionQueue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "ActionQueue"
 
