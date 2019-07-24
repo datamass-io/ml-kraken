@@ -2,29 +2,35 @@
 
 const uuid = require('uuid');
 const dynamodb = require('../dynamo-utils/dynamodb');
+var MlModel = require('../models/ml-model');
+const middy = require('middy');
+const { cors } = require('middy/middlewares');
 
-module.exports.create = (event, context, callback) => {
-    const timestamp = new Date().getTime();
-    const data = JSON.parse(event.body);
-    if (typeof data.text !== 'string') {
+//module.exports.create = (event, context, callback) => {
+const createModel = (event, context, callback) => {
+    console.log(event.body);
+    //const data = JSON.parse(event.body);
+    const data = event.body;
+    if (typeof data.name !== 'string') {
         console.error('Validation Failed');
         callback(null, {
             statusCode: 400,
-            headers: { 'Content-Type': 'text/plain' },
+            headers: {
+                'Content-Type': 'text/plain'
+            },
             body: 'Couldn\'t create the todo item.',
         });
         return;
     }
 
+    console.log(data);
+    let model = new MlModel(data);
+    model.id = uuid.v1()
+    console.log(model);
+
     const params = {
         TableName: process.env.DYNAMODB_TABLE,
-        Item: {
-            id: uuid.v1(),
-            text: data.text,
-            checked: false,
-            createdAt: timestamp,
-            updatedAt: timestamp,
-        },
+        Item: model,
     };
 
     // write the todo to the database
@@ -34,7 +40,9 @@ module.exports.create = (event, context, callback) => {
             console.error(error);
             callback(null, {
                 statusCode: error.statusCode || 501,
-                headers: { 'Content-Type': 'text/plain' },
+                headers: {
+                    'Content-Type': 'text/plain'
+                },
                 body: 'Couldn\'t create the todo item.',
             });
             return;
@@ -48,3 +56,7 @@ module.exports.create = (event, context, callback) => {
         callback(null, response);
     });
 };
+
+// Adds CORS headers to responses
+const create = middy(createModel).use(cors())
+module.exports = {create}
