@@ -20,6 +20,7 @@ export class CrudTableComponent implements OnInit {
 
   loadData() {
     this.config.subscriber.subscribe(items => {
+      console.log('get');
       this.data = JSON.parse(items.body);
       this.data = [...this.data];
       this.table.reset();
@@ -51,7 +52,7 @@ export class CrudTableComponent implements OnInit {
         seconds.substr(-2);
 
       return formattedTime;
-    } else if (this.config.cols[columnIndex].type === 'status') {
+    } else if (this.config.cols[columnIndex].type === 'status' || this.config.cols[columnIndex].type === 'button') {
       return '';
     } else {
       return data;

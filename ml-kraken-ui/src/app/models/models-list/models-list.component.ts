@@ -15,7 +15,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
 
   @ViewChild('table', { static: false }) table: CrudTableComponent;
   @ViewChild('dialog', { static: false }) dialog: FormDialogComponent;
-  tableConfig: TableConfig;
+  tableConfig: TableConfig = {} as any;
   dialogConfig: FormConfig;
 
   ngOnInit() {
@@ -31,13 +31,72 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
     this.tableConfig = {
       header: 'Models',
       cols: [
-        { field: 'name', header: 'Name', type: 'string', withFilter: false },
-        { field: 'ver', header: 'Version', type: 'string', withFilter: false },
-        { field: 'uri', header: 'URI', type: 'string', withFilter: false },
-        { field: 'user', header: 'Created by', type: 'string', withFilter: false },
-        { field: 'createdAt', header: 'Date of creation', type: 'unix', withFilter: false },
-        { field: 'updatedAt', header: 'Date of update', type: 'unix', withFilter: false },
-        { field: '', header: 'Status', type: 'status', withFilter: false}
+        {
+          field: 'name',
+          header: 'Name',
+          type: 'string',
+          withFilter: false,
+          icon: undefined
+        },
+        {
+          field: 'ver',
+          header: 'Version',
+          type: 'string',
+          withFilter: false,
+          icon: undefined
+        },
+        {
+          field: 'uri',
+          header: 'URI',
+          type: 'string',
+          withFilter: false,
+          icon: undefined
+        },
+        {
+          field: 'user',
+          header: 'Created by',
+          type: 'string',
+          withFilter: false,
+          icon: undefined
+        },
+        {
+          field: 'createdAt',
+          header: 'Date of creation',
+          type: 'unix',
+          withFilter: false,
+          icon: undefined
+        },
+        {
+          field: 'updatedAt',
+          header: 'Date of update',
+          type: 'unix',
+          withFilter: false,
+          icon: undefined
+        },
+        {
+          field: '',
+          header: 'Status',
+          type: 'status',
+          withFilter: false,
+          icon: {
+            class: 'fas fa-circle',
+            style: { color: 'red' },
+            text: '- stopped',
+            clickable: false
+          }
+        },
+        {
+          field: '',
+          header: '',
+          type: 'button',
+          withFilter: false,
+          icon: {
+            class: 'fas fa-play',
+            style: { color: 'green' },
+            text: '',
+            clickable: true
+          }
+        }
       ],
       buttons: [
         {
@@ -57,11 +116,11 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
       withEdit: false,
       withDelete: true,
       withExport: false,
-      withGlobalFilter: false,
+      withGlobalFilter: true,
       paging: true,
       emptyMessage: 'No models',
       subscriber: null,
-      globalFF: []
+      globalFF: ['name', 'ver', 'uri', 'user']
     };
   }
 

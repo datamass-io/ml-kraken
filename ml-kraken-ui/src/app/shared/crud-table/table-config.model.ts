@@ -2,7 +2,18 @@ import { Observable } from 'rxjs';
 
 export interface TableConfig {
   header: string;
-  cols: { field: string; header: string; type: string; withFilter: boolean }[];
+  cols: {
+    field: string;
+    header: string;
+    type: string;
+    withFilter: boolean;
+    icon: {
+      class: string;
+      style: { color: string };
+      text: string;
+      clickable: boolean;
+    };
+  }[];
   buttons: [
     {
       label: string;
@@ -23,5 +34,5 @@ export interface TableConfig {
   paging: boolean;
   emptyMessage: string;
   subscriber: Observable<any>;
-  globalFF: [];
+  globalFF: string[];
 }
