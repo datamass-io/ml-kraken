@@ -6,6 +6,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { SliderModule } from 'primeng/slider';
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { DataService } from './data-service.service';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
 
 @NgModule({
     imports: [
@@ -14,13 +18,16 @@ import { MultiSelectModule } from 'primeng/multiselect';
         BrowserModule,
         SliderModule,
         DropdownModule,
-        MultiSelectModule
+        MultiSelectModule,
+        DialogModule,
+        InputTextModule
     ],
     declarations: [
-        CrudTableComponent
+        CrudTableComponent,
+        FormDialogComponent
     ],
-    exports: [CrudTableComponent],
-    providers: []
+    exports: [CrudTableComponent, FormDialogComponent],
+    providers: [DataService]
 })
 export class UniversalComponentsModule {
 }

@@ -7,19 +7,22 @@ import { AppComponent } from './app.component';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { ModelsModule } from './models/models.module';
 import { UniversalComponentsModule } from './shared/universal-components.module';
-import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { LoginComponent } from './layout/login/login.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MainLayoutComponent
+    MainLayoutComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     ModelsModule,
-    UniversalComponentsModule
+    UniversalComponentsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
