@@ -1,8 +1,10 @@
 'use strict';
 
 const dynamodb = require('../dynamo-utils/dynamodb');
+const middy = require('middy');
+const { cors } = require('middy/middlewares');
 
-module.exports.delete = (event, context, callback) => {
+const deleteModel = (event, context, callback) => {
     const params = {
         TableName: process.env.DYNAMODB_TABLE,
         Key: {
@@ -31,3 +33,7 @@ module.exports.delete = (event, context, callback) => {
         callback(null, response);
     });
 };
+
+// Adds CORS headers to responses
+const deleteM = middy(deleteModel).use(cors())
+module.exports = {deleteM}

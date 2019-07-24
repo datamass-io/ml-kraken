@@ -81,6 +81,7 @@ functions:
       - http:
           path: api/v1/model-meta
           method: post
+          integration: lambda
           cors: true
           documentation:
             summary: Post a model definition
@@ -108,15 +109,16 @@ functions:
       - http:
           path: api/v1/model-meta
           method: get
+          integration: lambda
           cors: true
-          documentation:
-            summary: Get all models
-#            description: >
-#              Demonstrates a POST method.
-            methodResponses:
-              - statusCode: '200'
-                responseModels:
-                  "application/json": MessageResponse
+#          documentation:
+#            summary: Get all models
+##            description: >
+##              Demonstrates a POST method.
+#            methodResponses:
+#              - statusCode: '200'
+#                responseModels:
+#                  "application/json": MessageResponse
 
 
   model-meta-get:
@@ -125,18 +127,19 @@ functions:
       - http:
           path: api/v1/model-meta/{id}
           method: get
+          integration: lambda
           cors: true
-          documentation:
-            summary: Get all models
-            #            description: >
-            #              Demonstrates a POST method.
-            queryParams:
-              - id: name
-                required: true
-            methodResponses:
-              - statusCode: '200'
-                responseModels:
-                  "application/json": MessageResponse
+#          documentation:
+#            summary: Get all models
+#            #            description: >
+#            #              Demonstrates a POST method.
+#            queryParams:
+#              - id: name
+#                required: true
+#            methodResponses:
+#              - statusCode: '200'
+#                responseModels:
+#                  "application/json": MessageResponse
 
 
   model-meta-update:
@@ -145,32 +148,34 @@ functions:
       - http:
           path: api/v1/model-meta/{id}
           method: put
+          integration: lambda
           cors: true
-          documentation:
-            summary: Update model.
-            #            description: >
-            #              Demonstrates a POST method.
-            methodResponses:
-              - statusCode: '200'
-                responseModels:
-                  "application/json": MessageResponse
+#          documentation:
+#            summary: Update model.
+#            #            description: >
+#            #              Demonstrates a POST method.
+#            methodResponses:
+#              - statusCode: '200'
+#                responseModels:
+#                  "application/json": MessageResponse
 
 
   model-meta-delete:
-    handler: model-meta/delete.delete
+    handler: model-meta/delete.deleteM
     events:
       - http:
           path: api/v1/model-meta/{id}
           method: delete
+          integration: lambda
           cors: true
-          documentation:
-            summary: Delete model.
-            #            description: >
-            #              Demonstrates a POST method.
-            methodResponses:
-              - statusCode: '200'
-                responseModels:
-                  "application/json": MessageResponse
+#          documentation:
+#            summary: Delete model.
+#            #            description: >
+#            #              Demonstrates a POST method.
+#            methodResponses:
+#              - statusCode: '200'
+#                responseModels:
+#                  "application/json": MessageResponse
 
 
 resources:
