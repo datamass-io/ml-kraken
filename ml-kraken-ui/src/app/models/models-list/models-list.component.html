@@ -1,1 +1,6 @@
-<app-crud-table #table [config]="config"></app-crud-table>
+<app-crud-table #table [config]="tableConfig"></app-crud-table>
+<app-form-dialog
+  #dialog
+  [config]="dialogConfig"
+  (entryAdded)="loadModels()"
+></app-form-dialog>

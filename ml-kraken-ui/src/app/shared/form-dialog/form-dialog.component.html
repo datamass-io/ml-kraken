@@ -1,0 +1,22 @@
+<p-dialog [header]="config.header" 
+          [(visible)]="display"
+          [width]="config.width"
+          [style]="{width: config.width, height: config.height}"
+          >
+    <p-header>
+    </p-header>
+    
+    <div class="row" *ngFor="let field of config.fields">
+        <div class="col-lg-6">
+            <label>{{ field.label }}</label>
+        </div>
+        <div class="col-lg-6">
+            <input type="text" pInputText [(ngModel)]="data[field.endpoint]" />
+        </div>
+    </div>
+
+    <p-footer>
+        <button type="button" (click)="onSave()">Save</button>
+        <button type="button" (click)="display=false">Cancel</button>
+    </p-footer>
+</p-dialog>
