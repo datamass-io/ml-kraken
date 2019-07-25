@@ -34,6 +34,7 @@ export class FormDialogComponent implements OnInit {
             this.dataService.post(this.config.postURL, this.data)
                 .subscribe(resp => {
                     this.closeDialog();
+                    this.entryAdded.emit();
                 });
         }
     }

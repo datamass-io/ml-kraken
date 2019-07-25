@@ -3,7 +3,7 @@ import { MainLayoutComponent } from 'src/app/layout/main-layout/main-layout.comp
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModelsListComponent } from '../models-list/models-list.component';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from 'src/app/auth/auth.guard';
 
 const routes: Routes = [
   {

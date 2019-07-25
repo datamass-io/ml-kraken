@@ -51,7 +51,7 @@ export class CrudTableComponent implements OnInit {
         seconds.substr(-2);
 
       return formattedTime;
-    } else if (this.config.cols[columnIndex].type === 'status') {
+    } else if (this.config.cols[columnIndex].type === 'status' || this.config.cols[columnIndex].type === 'button') {
       return '';
     } else {
       return data;

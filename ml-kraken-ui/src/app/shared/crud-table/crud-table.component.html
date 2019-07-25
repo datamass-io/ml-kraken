@@ -4,6 +4,7 @@
   [value]="data"
   [paginator]="config['paging']"
   [rows]="10"
+  [globalFilterFields]="config.globalFF"
 >
   <ng-template pTemplate="caption">
     <div class="caption">
@@ -19,7 +20,7 @@
         type="text"
         pInputText
         size="20"
-        placeholder="Szukaj"
+        placeholder="Search"
         (input)="dt.filterGlobal($event.target.value, 'contains')"
         style="width:auto; margin-left: 10px"
         *ngIf="config.withGlobalFilter"
@@ -28,16 +29,48 @@
   </ng-template>
   <ng-template pTemplate="header" let-columns>
     <tr>
-      <th *ngFor="let col of columns">
+      <th
+        *ngFor="let col of columns"
+        [pSortableColumn]="col.sortable ? col.field : ''"
+      >
         {{ col.header }}
+        <p-sortIcon
+          [field]="col.field"
+          ariaLabel="Activate to sort"
+          ariaLabelDesc="Activate to sort in descending order"
+          ariaLabelAsc="Activate to sort in ascending order"
+          *ngIf="col.sortable"
+        ></p-sortIcon>
       </th>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr [pSelectableRow]="rowData">
       <td *ngFor="let col of columns; let i = index">
-        <i id="statusIcon" class="fas fa-circle" *ngIf="col.type === 'status'"></i>
-        {{preprocessColumnField(rowData[col.field], i)}}
+        <a
+          href="#"
+          [ngStyle]="
+            col.icon !== undefined
+              ? col.icon.clickable
+                ? ''
+                : { 'pointer-events': 'none' }
+              : ''
+          "
+          ><i
+            [ngStyle]="{ color: col.icon.style.color }"
+            [ngClass]="col.icon !== undefined ? col.icon.class : ''"
+            *ngIf="col.icon !== undefined ? col.icon.class !== '' : false"
+          ></i
+        ></a>
+        {{
+          col.icon !== undefined
+            ? col.icon.class !== "" && col.icon.text === ""
+              ? ""
+              : col.icon.class !== "" && col.icon.text !== ""
+              ? col.icon.text
+              : ""
+            : preprocessColumnField(rowData[col.field], i)
+        }}
       </td>
     </tr>
   </ng-template>
