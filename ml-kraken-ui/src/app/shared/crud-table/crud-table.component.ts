@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { TableConfig } from './table-config.model';
+import { DataService } from '../data-service.service';
+import { FormDialogComponent } from '../form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-crud-table',
@@ -8,21 +10,55 @@ import { TableConfig } from './table-config.model';
 })
 export class CrudTableComponent implements OnInit {
   @ViewChild('dt', { static: false }) table;
+  @ViewChild('fd', { static: false }) dialog: FormDialogComponent;
+
   data: any;
+  selectedRow: any;
+
+  addButton = {
+    icon: 'fas fa-plus',
+    class: '',
+    callback: () => {
+      this.dialog.config.operation = 'new';
+      this.dialog.showDialog();
+    },
+    disabled: false
+  };
+
+  editButton = {
+    icon: 'fas fa-edit',
+    class: '',
+    callback: () => {
+      this.dialog.config.operation = 'edit';
+      this.dialog.showDialog(this.selectedRow);
+    },
+    disabled: true
+  };
 
   @Input() config: TableConfig;
 
+  constructor(private dataService: DataService) {}
+
   ngOnInit() {
-    if (this.config.subscriber != null) {
-      this.loadData();
-    }
+    this.loadData();
   }
 
   loadData() {
-    this.config.subscriber.subscribe(items => {
-      this.data = JSON.parse(items.body);
-      this.data = [...this.data];
-      this.table.reset();
+    this.editButton.disabled = true;
+    this.dataService.get(this.config.getURL)
+      .subscribe(items => {
+        this.data = JSON.parse(items.body);
+        this.data = [...this.data];
+        if (this.config.statusGetURL !== undefined) {
+          this.getStatusForData();
+        }
+        this.table.reset();
+      });
+  }
+
+  getStatusForData() {
+    (this.data as Array<any>).forEach(item => {
+      Object.assign(item, {status: 'stopped'});
     });
   }
 
@@ -56,5 +92,15 @@ export class CrudTableComponent implements OnInit {
     } else {
       return data;
     }
+  }
+
+  rowSelected() {
+    console.log(this.selectedRow);
+    this.editButton.disabled = false;
+    this.dataService.selectedData.next(this.selectedRow);
+  }
+
+  rowUnselected() {
+    this.editButton.disabled = true;
   }
 }

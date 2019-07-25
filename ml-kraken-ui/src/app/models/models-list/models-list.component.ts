@@ -14,17 +14,23 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
   constructor(private dataService: DataService) {}
 
   @ViewChild('table', { static: false }) table: CrudTableComponent;
-  @ViewChild('dialog', { static: false }) dialog: FormDialogComponent;
+
   tableConfig: TableConfig = {} as any;
   dialogConfig: FormConfig;
+  dialogData: any;
+  itemId = '';
 
   ngOnInit() {
-    this.createTableConfig();
     this.createDialogConfig();
+    this.createTableConfig();
   }
 
   ngAfterViewInit() {
-    this.loadModels();
+    // this.loadModels();
+    // this.dataService.selectedData.subscribe(item => {
+    //   this.dialog.setData(item);
+    //   this.itemId = item.id;
+    // });
   }
 
   createTableConfig() {
@@ -88,7 +94,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           icon: {
             class: 'fas fa-circle',
             style: { color: 'red' },
-            text: '- stopped',
+            withText: true,
             clickable: false
           }
         },
@@ -101,40 +107,30 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           icon: {
             class: 'fas fa-play',
             style: { color: 'green' },
-            text: '',
+            withText: false,
             clickable: true
           }
         }
       ],
-      buttons: [
-        {
-          label: '',
-          class: '',
-          callback: () => {
-            this.dialog.showDialog();
-          },
-          icon: 'fas fa-plus',
-          disabled: false
-        }
-      ],
+      buttons: [],
       errors: {
         load: ''
       },
+      formDialogConfig: this.dialogConfig,
       withAdd: true,
-      withEdit: false,
-      withDelete: true,
-      withExport: false,
+      withEdit: true,
       withGlobalFilter: true,
       paging: true,
       emptyMessage: 'No models',
-      subscriber: null,
+      getURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
+      statusGetURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-status',
       globalFF: ['name', 'ver', 'uri', 'user']
     };
   }
 
   createDialogConfig() {
     this.dialogConfig = {
-      header: 'New model',
+      header: 'model',
       fields: [
         { label: 'Name', type: 'text', endpoint: 'name' },
         { label: 'Version', type: 'text', endpoint: 'ver' },
@@ -143,16 +139,10 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
       ],
       width: '400px',
       height: '200px',
-      operation: 'new',
+      operation: '',
       postURL:
-        'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta'
+        'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
+      withDelete: true
     };
-  }
-
-  loadModels() {
-    this.table.config.subscriber = this.dataService.get(
-      'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta'
-    );
-    this.table.loadData();
   }
 }

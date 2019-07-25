@@ -1,4 +1,4 @@
-<p-dialog [header]="config.header" 
+<p-dialog [header]="config.operation === 'edit' ? 'Edit ' + config.header : 'New ' + config.header" 
           [(visible)]="display"
           [width]="config.width"
           [style]="{width: config.width, height: config.height}"
@@ -17,6 +17,7 @@
 
     <p-footer>
         <button type="button" (click)="onSave()">Save</button>
-        <button type="button" (click)="display=false">Cancel</button>
+        <button type="button" (click)="onCancel()">Cancel</button>
+        <button *ngIf="config.withDelete && config.operation === 'edit'" type="button" (click)="onDelete()">Delete</button>
     </p-footer>
 </p-dialog>

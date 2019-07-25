@@ -9,4 +9,5 @@ export interface FormConfig {
     height: string;
     operation: string;
     postURL: string;
+    withDelete: boolean;
 }

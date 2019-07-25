@@ -10,6 +10,7 @@ import { DataService } from '../data-service.service';
 export class FormDialogComponent implements OnInit {
     display = false;
     data = {};
+    id = '';
 
     @Input() config: FormConfig;
 
@@ -21,7 +22,15 @@ export class FormDialogComponent implements OnInit {
         this.createDataModel();
     }
 
-    showDialog() {
+    showDialog(item = null) {
+        if (this.config.operation === 'edit') {
+            if (item !== null) {
+                this.config.fields.forEach(field => {
+                    this.data[field.endpoint] = item[field.endpoint];
+                });
+                this.id = item.id;
+            }
+        }
         this.display = true;
     }
 
@@ -35,11 +44,40 @@ export class FormDialogComponent implements OnInit {
                 .subscribe(resp => {
                     this.closeDialog();
                     this.entryAdded.emit();
+                    this.resetData();
+                });
+        } else if (this.config.operation === 'edit') {
+            console.log(this.data);
+            this.dataService.put(this.config.postURL + '/' + this.id, this.data)
+                .subscribe(resp => {
+                    this.closeDialog();
+                    this.entryAdded.emit();
+                    this.resetData();
                 });
         }
     }
 
+    onCancel() {
+        this.display = false;
+        this.resetData();
+    }
+
+    onDelete() {
+        this.dataService.delete(this.config.postURL + '/' + this.id)
+            .subscribe(resp => {
+                this.closeDialog();
+                this.entryAdded.emit();
+                this.resetData();
+            });
+    }
+
     createDataModel() {
+        this.config.fields.forEach(field => {
+            this.data[field.endpoint] = '';
+        });
+    }
+
+    resetData() {
         this.config.fields.forEach(field => {
             this.data[field.endpoint] = '';
         });

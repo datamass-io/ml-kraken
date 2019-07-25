@@ -5,26 +5,35 @@
   [paginator]="config['paging']"
   [rows]="10"
   [globalFilterFields]="config.globalFF"
+  selectionMode="single"
+  [(selection)]="selectedRow"
+  (onRowSelect)="rowSelected()"
+  (onRowUnselect)="rowUnselected()"
 >
   <ng-template pTemplate="caption">
     <div class="caption">
-      <button
-        *ngFor="let button of config.buttons"
-        (click)="button.callback()"
-        [ngClass]="button.icon + ' ' + button.class"
-      >
-        {{ button.label }}
-      </button>
-      <span>{{ config.header }}</span>
-      <input
-        type="text"
-        pInputText
-        size="20"
-        placeholder="Search"
-        (input)="dt.filterGlobal($event.target.value, 'contains')"
-        style="width:auto; margin-left: 10px"
-        *ngIf="config.withGlobalFilter"
-      />
+      <div class="center">
+        <button *ngIf="config.withAdd" 
+                [ngClass]="addButton.icon + ' ' + addButton.class"
+                [disabled]="addButton.disabled"
+                (click)="addButton.callback()"></button>
+        <button *ngIf="config.withEdit"
+                [ngClass]="editButton.icon + ' ' + editButton.class"
+                [disabled]="editButton.disabled"
+                (click)="editButton.callback()"></button>
+      </div>
+      <div class="center">
+        <span>{{ config.header }}</span>
+        <input
+          type="text"
+          pInputText
+          size="20"
+          placeholder="Search"
+          (input)="dt.filterGlobal($event.target.value, 'contains')"
+          style="width:auto; margin-left: 10px"
+          *ngIf="config.withGlobalFilter"
+        />
+      </div>
     </div>
   </ng-template>
   <ng-template pTemplate="header" let-columns>
@@ -64,10 +73,10 @@
         ></a>
         {{
           col.icon !== undefined
-            ? col.icon.class !== "" && col.icon.text === ""
+            ? col.icon.class !== "" && col.icon.withText === false
               ? ""
-              : col.icon.class !== "" && col.icon.text !== ""
-              ? col.icon.text
+              : col.icon.class !== "" && col.icon.withText
+              ? '- ' + rowData['status']
               : ""
             : preprocessColumnField(rowData[col.field], i)
         }}
@@ -82,3 +91,6 @@
     </tr>
   </ng-template>
 </p-table>
+
+<app-form-dialog #fd [config]="config.formDialogConfig" 
+                 (entryAdded)="loadData()"></app-form-dialog>
