@@ -21,10 +21,6 @@
                 [ngClass]="editButton.icon + ' ' + editButton.class"
                 [disabled]="editButton.disabled"
                 (click)="editButton.callback()"></button>
-        <button *ngIf="config.withDelete"
-                [ngClass]="deleteButton.icon + ' ' + deleteButton.class"
-                [disabled]="deleteButton.disabled"
-                (click)="deleteButton.callback()"></button>
       </div>
       <div class="center">
         <span>{{ config.header }}</span>
@@ -77,10 +73,10 @@
         ></a>
         {{
           col.icon !== undefined
-            ? col.icon.class !== "" && col.icon.text === ""
+            ? col.icon.class !== "" && col.icon.withText === false
               ? ""
-              : col.icon.class !== "" && col.icon.text !== ""
-              ? col.icon.text
+              : col.icon.class !== "" && col.icon.withText
+              ? '- ' + rowData['status']
               : ""
             : preprocessColumnField(rowData[col.field], i)
         }}

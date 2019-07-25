@@ -49,8 +49,17 @@ export class CrudTableComponent implements OnInit {
       .subscribe(items => {
         this.data = JSON.parse(items.body);
         this.data = [...this.data];
+        if (this.config.statusGetURL !== undefined) {
+          this.getStatusForData();
+        }
         this.table.reset();
       });
+  }
+
+  getStatusForData() {
+    (this.data as Array<any>).forEach(item => {
+      Object.assign(item, {status: 'stopped'});
+    });
   }
 
   preprocessColumnField(data, columnIndex): string {
@@ -86,6 +95,7 @@ export class CrudTableComponent implements OnInit {
   }
 
   rowSelected() {
+    console.log(this.selectedRow);
     this.editButton.disabled = false;
     this.dataService.selectedData.next(this.selectedRow);
   }

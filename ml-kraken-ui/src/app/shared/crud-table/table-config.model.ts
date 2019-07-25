@@ -12,7 +12,7 @@ export interface TableConfig {
     icon: {
       class: string;
       style: { color: string };
-      text: string;
+      withText: boolean;
       clickable: boolean;
     };
   }[];
@@ -34,5 +34,6 @@ export interface TableConfig {
   paging: boolean;
   emptyMessage: string;
   getURL: string;
+  statusGetURL: string;
   globalFF: string[];
 }

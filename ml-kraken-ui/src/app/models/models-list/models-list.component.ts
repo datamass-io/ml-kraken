@@ -94,7 +94,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           icon: {
             class: 'fas fa-circle',
             style: { color: 'red' },
-            text: '- stopped',
+            withText: true,
             clickable: false
           }
         },
@@ -107,52 +107,12 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           icon: {
             class: 'fas fa-play',
             style: { color: 'green' },
-            text: '',
+            withText: false,
             clickable: true
           }
         }
       ],
-      buttons: [
-        // {
-        //   label: '',
-        //   class: '',
-        //   callback: () => {
-        //     this.dialogConfig.operation = 'new';
-        //     this.dataService.selectedData.next(null);
-        //     this.table.selectedRow = [];
-        //     this.dialog.showDialog();
-        //   },
-        //   icon: 'fas fa-plus',
-        //   disabled: false
-        // },
-        // {
-        //   label: '',
-        //   class: '',
-        //   callback: () => {
-        //     if (this.dialogConfig.operation === '' || this.dialogConfig.operation === 'new') {
-        //       this.dialogConfig.operation = 'edit';
-        //       this.table.rowSelected();
-        //     } else {
-        //       this.dialogConfig.operation = 'edit';
-        //     }
-        //     this.dialog.showDialog();
-        //   },
-        //   icon: 'fas fa-edit',
-        //   disabled: false
-        // },
-        // {
-        //   label: '',
-        //   class: '',
-        //   callback: () => {
-        //     this.dataService.delete('https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta'
-        //       + '/' + this.itemId).subscribe(resp => {
-        //         this.loadModels();
-        //       });
-        //   },
-        //   icon: 'fas fa-trash',
-        //   disabled: false
-        // }
-      ],
+      buttons: [],
       errors: {
         load: ''
       },
@@ -163,6 +123,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
       paging: true,
       emptyMessage: 'No models',
       getURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
+      statusGetURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-status',
       globalFF: ['name', 'ver', 'uri', 'user']
     };
   }
