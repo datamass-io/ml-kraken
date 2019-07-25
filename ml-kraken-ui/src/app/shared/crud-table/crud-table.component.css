@@ -1,11 +1,14 @@
-.caption {
-  text-align: center;
-  position: relative;
+div.caption {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
 }
 
-.caption > button {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
+.center {
+  margin-right: auto
+}
+
+div.caption div.center button {
+  margin-left: 5px;
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { TableConfig } from './table-config.model';
+import { DataService } from '../data-service.service';
 
 @Component({
   selector: 'app-crud-table',
@@ -9,8 +10,13 @@ import { TableConfig } from './table-config.model';
 export class CrudTableComponent implements OnInit {
   @ViewChild('dt', { static: false }) table;
   data: any;
+  selectedRow: any;
+  editDisabled = true;
+  deleteDisabled = true;
 
   @Input() config: TableConfig;
+
+  constructor(private dataService: DataService) {}
 
   ngOnInit() {
     if (this.config.subscriber != null) {
@@ -56,5 +62,16 @@ export class CrudTableComponent implements OnInit {
     } else {
       return data;
     }
+  }
+
+  rowSelected() {
+    this.deleteDisabled = false;
+    this.editDisabled = false;
+    this.dataService.selectedData.next(this.selectedRow);
+  }
+
+  rowUnselected() {
+    this.deleteDisabled = true;
+    this.editDisabled = true;
   }
 }

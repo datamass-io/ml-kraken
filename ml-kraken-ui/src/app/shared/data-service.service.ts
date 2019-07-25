@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 
 @Injectable({providedIn: 'root'})
 export class DataService {
+
+    selectedData = new Subject<any>();
 
     constructor(private httpClient: HttpClient) {}
 
@@ -18,5 +20,9 @@ export class DataService {
 
     public post(path, item, options = {}): Observable<any> {
         return this.httpClient.post(path, item, options);
+    }
+
+    public delete(path, options = {}): Observable<any> {
+        return this.httpClient.delete(path, options);
     }
 }

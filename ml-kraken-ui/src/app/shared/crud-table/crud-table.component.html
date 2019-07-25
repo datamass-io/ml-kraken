@@ -5,26 +5,41 @@
   [paginator]="config['paging']"
   [rows]="10"
   [globalFilterFields]="config.globalFF"
+  selectionMode="single"
+  [(selection)]="selectedRow"
+  (onRowSelect)="rowSelected()"
+  (onRowUnselect)="rowUnselected()"
 >
   <ng-template pTemplate="caption">
     <div class="caption">
-      <button
-        *ngFor="let button of config.buttons"
-        (click)="button.callback()"
-        [ngClass]="button.icon + ' ' + button.class"
-      >
-        {{ button.label }}
-      </button>
-      <span>{{ config.header }}</span>
-      <input
-        type="text"
-        pInputText
-        size="20"
-        placeholder="Search"
-        (input)="dt.filterGlobal($event.target.value, 'contains')"
-        style="width:auto; margin-left: 10px"
-        *ngIf="config.withGlobalFilter"
-      />
+      <div class="center">
+        <button
+          *ngFor="let button of config.buttons"
+          (click)="button.callback()"
+          [ngClass]="button.icon + ' ' + button.class"
+          [disabled]="
+            (button.icon.indexOf('edit') !== -1 && editDisabled === false) ||
+            (button.icon.indexOf('trash') !== -1 && deleteDisabled === false) || 
+            (button.icon.indexOf('edit') === -1 && button.icon.indexOf('trash') === -1)
+              ? false
+              : true
+          "
+        >
+          {{ button.label }}
+        </button>
+      </div>
+      <div class="center">
+        <span>{{ config.header }}</span>
+        <input
+          type="text"
+          pInputText
+          size="20"
+          placeholder="Search"
+          (input)="dt.filterGlobal($event.target.value, 'contains')"
+          style="width:auto; margin-left: 10px"
+          *ngIf="config.withGlobalFilter"
+        />
+      </div>
     </div>
   </ng-template>
   <ng-template pTemplate="header" let-columns>

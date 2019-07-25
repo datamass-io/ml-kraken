@@ -15,19 +15,14 @@ export interface TableConfig {
       clickable: boolean;
     };
   }[];
-  buttons: [
+  buttons:
     {
       label: string;
       class: string;
       callback: () => void;
       icon: string;
       disabled: boolean;
-    }
-  ];
-  withAdd: boolean;
-  withEdit: boolean;
-  withDelete: boolean;
-  withExport: boolean;
+    }[];
   withGlobalFilter: boolean;
   errors: {
     load: string;

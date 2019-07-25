@@ -17,6 +17,8 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
   @ViewChild('dialog', { static: false }) dialog: FormDialogComponent;
   tableConfig: TableConfig = {} as any;
   dialogConfig: FormConfig;
+  dialogData: any;
+  itemId = '';
 
   ngOnInit() {
     this.createTableConfig();
@@ -25,6 +27,10 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.loadModels();
+    this.dataService.selectedData.subscribe(item => {
+      this.dialog.setData(item);
+      this.itemId = item.id;
+    });
   }
 
   createTableConfig() {
@@ -111,19 +117,47 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           label: '',
           class: '',
           callback: () => {
+            this.dialogConfig.operation = 'new';
+            this.dataService.selectedData.next(null);
+            this.table.selectedRow = [];
+            this.table.deleteDisabled = true;
+            this.table.editDisabled = true;
             this.dialog.showDialog();
           },
           icon: 'fas fa-plus',
+          disabled: false
+        },
+        {
+          label: '',
+          class: '',
+          callback: () => {
+            if (this.dialogConfig.operation === '' || this.dialogConfig.operation === 'new') {
+              this.dialogConfig.operation = 'edit';
+              this.table.rowSelected();
+            } else {
+              this.dialogConfig.operation = 'edit';
+            }
+            this.dialog.showDialog();
+          },
+          icon: 'fas fa-edit',
+          disabled: false
+        },
+        {
+          label: '',
+          class: '',
+          callback: () => {
+            this.dataService.delete('https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta'
+              + '/' + this.itemId).subscribe(resp => {
+                this.loadModels();
+              });
+          },
+          icon: 'fas fa-trash',
           disabled: false
         }
       ],
       errors: {
         load: ''
       },
-      withAdd: true,
-      withEdit: false,
-      withDelete: true,
-      withExport: false,
       withGlobalFilter: true,
       paging: true,
       emptyMessage: 'No models',
@@ -143,7 +177,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
       ],
       width: '400px',
       height: '200px',
-      operation: 'new',
+      operation: '',
       postURL:
         'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta'
     };
@@ -154,5 +188,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
       'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta'
     );
     this.table.loadData();
+    this.table.deleteDisabled = true;
+    this.table.editDisabled = true;
   }
 }

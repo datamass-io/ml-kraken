@@ -10,6 +10,7 @@ import { DataService } from '../data-service.service';
 export class FormDialogComponent implements OnInit {
     display = false;
     data = {};
+    id = '';
 
     @Input() config: FormConfig;
 
@@ -29,9 +30,29 @@ export class FormDialogComponent implements OnInit {
         this.display = false;
     }
 
+    setData(item) {
+        if (item !== null && this.config.operation === 'edit') {
+            this.config.fields.forEach(field => {
+                this.data[field.endpoint] = item[field.endpoint];
+            });
+            this.id = item.id;
+        } else {
+            this.config.fields.forEach(field => {
+                this.data[field.endpoint] = '';
+            });
+        }
+    }
+
     onSave() {
         if (this.config.operation === 'new') {
             this.dataService.post(this.config.postURL, this.data)
+                .subscribe(resp => {
+                    this.closeDialog();
+                    this.entryAdded.emit();
+                });
+        } else if (this.config.operation === 'edit') {
+            console.log(this.data);
+            this.dataService.put(this.config.postURL + '/' + this.id, this.data)
                 .subscribe(resp => {
                     this.closeDialog();
                     this.entryAdded.emit();
