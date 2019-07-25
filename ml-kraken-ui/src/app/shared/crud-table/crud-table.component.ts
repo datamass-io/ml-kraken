@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { TableConfig } from './table-config.model';
 import { DataService } from '../data-service.service';
+import { FormDialogComponent } from '../form-dialog/form-dialog.component';
 
 @Component({
   selector: 'app-crud-table',
@@ -9,27 +10,47 @@ import { DataService } from '../data-service.service';
 })
 export class CrudTableComponent implements OnInit {
   @ViewChild('dt', { static: false }) table;
+  @ViewChild('fd', { static: false }) dialog: FormDialogComponent;
+
   data: any;
   selectedRow: any;
-  editDisabled = true;
-  deleteDisabled = true;
+
+  addButton = {
+    icon: 'fas fa-plus',
+    class: '',
+    callback: () => {
+      this.dialog.config.operation = 'new';
+      this.dialog.showDialog();
+    },
+    disabled: false
+  };
+
+  editButton = {
+    icon: 'fas fa-edit',
+    class: '',
+    callback: () => {
+      this.dialog.config.operation = 'edit';
+      this.dialog.showDialog(this.selectedRow);
+    },
+    disabled: true
+  };
 
   @Input() config: TableConfig;
 
   constructor(private dataService: DataService) {}
 
   ngOnInit() {
-    if (this.config.subscriber != null) {
-      this.loadData();
-    }
+    this.loadData();
   }
 
   loadData() {
-    this.config.subscriber.subscribe(items => {
-      this.data = JSON.parse(items.body);
-      this.data = [...this.data];
-      this.table.reset();
-    });
+    this.editButton.disabled = true;
+    this.dataService.get(this.config.getURL)
+      .subscribe(items => {
+        this.data = JSON.parse(items.body);
+        this.data = [...this.data];
+        this.table.reset();
+      });
   }
 
   preprocessColumnField(data, columnIndex): string {
@@ -65,13 +86,11 @@ export class CrudTableComponent implements OnInit {
   }
 
   rowSelected() {
-    this.deleteDisabled = false;
-    this.editDisabled = false;
+    this.editButton.disabled = false;
     this.dataService.selectedData.next(this.selectedRow);
   }
 
   rowUnselected() {
-    this.deleteDisabled = true;
-    this.editDisabled = true;
+    this.editButton.disabled = true;
   }
 }

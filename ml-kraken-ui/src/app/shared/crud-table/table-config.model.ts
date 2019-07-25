@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { FormConfig } from '../form-dialog/form-config.model';
 
 export interface TableConfig {
   header: string;
@@ -23,12 +24,15 @@ export interface TableConfig {
       icon: string;
       disabled: boolean;
     }[];
+  formDialogConfig: FormConfig;
+  withAdd: boolean;
+  withEdit: boolean;
   withGlobalFilter: boolean;
   errors: {
     load: string;
   };
   paging: boolean;
   emptyMessage: string;
-  subscriber: Observable<any>;
+  getURL: string;
   globalFF: string[];
 }

@@ -13,20 +13,18 @@
   <ng-template pTemplate="caption">
     <div class="caption">
       <div class="center">
-        <button
-          *ngFor="let button of config.buttons"
-          (click)="button.callback()"
-          [ngClass]="button.icon + ' ' + button.class"
-          [disabled]="
-            (button.icon.indexOf('edit') !== -1 && editDisabled === false) ||
-            (button.icon.indexOf('trash') !== -1 && deleteDisabled === false) || 
-            (button.icon.indexOf('edit') === -1 && button.icon.indexOf('trash') === -1)
-              ? false
-              : true
-          "
-        >
-          {{ button.label }}
-        </button>
+        <button *ngIf="config.withAdd" 
+                [ngClass]="addButton.icon + ' ' + addButton.class"
+                [disabled]="addButton.disabled"
+                (click)="addButton.callback()"></button>
+        <button *ngIf="config.withEdit"
+                [ngClass]="editButton.icon + ' ' + editButton.class"
+                [disabled]="editButton.disabled"
+                (click)="editButton.callback()"></button>
+        <button *ngIf="config.withDelete"
+                [ngClass]="deleteButton.icon + ' ' + deleteButton.class"
+                [disabled]="deleteButton.disabled"
+                (click)="deleteButton.callback()"></button>
       </div>
       <div class="center">
         <span>{{ config.header }}</span>
@@ -97,3 +95,6 @@
     </tr>
   </ng-template>
 </p-table>
+
+<app-form-dialog #fd [config]="config.formDialogConfig" 
+                 (entryAdded)="loadData()"></app-form-dialog>

@@ -14,23 +14,23 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
   constructor(private dataService: DataService) {}
 
   @ViewChild('table', { static: false }) table: CrudTableComponent;
-  @ViewChild('dialog', { static: false }) dialog: FormDialogComponent;
+
   tableConfig: TableConfig = {} as any;
   dialogConfig: FormConfig;
   dialogData: any;
   itemId = '';
 
   ngOnInit() {
-    this.createTableConfig();
     this.createDialogConfig();
+    this.createTableConfig();
   }
 
   ngAfterViewInit() {
-    this.loadModels();
-    this.dataService.selectedData.subscribe(item => {
-      this.dialog.setData(item);
-      this.itemId = item.id;
-    });
+    // this.loadModels();
+    // this.dataService.selectedData.subscribe(item => {
+    //   this.dialog.setData(item);
+    //   this.itemId = item.id;
+    // });
   }
 
   createTableConfig() {
@@ -113,62 +113,63 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
         }
       ],
       buttons: [
-        {
-          label: '',
-          class: '',
-          callback: () => {
-            this.dialogConfig.operation = 'new';
-            this.dataService.selectedData.next(null);
-            this.table.selectedRow = [];
-            this.table.deleteDisabled = true;
-            this.table.editDisabled = true;
-            this.dialog.showDialog();
-          },
-          icon: 'fas fa-plus',
-          disabled: false
-        },
-        {
-          label: '',
-          class: '',
-          callback: () => {
-            if (this.dialogConfig.operation === '' || this.dialogConfig.operation === 'new') {
-              this.dialogConfig.operation = 'edit';
-              this.table.rowSelected();
-            } else {
-              this.dialogConfig.operation = 'edit';
-            }
-            this.dialog.showDialog();
-          },
-          icon: 'fas fa-edit',
-          disabled: false
-        },
-        {
-          label: '',
-          class: '',
-          callback: () => {
-            this.dataService.delete('https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta'
-              + '/' + this.itemId).subscribe(resp => {
-                this.loadModels();
-              });
-          },
-          icon: 'fas fa-trash',
-          disabled: false
-        }
+        // {
+        //   label: '',
+        //   class: '',
+        //   callback: () => {
+        //     this.dialogConfig.operation = 'new';
+        //     this.dataService.selectedData.next(null);
+        //     this.table.selectedRow = [];
+        //     this.dialog.showDialog();
+        //   },
+        //   icon: 'fas fa-plus',
+        //   disabled: false
+        // },
+        // {
+        //   label: '',
+        //   class: '',
+        //   callback: () => {
+        //     if (this.dialogConfig.operation === '' || this.dialogConfig.operation === 'new') {
+        //       this.dialogConfig.operation = 'edit';
+        //       this.table.rowSelected();
+        //     } else {
+        //       this.dialogConfig.operation = 'edit';
+        //     }
+        //     this.dialog.showDialog();
+        //   },
+        //   icon: 'fas fa-edit',
+        //   disabled: false
+        // },
+        // {
+        //   label: '',
+        //   class: '',
+        //   callback: () => {
+        //     this.dataService.delete('https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta'
+        //       + '/' + this.itemId).subscribe(resp => {
+        //         this.loadModels();
+        //       });
+        //   },
+        //   icon: 'fas fa-trash',
+        //   disabled: false
+        // }
       ],
       errors: {
         load: ''
       },
+      formDialogConfig: this.dialogConfig,
+      withAdd: true,
+      withEdit: true,
       withGlobalFilter: true,
       paging: true,
       emptyMessage: 'No models',
-      subscriber: null,
+      getURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
       globalFF: ['name', 'ver', 'uri', 'user']
     };
   }
 
   createDialogConfig() {
     this.dialogConfig = {
-      header: 'New model',
+      header: 'model',
       fields: [
         { label: 'Name', type: 'text', endpoint: 'name' },
         { label: 'Version', type: 'text', endpoint: 'ver' },
@@ -179,16 +180,8 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
       height: '200px',
       operation: '',
       postURL:
-        'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta'
+        'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
+      withDelete: true
     };
-  }
-
-  loadModels() {
-    this.table.config.subscriber = this.dataService.get(
-      'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta'
-    );
-    this.table.loadData();
-    this.table.deleteDisabled = true;
-    this.table.editDisabled = true;
   }
 }
