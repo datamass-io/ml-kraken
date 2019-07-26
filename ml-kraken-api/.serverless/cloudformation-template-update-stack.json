@@ -16,6 +16,24 @@
         }
       }
     },
+    "SqsDashconsumerLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/ml-kraken-api-dev-sqs-consumer"
+      }
+    },
+    "ModelDashstatusDashlistLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/ml-kraken-api-dev-model-status-list"
+      }
+    },
+    "ModelDashactionDashrunLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/ml-kraken-api-dev-model-action-run"
+      }
+    },
     "ModelDashmetaDashcreateLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
@@ -114,6 +132,31 @@
                     "dynamodb:DeleteItem"
                   ],
                   "Resource": "arn:aws:dynamodb:eu-west-1:*:*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "sqs:SendMessage",
+                    "sqs:GetQueueUrl",
+                    "sqs:ListQueues"
+                  ],
+                  "Resource": "arn:aws:sqs:eu-west-1:*:*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "ActionQueue",
+                        "Arn"
+                      ]
+                    }
+                  ]
                 }
               ]
             }
@@ -135,6 +178,141 @@
         }
       }
     },
+    "SqsDashconsumerLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
+        },
+        "FunctionName": "ml-kraken-api-dev-sqs-consumer",
+        "Handler": "model-action/sqsConsumer.consumer",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x",
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+            "DYNAMODB_MSTATUS": "ModelStatusTbl",
+            "SQS_URL": {
+              "Ref": "ActionQueue"
+            }
+          }
+        }
+      },
+      "DependsOn": [
+        "SqsDashconsumerLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "SqsDashconsumerLambdaVersionEi8WhS480TpO3qnHMTyf6Tllvc5uq6Sc3RfAk6Bi4Q": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "SqsDashconsumerLambdaFunction"
+        },
+        "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
+      }
+    },
+    "ModelDashstatusDashlistLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
+        },
+        "FunctionName": "ml-kraken-api-dev-model-status-list",
+        "Handler": "model-status/listStatuses.listStatuses",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x",
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+            "DYNAMODB_MSTATUS": "ModelStatusTbl",
+            "SQS_URL": {
+              "Ref": "ActionQueue"
+            }
+          }
+        }
+      },
+      "DependsOn": [
+        "ModelDashstatusDashlistLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "ModelDashstatusDashlistLambdaVersionOUTI8aAOz0gL6gZrFKeY95mBSvwkJFWjC2FldNdBfU": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ModelDashstatusDashlistLambdaFunction"
+        },
+        "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
+      }
+    },
+    "ModelDashactionDashrunLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
+        },
+        "FunctionName": "ml-kraken-api-dev-model-action-run",
+        "Handler": "model-action/takeAction.takeAction",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs10.x",
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+            "DYNAMODB_MSTATUS": "ModelStatusTbl",
+            "SQS_URL": {
+              "Ref": "ActionQueue"
+            }
+          }
+        }
+      },
+      "DependsOn": [
+        "ModelDashactionDashrunLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "ModelDashactionDashrunLambdaVersionfPjpgZ9Z2WHEaHh0x1IjgDdTYeDPIojvbx7cut2YsLo": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ModelDashactionDashrunLambdaFunction"
+        },
+        "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
+      }
+    },
     "ModelDashmetaDashcreateLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -142,7 +320,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/ml-kraken-api/dev/1563963638869-2019-07-24T10:20:38.869Z/ml-kraken-api.zip"
+          "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
         },
         "FunctionName": "ml-kraken-api-dev-model-meta-create",
         "Handler": "model-meta/create.create",
@@ -157,7 +335,11 @@
         "Timeout": 6,
         "Environment": {
           "Variables": {
-            "DYNAMODB_TABLE": "ModelMetaDynamoDbTable"
+            "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+            "DYNAMODB_MSTATUS": "ModelStatusTbl",
+            "SQS_URL": {
+              "Ref": "ActionQueue"
+            }
           }
         }
       },
@@ -166,14 +348,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "ModelDashmetaDashcreateLambdaVersionS8WL85pVAXF687gzQYvGSCzjtj1bMvCNgFur0ifUs": {
+    "ModelDashmetaDashcreateLambdaVersionRL1q04AD9bzY0PFreHOuOkAU6z4O3T2Y64zSaw67Jg": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ModelDashmetaDashcreateLambdaFunction"
         },
-        "CodeSha256": "I6OOSbcTWOONeQ80xFGwgFzxUVCNEcSdEHtHSNzhlbE="
+        "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
       }
     },
     "ModelDashmetaDashlistLambdaFunction": {
@@ -183,7 +365,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/ml-kraken-api/dev/1563963638869-2019-07-24T10:20:38.869Z/ml-kraken-api.zip"
+          "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
         },
         "FunctionName": "ml-kraken-api-dev-model-meta-list",
         "Handler": "model-meta/list.list",
@@ -198,7 +380,11 @@
         "Timeout": 6,
         "Environment": {
           "Variables": {
-            "DYNAMODB_TABLE": "ModelMetaDynamoDbTable"
+            "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+            "DYNAMODB_MSTATUS": "ModelStatusTbl",
+            "SQS_URL": {
+              "Ref": "ActionQueue"
+            }
           }
         }
       },
@@ -207,14 +393,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "ModelDashmetaDashlistLambdaVersionUsjigyrV7uwJSwYq7hQXj6mSwwszF2q1B1HokiXY38s": {
+    "ModelDashmetaDashlistLambdaVersion2hPN3UGjngxtrU9pMWsWTBbGG60NHZmH7QUZfi9iDxk": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ModelDashmetaDashlistLambdaFunction"
         },
-        "CodeSha256": "I6OOSbcTWOONeQ80xFGwgFzxUVCNEcSdEHtHSNzhlbE="
+        "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
       }
     },
     "ModelDashmetaDashgetLambdaFunction": {
@@ -224,7 +410,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/ml-kraken-api/dev/1563963638869-2019-07-24T10:20:38.869Z/ml-kraken-api.zip"
+          "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
         },
         "FunctionName": "ml-kraken-api-dev-model-meta-get",
         "Handler": "model-meta/get.get",
@@ -239,7 +425,11 @@
         "Timeout": 6,
         "Environment": {
           "Variables": {
-            "DYNAMODB_TABLE": "ModelMetaDynamoDbTable"
+            "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+            "DYNAMODB_MSTATUS": "ModelStatusTbl",
+            "SQS_URL": {
+              "Ref": "ActionQueue"
+            }
           }
         }
       },
@@ -248,14 +438,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "ModelDashmetaDashgetLambdaVersionUYqbQ4k4riAAR2zv2rmG1Nmuvu8YXkT7vyB400PViI": {
+    "ModelDashmetaDashgetLambdaVersionhFsq2TLeYXl6SpKhB3A59wajuBSywlC0THaWbFOrAso": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ModelDashmetaDashgetLambdaFunction"
         },
-        "CodeSha256": "I6OOSbcTWOONeQ80xFGwgFzxUVCNEcSdEHtHSNzhlbE="
+        "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
       }
     },
     "ModelDashmetaDashupdateLambdaFunction": {
@@ -265,7 +455,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/ml-kraken-api/dev/1563963638869-2019-07-24T10:20:38.869Z/ml-kraken-api.zip"
+          "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
         },
         "FunctionName": "ml-kraken-api-dev-model-meta-update",
         "Handler": "model-meta/update.update",
@@ -280,7 +470,11 @@
         "Timeout": 6,
         "Environment": {
           "Variables": {
-            "DYNAMODB_TABLE": "ModelMetaDynamoDbTable"
+            "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+            "DYNAMODB_MSTATUS": "ModelStatusTbl",
+            "SQS_URL": {
+              "Ref": "ActionQueue"
+            }
           }
         }
       },
@@ -289,14 +483,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "ModelDashmetaDashupdateLambdaVersionsK9WrCWZnI4AJeM6nCEb5looczili5QzVLJf5QJOBLg": {
+    "ModelDashmetaDashupdateLambdaVersionAmHMCCETNVnZngHl9MEfRigMhtv7HXU1av0rpjjy4I": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ModelDashmetaDashupdateLambdaFunction"
         },
-        "CodeSha256": "I6OOSbcTWOONeQ80xFGwgFzxUVCNEcSdEHtHSNzhlbE="
+        "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
       }
     },
     "ModelDashmetaDashdeleteLambdaFunction": {
@@ -306,7 +500,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/ml-kraken-api/dev/1563963638869-2019-07-24T10:20:38.869Z/ml-kraken-api.zip"
+          "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
         },
         "FunctionName": "ml-kraken-api-dev-model-meta-delete",
         "Handler": "model-meta/delete.deleteM",
@@ -321,7 +515,11 @@
         "Timeout": 6,
         "Environment": {
           "Variables": {
-            "DYNAMODB_TABLE": "ModelMetaDynamoDbTable"
+            "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+            "DYNAMODB_MSTATUS": "ModelStatusTbl",
+            "SQS_URL": {
+              "Ref": "ActionQueue"
+            }
           }
         }
       },
@@ -330,14 +528,14 @@
         "IamRoleLambdaExecution"
       ]
     },
-    "ModelDashmetaDashdeleteLambdaVersionOUgUINhN3MPfUBAxbc7EPHW6ocjsznGBHDmLrXP0": {
+    "ModelDashmetaDashdeleteLambdaVersion8ABfBTwF4l8ABNpIRXVvA9JmfPxKQpxHd9RQIFKXvMw": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ModelDashmetaDashdeleteLambdaFunction"
         },
-        "CodeSha256": "I6OOSbcTWOONeQ80xFGwgFzxUVCNEcSdEHtHSNzhlbE="
+        "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
       }
     },
     "ApiGatewayRestApi": {
@@ -378,6 +576,42 @@
         }
       }
     },
+    "ApiGatewayResourceApiV1ModelDashstatus": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceApiV1"
+        },
+        "PathPart": "model-status",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceApiV1ModelDashstatusIdVar": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceApiV1ModelDashstatus"
+        },
+        "PathPart": "{id}",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayResourceApiV1ModelDashaction": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Ref": "ApiGatewayResourceApiV1"
+        },
+        "PathPart": "model-action",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
     "ApiGatewayResourceApiV1ModelDashmeta": {
       "Type": "AWS::ApiGateway::Resource",
       "Properties": {
@@ -397,6 +631,100 @@
           "Ref": "ApiGatewayResourceApiV1ModelDashmeta"
         },
         "PathPart": "{id}",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodApiV1ModelDashstatusIdVarOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Credentials": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'",
+                "method.response.header.Access-Control-Allow-Credentials": "'false'"
+              },
+              "ResponseTemplates": {
+                "application/json": "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\".*\")) #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin) #end"
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceApiV1ModelDashstatusIdVar"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodApiV1ModelDashactionOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Credentials": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'",
+                "method.response.header.Access-Control-Allow-Credentials": "'false'"
+              },
+              "ResponseTemplates": {
+                "application/json": "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\".*\")) #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin) #end"
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceApiV1ModelDashaction"
+        },
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
@@ -494,6 +822,378 @@
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
+      }
+    },
+    "ApiGatewayMethodApiV1ModelDashstatusIdVarGet": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceApiV1ModelDashstatusIdVar"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ModelDashstatusDashlistLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          },
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "\n    #set( $body = $input.json(\"$\") )\n\n    \n  #define( $loop )\n    {\n    #foreach($key in $map.keySet())\n        #set( $k = $util.escapeJavaScript($key) )\n        #set( $v = $util.escapeJavaScript($map.get($key)).replaceAll(\"\\\\'\", \"'\") )\n        \"$k\":\n          \"$v\"\n          #if( $foreach.hasNext ) , #end\n    #end\n    }\n  #end\n\n  {\n    \"body\": $body,\n    \"method\": \"$context.httpMethod\",\n    \"principalId\": \"$context.authorizer.principalId\",\n    \"stage\": \"$context.stage\",\n\n    \"cognitoPoolClaims\" : {\n       \n       \"sub\": \"$context.authorizer.claims.sub\"\n    },\n\n    #set( $map = $context.authorizer )\n    \"enhancedAuthContext\": $loop,\n\n    #set( $map = $input.params().header )\n    \"headers\": $loop,\n\n    #set( $map = $input.params().querystring )\n    \"query\": $loop,\n\n    #set( $map = $input.params().path )\n    \"path\": $loop,\n\n    #set( $map = $context.identity )\n    \"identity\": $loop,\n\n    #set( $map = $stageVariables )\n    \"stageVariables\": $loop\n  }\n\n  ",
+            "application/x-www-form-urlencoded": "\n    #define( $body )\n      {\n      #foreach( $token in $input.path('$').split('&') )\n        #set( $keyVal = $token.split('=') )\n        #set( $keyValSize = $keyVal.size() )\n        #if( $keyValSize >= 1 )\n          #set( $key = $util.escapeJavaScript($util.urlDecode($keyVal[0])) )\n          #if( $keyValSize >= 2 )\n            #set($val = $util.escapeJavaScript($util.urlDecode($keyVal[1])).replaceAll(\"\\\\'\",\"'\"))\n          #else\n            #set( $val = '' )\n          #end\n          \"$key\": \"$val\"#if($foreach.hasNext),#end\n        #end\n      #end\n      }\n    #end\n\n    \n  #define( $loop )\n    {\n    #foreach($key in $map.keySet())\n        #set( $k = $util.escapeJavaScript($key) )\n        #set( $v = $util.escapeJavaScript($map.get($key)).replaceAll(\"\\\\'\", \"'\") )\n        \"$k\":\n          \"$v\"\n          #if( $foreach.hasNext ) , #end\n    #end\n    }\n  #end\n\n  {\n    \"body\": $body,\n    \"method\": \"$context.httpMethod\",\n    \"principalId\": \"$context.authorizer.principalId\",\n    \"stage\": \"$context.stage\",\n\n    \"cognitoPoolClaims\" : {\n       \n       \"sub\": \"$context.authorizer.claims.sub\"\n    },\n\n    #set( $map = $context.authorizer )\n    \"enhancedAuthContext\": $loop,\n\n    #set( $map = $input.params().header )\n    \"headers\": $loop,\n\n    #set( $map = $input.params().querystring )\n    \"query\": $loop,\n\n    #set( $map = $input.params().path )\n    \"path\": $loop,\n\n    #set( $map = $context.identity )\n    \"identity\": $loop,\n\n    #set( $map = $stageVariables )\n    \"stageVariables\": $loop\n  }\n\n  "
+          },
+          "IntegrationResponses": [
+            {
+              "StatusCode": 200,
+              "SelectionPattern": "",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 400,
+              "SelectionPattern": "[\\s\\S]*\\[400\\][\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 401,
+              "SelectionPattern": "[\\s\\S]*\\[401\\][\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 403,
+              "SelectionPattern": "[\\s\\S]*\\[403\\][\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 404,
+              "SelectionPattern": "[\\s\\S]*\\[404\\][\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 422,
+              "SelectionPattern": "[\\s\\S]*\\[422\\][\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 500,
+              "SelectionPattern": "[\\s\\S]*(Process\\s?exited\\s?before\\s?completing\\s?request|\\[500\\])[\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 502,
+              "SelectionPattern": "[\\s\\S]*\\[502\\][\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 504,
+              "SelectionPattern": "([\\s\\S]*\\[504\\][\\s\\S]*)|(.*Task timed out after \\d+\\.\\d+ seconds$)",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            }
+          ]
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 200
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 400
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 401
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 403
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 404
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 422
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 500
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 502
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 504
+          }
+        ]
+      }
+    },
+    "ApiGatewayMethodApiV1ModelDashactionPost": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "POST",
+        "RequestParameters": {},
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceApiV1ModelDashaction"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        },
+        "ApiKeyRequired": false,
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Fn::GetAtt": [
+                    "ModelDashactionDashrunLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "/invocations"
+              ]
+            ]
+          },
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "\n    #set( $body = $input.json(\"$\") )\n\n    \n  #define( $loop )\n    {\n    #foreach($key in $map.keySet())\n        #set( $k = $util.escapeJavaScript($key) )\n        #set( $v = $util.escapeJavaScript($map.get($key)).replaceAll(\"\\\\'\", \"'\") )\n        \"$k\":\n          \"$v\"\n          #if( $foreach.hasNext ) , #end\n    #end\n    }\n  #end\n\n  {\n    \"body\": $body,\n    \"method\": \"$context.httpMethod\",\n    \"principalId\": \"$context.authorizer.principalId\",\n    \"stage\": \"$context.stage\",\n\n    \"cognitoPoolClaims\" : {\n       \n       \"sub\": \"$context.authorizer.claims.sub\"\n    },\n\n    #set( $map = $context.authorizer )\n    \"enhancedAuthContext\": $loop,\n\n    #set( $map = $input.params().header )\n    \"headers\": $loop,\n\n    #set( $map = $input.params().querystring )\n    \"query\": $loop,\n\n    #set( $map = $input.params().path )\n    \"path\": $loop,\n\n    #set( $map = $context.identity )\n    \"identity\": $loop,\n\n    #set( $map = $stageVariables )\n    \"stageVariables\": $loop\n  }\n\n  ",
+            "application/x-www-form-urlencoded": "\n    #define( $body )\n      {\n      #foreach( $token in $input.path('$').split('&') )\n        #set( $keyVal = $token.split('=') )\n        #set( $keyValSize = $keyVal.size() )\n        #if( $keyValSize >= 1 )\n          #set( $key = $util.escapeJavaScript($util.urlDecode($keyVal[0])) )\n          #if( $keyValSize >= 2 )\n            #set($val = $util.escapeJavaScript($util.urlDecode($keyVal[1])).replaceAll(\"\\\\'\",\"'\"))\n          #else\n            #set( $val = '' )\n          #end\n          \"$key\": \"$val\"#if($foreach.hasNext),#end\n        #end\n      #end\n      }\n    #end\n\n    \n  #define( $loop )\n    {\n    #foreach($key in $map.keySet())\n        #set( $k = $util.escapeJavaScript($key) )\n        #set( $v = $util.escapeJavaScript($map.get($key)).replaceAll(\"\\\\'\", \"'\") )\n        \"$k\":\n          \"$v\"\n          #if( $foreach.hasNext ) , #end\n    #end\n    }\n  #end\n\n  {\n    \"body\": $body,\n    \"method\": \"$context.httpMethod\",\n    \"principalId\": \"$context.authorizer.principalId\",\n    \"stage\": \"$context.stage\",\n\n    \"cognitoPoolClaims\" : {\n       \n       \"sub\": \"$context.authorizer.claims.sub\"\n    },\n\n    #set( $map = $context.authorizer )\n    \"enhancedAuthContext\": $loop,\n\n    #set( $map = $input.params().header )\n    \"headers\": $loop,\n\n    #set( $map = $input.params().querystring )\n    \"query\": $loop,\n\n    #set( $map = $input.params().path )\n    \"path\": $loop,\n\n    #set( $map = $context.identity )\n    \"identity\": $loop,\n\n    #set( $map = $stageVariables )\n    \"stageVariables\": $loop\n  }\n\n  "
+          },
+          "IntegrationResponses": [
+            {
+              "StatusCode": 200,
+              "SelectionPattern": "",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 400,
+              "SelectionPattern": "[\\s\\S]*\\[400\\][\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 401,
+              "SelectionPattern": "[\\s\\S]*\\[401\\][\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 403,
+              "SelectionPattern": "[\\s\\S]*\\[403\\][\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 404,
+              "SelectionPattern": "[\\s\\S]*\\[404\\][\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 422,
+              "SelectionPattern": "[\\s\\S]*\\[422\\][\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 500,
+              "SelectionPattern": "[\\s\\S]*(Process\\s?exited\\s?before\\s?completing\\s?request|\\[500\\])[\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 502,
+              "SelectionPattern": "[\\s\\S]*\\[502\\][\\s\\S]*",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            },
+            {
+              "StatusCode": 504,
+              "SelectionPattern": "([\\s\\S]*\\[504\\][\\s\\S]*)|(.*Task timed out after \\d+\\.\\d+ seconds$)",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {}
+            }
+          ]
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 200
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 400
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 401
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 403
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 404
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 422
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 500
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 502
+          },
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true
+            },
+            "ResponseModels": {},
+            "StatusCode": 504
+          }
+        ]
       }
     },
     "ApiGatewayMethodApiV1ModelDashmetaPost": {
@@ -1436,7 +2136,7 @@
         ]
       }
     },
-    "ApiGatewayDeployment1563963633493": {
+    "ApiGatewayDeployment1564148323755": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -1445,14 +2145,92 @@
         "StageName": "dev"
       },
       "DependsOn": [
+        "ApiGatewayMethodApiV1ModelDashstatusIdVarOptions",
+        "ApiGatewayMethodApiV1ModelDashactionOptions",
         "ApiGatewayMethodApiV1ModelDashmetaOptions",
         "ApiGatewayMethodApiV1ModelDashmetaIdVarOptions",
+        "ApiGatewayMethodApiV1ModelDashstatusIdVarGet",
+        "ApiGatewayMethodApiV1ModelDashactionPost",
         "ApiGatewayMethodApiV1ModelDashmetaPost",
         "ApiGatewayMethodApiV1ModelDashmetaGet",
         "ApiGatewayMethodApiV1ModelDashmetaIdVarGet",
         "ApiGatewayMethodApiV1ModelDashmetaIdVarPut",
         "ApiGatewayMethodApiV1ModelDashmetaIdVarDelete"
       ]
+    },
+    "ModelDashstatusDashlistLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ModelDashstatusDashlistLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
+    },
+    "ModelDashactionDashrunLambdaPermissionApiGateway": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ModelDashactionDashrunLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "/*/*"
+            ]
+          ]
+        }
+      }
     },
     "ModelDashmetaDashcreateLambdaPermissionApiGateway": {
       "Type": "AWS::Lambda::Permission",
@@ -1639,6 +2417,26 @@
         }
       }
     },
+    "SqsDashconsumerEventSourceMappingSQSActionQueue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": "IamRoleLambdaExecution",
+      "Properties": {
+        "BatchSize": 10,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "ActionQueue",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "SqsDashconsumerLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": "True"
+      }
+    },
     "MessageResponseModel": {
       "Type": "AWS::ApiGateway::Model",
       "Properties": {
@@ -1694,6 +2492,35 @@
         },
         "TableName": "ModelMetaDynamoDbTable"
       }
+    },
+    "ModelStatusTbl": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        },
+        "TableName": "ModelStatusTbl"
+      }
+    },
+    "ActionQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "ActionQueue"
+      }
     }
   },
   "Outputs": {
@@ -1702,34 +2529,52 @@
         "Ref": "ServerlessDeploymentBucket"
       }
     },
+    "SqsDashconsumerLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "SqsDashconsumerLambdaVersionEi8WhS480TpO3qnHMTyf6Tllvc5uq6Sc3RfAk6Bi4Q"
+      }
+    },
+    "ModelDashstatusDashlistLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ModelDashstatusDashlistLambdaVersionOUTI8aAOz0gL6gZrFKeY95mBSvwkJFWjC2FldNdBfU"
+      }
+    },
+    "ModelDashactionDashrunLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ModelDashactionDashrunLambdaVersionfPjpgZ9Z2WHEaHh0x1IjgDdTYeDPIojvbx7cut2YsLo"
+      }
+    },
     "ModelDashmetaDashcreateLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ModelDashmetaDashcreateLambdaVersionS8WL85pVAXF687gzQYvGSCzjtj1bMvCNgFur0ifUs"
+        "Ref": "ModelDashmetaDashcreateLambdaVersionRL1q04AD9bzY0PFreHOuOkAU6z4O3T2Y64zSaw67Jg"
       }
     },
     "ModelDashmetaDashlistLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ModelDashmetaDashlistLambdaVersionUsjigyrV7uwJSwYq7hQXj6mSwwszF2q1B1HokiXY38s"
+        "Ref": "ModelDashmetaDashlistLambdaVersion2hPN3UGjngxtrU9pMWsWTBbGG60NHZmH7QUZfi9iDxk"
       }
     },
     "ModelDashmetaDashgetLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ModelDashmetaDashgetLambdaVersionUYqbQ4k4riAAR2zv2rmG1Nmuvu8YXkT7vyB400PViI"
+        "Ref": "ModelDashmetaDashgetLambdaVersionhFsq2TLeYXl6SpKhB3A59wajuBSywlC0THaWbFOrAso"
       }
     },
     "ModelDashmetaDashupdateLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ModelDashmetaDashupdateLambdaVersionsK9WrCWZnI4AJeM6nCEb5looczili5QzVLJf5QJOBLg"
+        "Ref": "ModelDashmetaDashupdateLambdaVersionAmHMCCETNVnZngHl9MEfRigMhtv7HXU1av0rpjjy4I"
       }
     },
     "ModelDashmetaDashdeleteLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ModelDashmetaDashdeleteLambdaVersionOUgUINhN3MPfUBAxbc7EPHW6ocjsznGBHDmLrXP0"
+        "Ref": "ModelDashmetaDashdeleteLambdaVersion8ABfBTwF4l8ABNpIRXVvA9JmfPxKQpxHd9RQIFKXvMw"
       }
     },
     "ServiceEndpoint": {
