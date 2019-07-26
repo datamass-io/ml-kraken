@@ -7,8 +7,8 @@ const { cors } = require('middy/middlewares');
 
 const updateModel = (event, context, callback) => {
     const timestamp = new Date().getTime();
-    const data = JSON.parse(event.body);
-    let model = new MlModel(data);
+    const data = event.body;
+    let model = new MlModel(event.body);
 
     // validation
     if (typeof data.name !== 'string' || typeof data.ver !== 'string') {
@@ -24,7 +24,7 @@ const updateModel = (event, context, callback) => {
     const params = {
         TableName: process.env.DYNAMODB_TABLE,
         Key: {
-            id: event.pathParameters.id,
+            id: event.path.id,
         },
         ExpressionAttributeNames: {
             '#model_name': 'name',

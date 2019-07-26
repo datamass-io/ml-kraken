@@ -13,6 +13,7 @@
     "aws-sdk": "^2.496.0",
     "serverless-aws-documentation": "^1.1.0",
     "serverless-dynamodb-local": "^0.2.38",
-    "serverless-offline": "^5.8.0"
+    "serverless-offline": "^5.8.0",
+    "serverless-offline-sqs": "^2.0.3"
   }
 }
