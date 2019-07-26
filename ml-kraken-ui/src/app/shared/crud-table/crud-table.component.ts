@@ -58,7 +58,16 @@ export class CrudTableComponent implements OnInit {
 
   getStatusForData() {
     (this.data as Array<any>).forEach(item => {
-      Object.assign(item, {status: 'stopped'});
+      let statuses: any;
+      this.dataService.get(this.config.statusGetURL + '/' + item.id)
+        .subscribe(resp => {
+          statuses = JSON.parse(resp.body);
+          statuses = [...statuses];
+          if ((statuses as Array<any>).length > 0) {
+            (statuses as Array<any>).sort((a, b) => (a.updatedAt > b.updatedAt) ? 1 : -1);
+            Object.assign(item, {status: statuses[statuses.length - 1].action});
+          }
+        });
     });
   }
 
@@ -95,12 +104,27 @@ export class CrudTableComponent implements OnInit {
   }
 
   rowSelected() {
-    console.log(this.selectedRow);
     this.editButton.disabled = false;
     this.dataService.selectedData.next(this.selectedRow);
   }
 
   rowUnselected() {
     this.editButton.disabled = true;
+  }
+
+  onIconPressed(columnType, data) {
+    if (columnType === 'run') {
+      if (data.status === 'scheduled to run') {
+        this.dataService.post(this.config.runPostURL, {modelId: data.id, action: 'stop'})
+        .subscribe(resp => {
+          this.loadData();
+        });
+      } else {
+        this.dataService.post(this.config.runPostURL, {modelId: data.id, action: 'run'})
+        .subscribe(resp => {
+          this.loadData();
+        });
+      }
+    }
   }
 }

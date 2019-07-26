@@ -93,22 +93,22 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           sortable: false,
           icon: {
             class: 'fas fa-circle',
-            style: { color: 'red' },
+            style: undefined,
             withText: true,
-            clickable: false
+            clickable: false,
           }
         },
         {
           field: '',
           header: '',
-          type: 'button',
+          type: 'run',
           withFilter: false,
           sortable: false,
           icon: {
             class: 'fas fa-play',
             style: { color: 'green' },
             withText: false,
-            clickable: true
+            clickable: true,
           }
         }
       ],
@@ -124,6 +124,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
       emptyMessage: 'No models',
       getURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
       statusGetURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-status',
+      runPostURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-action',
       globalFF: ['name', 'ver', 'uri', 'user']
     };
   }

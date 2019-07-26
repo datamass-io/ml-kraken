@@ -2,6 +2,7 @@
           [(visible)]="display"
           [width]="config.width"
           [style]="{width: config.width, height: config.height}"
+          (onHide)="onHide()"
           >
     <p-header>
     </p-header>
@@ -18,6 +19,8 @@
     <p-footer>
         <button type="button" (click)="onSave()">Save</button>
         <button type="button" (click)="onCancel()">Cancel</button>
-        <button *ngIf="config.withDelete && config.operation === 'edit'" type="button" (click)="onDelete()">Delete</button>
+        <button *ngIf="config.withDelete && config.operation === 'edit'" type="button" (click)="confirm()">Delete</button>
     </p-footer>
 </p-dialog>
+
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>

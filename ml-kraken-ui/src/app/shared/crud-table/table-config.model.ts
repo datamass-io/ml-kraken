@@ -35,5 +35,6 @@ export interface TableConfig {
   emptyMessage: string;
   getURL: string;
   statusGetURL: string;
+  runPostURL: string;
   globalFF: string[];
 }

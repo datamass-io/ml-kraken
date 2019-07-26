@@ -13,14 +13,18 @@
   <ng-template pTemplate="caption">
     <div class="caption">
       <div class="center">
-        <button *ngIf="config.withAdd" 
-                [ngClass]="addButton.icon + ' ' + addButton.class"
-                [disabled]="addButton.disabled"
-                (click)="addButton.callback()"></button>
-        <button *ngIf="config.withEdit"
-                [ngClass]="editButton.icon + ' ' + editButton.class"
-                [disabled]="editButton.disabled"
-                (click)="editButton.callback()"></button>
+        <button
+          *ngIf="config.withAdd"
+          [ngClass]="addButton.icon + ' ' + addButton.class"
+          [disabled]="addButton.disabled"
+          (click)="addButton.callback()"
+        ></button>
+        <button
+          *ngIf="config.withEdit"
+          [ngClass]="editButton.icon + ' ' + editButton.class"
+          [disabled]="editButton.disabled"
+          (click)="editButton.callback()"
+        ></button>
       </div>
       <div class="center">
         <span>{{ config.header }}</span>
@@ -57,18 +61,38 @@
     <tr [pSelectableRow]="rowData">
       <td *ngFor="let col of columns; let i = index">
         <a
-          href="#"
+          [routerLink]=""
           [ngStyle]="
             col.icon !== undefined
-              ? col.icon.clickable
-                ? ''
-                : { 'pointer-events': 'none' }
+              ? col.type === 'status'
+                ? { 'pointer-events': 'none' }
+                : ''
               : ''
           "
           ><i
-            [ngStyle]="{ color: col.icon.style.color }"
-            [ngClass]="col.icon !== undefined ? col.icon.class : ''"
-            *ngIf="col.icon !== undefined ? col.icon.class !== '' : false"
+            [ngStyle]="{
+              color:
+                col.type === 'run'
+                  ? rowData['status'] === 'scheduled to run'
+                    ? 'red'
+                    : 'green'
+                  : col.icon.style !== undefined
+                  ? col.icon.style.color
+                  : rowData['status'] === 'scheduled to run'
+                  ? 'yellow'
+                  : 'red'
+            }"
+            [ngClass]="
+              col.type === 'run'
+                ? rowData['status'] === 'scheduled to run'
+                  ? 'fas fa-stop'
+                  : 'fas fa-play'
+                : col.icon !== undefined
+                ? col.icon.class
+                : ''
+            "
+            *ngIf="col.icon !== undefined ? true : false"
+            (click)="onIconPressed(col.type, rowData)"
           ></i
         ></a>
         {{
@@ -76,7 +100,10 @@
             ? col.icon.class !== "" && col.icon.withText === false
               ? ""
               : col.icon.class !== "" && col.icon.withText
-              ? '- ' + rowData['status']
+              ? "- " +
+                (rowData["status"] === "scheduled to run"
+                  ? "pending"
+                  : "stopped")
               : ""
             : preprocessColumnField(rowData[col.field], i)
         }}
@@ -92,5 +119,8 @@
   </ng-template>
 </p-table>
 
-<app-form-dialog #fd [config]="config.formDialogConfig" 
-                 (entryAdded)="loadData()"></app-form-dialog>
+<app-form-dialog
+  #fd
+  [config]="config.formDialogConfig"
+  (entryAdded)="loadData()"
+></app-form-dialog>
