@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormConfig } from './form-config.model';
 import { DataService } from '../data-service.service';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
     selector: 'app-form-dialog',
@@ -16,7 +17,8 @@ export class FormDialogComponent implements OnInit {
 
     @Output() entryAdded: EventEmitter<any> = new EventEmitter<any>();
 
-    constructor(private dataService: DataService) {}
+    constructor(private dataService: DataService,
+                private confirmationService: ConfirmationService) {}
 
     ngOnInit() {
         this.createDataModel();
@@ -44,7 +46,6 @@ export class FormDialogComponent implements OnInit {
                 .subscribe(resp => {
                     this.closeDialog();
                     this.entryAdded.emit();
-                    this.resetData();
                 });
         } else if (this.config.operation === 'edit') {
             console.log(this.data);
@@ -52,14 +53,12 @@ export class FormDialogComponent implements OnInit {
                 .subscribe(resp => {
                     this.closeDialog();
                     this.entryAdded.emit();
-                    this.resetData();
                 });
         }
     }
 
     onCancel() {
         this.display = false;
-        this.resetData();
     }
 
     onDelete() {
@@ -67,7 +66,6 @@ export class FormDialogComponent implements OnInit {
             .subscribe(resp => {
                 this.closeDialog();
                 this.entryAdded.emit();
-                this.resetData();
             });
     }
 
@@ -81,5 +79,18 @@ export class FormDialogComponent implements OnInit {
         this.config.fields.forEach(field => {
             this.data[field.endpoint] = '';
         });
+    }
+
+    confirm() {
+        this.confirmationService.confirm({
+            message: 'Are you sure you want to delete?',
+            accept: () => {
+                this.onDelete();
+            }
+        });
+    }
+
+    onHide() {
+        this.resetData();
     }
 }
