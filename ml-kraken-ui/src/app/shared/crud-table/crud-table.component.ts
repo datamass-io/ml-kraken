@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { TableConfig } from './table-config.model';
 import { DataService } from '../data-service.service';
 import { FormDialogComponent } from '../form-dialog/form-dialog.component';
+import { DialogService } from 'primeng/api';
 
 @Component({
   selector: 'app-crud-table',
@@ -37,7 +38,7 @@ export class CrudTableComponent implements OnInit {
 
   @Input() config: TableConfig;
 
-  constructor(private dataService: DataService) {}
+  constructor(private dataService: DataService, public dialogService: DialogService) {}
 
   ngOnInit() {
     this.loadData();
@@ -49,6 +50,9 @@ export class CrudTableComponent implements OnInit {
       .subscribe(items => {
         this.data = JSON.parse(items.body);
         this.data = [...this.data];
+        if (this.config.sortField !== undefined) {
+          (this.data as Array<any>).sort((a, b) => (a[this.config.sortField] > b[this.config.sortField]) ? -1 : 1);
+        }
         if (this.config.statusGetURL !== undefined) {
           this.getStatusForData();
         }
@@ -105,7 +109,6 @@ export class CrudTableComponent implements OnInit {
 
   rowSelected() {
     this.editButton.disabled = false;
-    this.dataService.selectedData.next(this.selectedRow);
   }
 
   rowUnselected() {
@@ -126,5 +129,17 @@ export class CrudTableComponent implements OnInit {
         });
       }
     }
+  }
+
+  showDynamicDialog(id: string, buttonConfig: any) {
+    console.log(id);
+    console.log(buttonConfig);
+    const ref = this.dialogService.open(buttonConfig.component, {
+      data: {
+        id
+      },
+      header: buttonConfig.dialogHeader,
+      width: '70%'
+    });
   }
 }

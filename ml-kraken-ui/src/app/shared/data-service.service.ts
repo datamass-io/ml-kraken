@@ -6,8 +6,6 @@ import { Injectable } from '@angular/core';
 @Injectable({providedIn: 'root'})
 export class DataService {
 
-    selectedData = new Subject<any>();
-
     constructor(private httpClient: HttpClient) {}
 
     public get(path, options = {}): Observable<any> {

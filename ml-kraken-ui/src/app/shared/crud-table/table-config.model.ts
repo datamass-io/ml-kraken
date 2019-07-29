@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs';
 import { FormConfig } from '../form-dialog/form-config.model';
+import { Type } from '@angular/core';
 
 export interface TableConfig {
   header: string;
@@ -15,6 +16,11 @@ export interface TableConfig {
       withText: boolean;
       clickable: boolean;
     };
+    button: {
+      class: string;
+      component: Type<any>;
+      dialogHeader: string;
+    }
   }[];
   buttons:
     {
@@ -37,4 +43,5 @@ export interface TableConfig {
   statusGetURL: string;
   runPostURL: string;
   globalFF: string[];
+  sortField: string;
 }

@@ -1,14 +1,15 @@
 <p-table
   #dt
-  [columns]="config['cols']"
+  [columns]="config.cols"
   [value]="data"
-  [paginator]="config['paging']"
+  [paginator]="config.paging"
   [rows]="10"
   [globalFilterFields]="config.globalFF"
   selectionMode="single"
   [(selection)]="selectedRow"
   (onRowSelect)="rowSelected()"
   (onRowUnselect)="rowUnselected()"
+  [autoLayout]="true"
 >
   <ng-template pTemplate="caption">
     <div class="caption">
@@ -91,10 +92,11 @@
                 ? col.icon.class
                 : ''
             "
-            *ngIf="col.icon !== undefined ? true : false"
+            *ngIf="col.icon !== undefined || col.type === 'run' ? true : false"
             (click)="onIconPressed(col.type, rowData)"
           ></i
         ></a>
+        <button *ngIf="col.type === 'dynamic-button'" [ngClass]="col.button.class" (click)="showDynamicDialog(rowData.id, col.button)"></button>
         {{
           col.icon !== undefined
             ? col.icon.class !== "" && col.icon.withText === false
@@ -123,4 +125,7 @@
   #fd
   [config]="config.formDialogConfig"
   (entryAdded)="loadData()"
+  *ngIf="config.formDialogConfig !== undefined"
 ></app-form-dialog>
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
