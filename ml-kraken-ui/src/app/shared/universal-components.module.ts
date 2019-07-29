@@ -10,8 +10,11 @@ import { FormDialogComponent } from './form-dialog/form-dialog.component';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { RouterModule } from '@angular/router';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, DialogService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DynamicDialogModule } from 'primeng/components/dynamicdialog/dynamicdialog';
+import { ToastModule } from 'primeng/toast';
+import { ModelStatusComponent } from '../models/model-status/model-status.component';
 
 @NgModule({
     imports: [
@@ -24,14 +27,19 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
         DialogModule,
         InputTextModule,
         RouterModule,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        DynamicDialogModule,
+        ToastModule
     ],
     declarations: [
         CrudTableComponent,
-        FormDialogComponent
+        FormDialogComponent,
+    ],
+    entryComponents: [
+        ModelStatusComponent
     ],
     exports: [CrudTableComponent, FormDialogComponent],
-    providers: [ConfirmationService]
+    providers: [ConfirmationService, DialogService, MessageService]
 })
 export class UniversalComponentsModule {
 }
