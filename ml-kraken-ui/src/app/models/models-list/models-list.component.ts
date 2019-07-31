@@ -17,11 +17,11 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
 
   tableConfig: TableConfig = {} as any;
   dialogConfig: FormConfig;
-  dialogData: any;
-  itemId = '';
+  runDialogConfig: FormConfig;
 
   ngOnInit() {
     this.createDialogConfig();
+    this.createRunDialogConfig();
     this.createTableConfig();
   }
 
@@ -38,6 +38,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           type: 'string',
           withFilter: false,
           sortable: true,
+          hidden: false,
           icon: undefined,
           button: undefined
         },
@@ -47,15 +48,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           type: 'string',
           withFilter: false,
           sortable: true,
-          icon: undefined,
-          button: undefined
-        },
-        {
-          field: 'uri',
-          header: 'URI',
-          type: 'string',
-          withFilter: false,
-          sortable: true,
+          hidden: false,
           icon: undefined,
           button: undefined
         },
@@ -65,6 +58,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           type: 'string',
           withFilter: false,
           sortable: true,
+          hidden: false,
           icon: undefined,
           button: undefined
         },
@@ -74,6 +68,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           type: 'unix',
           withFilter: false,
           sortable: true,
+          hidden: false,
           icon: undefined,
           button: undefined
         },
@@ -83,6 +78,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           type: 'unix',
           withFilter: false,
           sortable: true,
+          hidden: false,
           icon: undefined,
           button: undefined
         },
@@ -92,6 +88,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           type: 'status',
           withFilter: false,
           sortable: false,
+          hidden: false,
           icon: {
             class: 'fas fa-circle',
             style: undefined,
@@ -106,6 +103,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           type: 'run',
           withFilter: false,
           sortable: false,
+          hidden: false,
           icon: undefined,
           button: undefined
         },
@@ -115,6 +113,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           type: 'dynamic-button',
           withFilter: false,
           sortable: false,
+          hidden: false,
           icon: undefined,
           button: {
             class: 'fas fa-search',
@@ -128,8 +127,11 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
         load: ''
       },
       formDialogConfig: this.dialogConfig,
+      runDialogConfig: this.runDialogConfig,
       withAdd: true,
       withEdit: true,
+      withColumnSelect: true,
+      withRefresh: true,
       withGlobalFilter: true,
       paging: true,
       emptyMessage: 'No models',
@@ -147,8 +149,11 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
       fields: [
         { label: 'Name', type: 'text', endpoint: 'name' },
         { label: 'Version', type: 'text', endpoint: 'ver' },
-        { label: 'URI', type: 'text', endpoint: 'uri' },
-        { label: 'User', type: 'text', endpoint: 'user' }
+        { label: 'User', type: 'text', endpoint: 'user' },
+        { label: 'Docker image', type: 'text', endpoint: 'dockerImage' },
+        { label: 'Container memory (GB)', type: 'spinner', endpoint: 'containerMemory', minValue: 1, maxValue: 3, stepValue: 0.1},
+        { label: 'Container CPU (vCPU)', type: 'spinner', endpoint: 'containerCpu', minValue: 1, maxValue: 4, stepValue: 0.1},
+        { label: 'Container Port', type: 'text', endpoint: 'containerPort'}
       ],
       width: '400px',
       height: '200px',
@@ -156,6 +161,21 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
       postURL:
         'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
       withDelete: true
+    };
+  }
+
+  createRunDialogConfig() {
+    this.runDialogConfig = {
+      header: 'Set container IP address',
+      fields: [
+        {label: 'Container IP address', type: 'text', endpoint: 'containerIP'}
+      ],
+      width: '400px',
+      height: '100px',
+      operation: 'run',
+      postURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
+      runPostURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-action',
+      withDelete: false
     };
   }
 }

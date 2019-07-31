@@ -15,6 +15,9 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DynamicDialogModule } from 'primeng/components/dynamicdialog/dynamicdialog';
 import { ToastModule } from 'primeng/toast';
 import { ModelStatusComponent } from '../models/model-status/model-status.component';
+import { SpinnerModule } from 'primeng/spinner';
+import { SelectDialogComponent } from './select-dialog/select-dialog.component';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @NgModule({
     imports: [
@@ -29,16 +32,19 @@ import { ModelStatusComponent } from '../models/model-status/model-status.compon
         RouterModule,
         ConfirmDialogModule,
         DynamicDialogModule,
-        ToastModule
+        ToastModule,
+        SpinnerModule,
+        CheckboxModule
     ],
     declarations: [
         CrudTableComponent,
         FormDialogComponent,
+        SelectDialogComponent
     ],
     entryComponents: [
         ModelStatusComponent
     ],
-    exports: [CrudTableComponent, FormDialogComponent],
+    exports: [CrudTableComponent, FormDialogComponent, SelectDialogComponent],
     providers: [ConfirmationService, DialogService, MessageService]
 })
 export class UniversalComponentsModule {

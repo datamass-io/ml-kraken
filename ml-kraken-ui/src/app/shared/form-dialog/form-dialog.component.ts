@@ -10,7 +10,7 @@ import { ConfirmationService } from 'primeng/api';
 })
 export class FormDialogComponent implements OnInit {
     display = false;
-    data = {};
+    data: any = {};
     id = '';
 
     @Input() config: FormConfig;
@@ -32,6 +32,12 @@ export class FormDialogComponent implements OnInit {
                 });
                 this.id = item.id;
             }
+        } else if (this.config.operation === 'run') {
+            if (item !== null) {
+                for (const key of Object.keys(item)) {
+                    this.data[key] = item[key];
+                }
+            }
         }
         this.display = true;
     }
@@ -48,11 +54,19 @@ export class FormDialogComponent implements OnInit {
                     this.entryAdded.emit();
                 });
         } else if (this.config.operation === 'edit') {
-            console.log(this.data);
             this.dataService.put(this.config.postURL + '/' + this.id, this.data)
                 .subscribe(resp => {
                     this.closeDialog();
                     this.entryAdded.emit();
+                });
+        } else if (this.config.operation === 'run') {
+            this.dataService.put(this.config.postURL + '/' + this.data.id, this.data)
+                .subscribe(() => {
+                    this.dataService.post(this.config.runPostURL, {modelId: this.data.id, action: 'run'})
+                        .subscribe(() => {
+                            this.closeDialog();
+                            this.entryAdded.emit();
+                        });
                 });
         }
     }

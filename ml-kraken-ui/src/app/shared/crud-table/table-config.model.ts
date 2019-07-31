@@ -1,4 +1,3 @@
-import { Observable } from 'rxjs';
 import { FormConfig } from '../form-dialog/form-config.model';
 import { Type } from '@angular/core';
 
@@ -10,6 +9,7 @@ export interface TableConfig {
     type: string;
     withFilter: boolean;
     sortable: boolean;
+    hidden: boolean;
     icon: {
       class: string;
       style: { color: string };
@@ -31,8 +31,11 @@ export interface TableConfig {
       disabled: boolean;
     }[];
   formDialogConfig: FormConfig;
+  runDialogConfig: FormConfig;
   withAdd: boolean;
   withEdit: boolean;
+  withColumnSelect: boolean;
+  withRefresh: boolean;
   withGlobalFilter: boolean;
   errors: {
     load: string;

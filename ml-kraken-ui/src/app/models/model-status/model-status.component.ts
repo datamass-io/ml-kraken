@@ -30,6 +30,7 @@ export class ModelStatusComponent implements OnInit {
           type: 'string',
           withFilter: false,
           sortable: true,
+          hidden: false,
           icon: undefined,
           button: undefined
         },
@@ -39,6 +40,7 @@ export class ModelStatusComponent implements OnInit {
           type: 'unix',
           withFilter: false,
           sortable: true,
+          hidden: false,
           icon: undefined,
           button: undefined
         }
@@ -48,8 +50,11 @@ export class ModelStatusComponent implements OnInit {
         load: ''
       },
       formDialogConfig: undefined,
+      runDialogConfig: undefined,
       withAdd: false,
       withEdit: false,
+      withColumnSelect: false,
+      withRefresh: false,
       withGlobalFilter: true,
       paging: true,
       emptyMessage: 'No statuses',
