@@ -1,26 +1,54 @@
-<p-dialog [header]="config.operation === 'edit' ? 'Edit ' + config.header : 'New ' + config.header" 
-          [(visible)]="display"
-          [width]="config.width"
-          [style]="{width: config.width, height: config.height}"
-          (onHide)="onHide()"
-          >
-    <p-header>
-    </p-header>
-    
-    <div class="row" *ngFor="let field of config.fields">
-        <div class="col-lg-6">
-            <label>{{ field.label }}</label>
-        </div>
-        <div class="col-lg-6">
-            <input type="text" pInputText [(ngModel)]="data[field.endpoint]" />
-        </div>
-    </div>
+<p-dialog
+  [header]="
+    config.operation === 'edit'
+      ? 'Edit ' + config.header
+      : config.operation === 'new'
+      ? 'New ' + config.header
+      : config.header
+  "
+  [(visible)]="display"
+  [width]="config.width"
+  [style]="{ width: config.width, height: config.height }"
+  (onHide)="onHide()"
+>
+  <p-header> </p-header>
 
-    <p-footer>
-        <button type="button" (click)="onSave()">Save</button>
-        <button type="button" (click)="onCancel()">Cancel</button>
-        <button *ngIf="config.withDelete && config.operation === 'edit'" type="button" (click)="confirm()">Delete</button>
-    </p-footer>
+  <div class="row" *ngFor="let field of config.fields">
+    <div class="col-lg-6">
+      <label>{{ field.label }}</label>
+    </div>
+    <div class="col-lg-6">
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="data[field.endpoint]"
+        *ngIf="field.type === 'text'"
+      />
+      <p-spinner
+        [(ngModel)]="data[field.endpoint]"
+        [min]="field.minValue ? field.minValue : 0"
+        [max]="field.maxValue ? field.maxValue : 1"
+        [step]="field.stepValue ? field.stepValue : 1"
+        [size]="16"
+        *ngIf="field.type === 'spinner'"
+      ></p-spinner>
+    </div>
+  </div>
+
+  <p-footer>
+    <button type="button" (click)="onSave()">Save</button>
+    <button type="button" (click)="onCancel()">Cancel</button>
+    <button
+      *ngIf="config.withDelete && config.operation === 'edit'"
+      type="button"
+      (click)="confirm()"
+    >
+      Delete
+    </button>
+  </p-footer>
 </p-dialog>
 
-<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+<p-confirmDialog
+  header="Confirmation"
+  icon="pi pi-exclamation-triangle"
+></p-confirmDialog>

@@ -39,77 +39,99 @@
           *ngIf="config.withGlobalFilter"
         />
       </div>
+      <button
+        *ngIf="config.withColumnSelect"
+        [ngClass]="columnSelectButton.icon + ' ' + columnSelectButton.class"
+        [disabled]="columnSelectButton.disabled"
+        (click)="columnSelectButton.callback()"
+      ></button>
+      <button
+        *ngIf="config.withRefresh"
+        [ngClass]="refreshButton.icon + ' ' + refreshButton.class"
+        [disabled]="refreshButton.disabled"
+        (click)="refreshButton.callback()"
+      ></button>
     </div>
   </ng-template>
   <ng-template pTemplate="header" let-columns>
     <tr>
-      <th
-        *ngFor="let col of columns"
-        [pSortableColumn]="col.sortable ? col.field : ''"
-      >
-        {{ col.header }}
-        <p-sortIcon
-          [field]="col.field"
-          ariaLabel="Activate to sort"
-          ariaLabelDesc="Activate to sort in descending order"
-          ariaLabelAsc="Activate to sort in ascending order"
-          *ngIf="col.sortable"
-        ></p-sortIcon>
-      </th>
+      <ng-container *ngFor="let col of columns">
+        <th
+          *ngIf="!col.hidden"
+          [pSortableColumn]="col.sortable ? col.field : ''"
+        >
+          {{ col.header }}
+          <p-sortIcon
+            [field]="col.field"
+            ariaLabel="Activate to sort"
+            ariaLabelDesc="Activate to sort in descending order"
+            ariaLabelAsc="Activate to sort in ascending order"
+            *ngIf="col.sortable"
+          ></p-sortIcon>
+        </th>
+      </ng-container>
     </tr>
   </ng-template>
   <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr [pSelectableRow]="rowData">
-      <td *ngFor="let col of columns; let i = index">
-        <a
-          [routerLink]=""
-          [ngStyle]="
-            col.icon !== undefined
-              ? col.type === 'status'
-                ? { 'pointer-events': 'none' }
-                : ''
-              : ''
-          "
-          ><i
-            [ngStyle]="{
-              color:
-                col.type === 'run'
-                  ? rowData['status'] === 'scheduled to run'
-                    ? 'red'
-                    : 'green'
-                  : col.icon.style !== undefined
-                  ? col.icon.style.color
-                  : rowData['status'] === 'scheduled to run'
-                  ? 'yellow'
-                  : 'red'
-            }"
-            [ngClass]="
-              col.type === 'run'
-                ? rowData['status'] === 'scheduled to run'
-                  ? 'fas fa-stop'
-                  : 'fas fa-play'
-                : col.icon !== undefined
-                ? col.icon.class
+      <ng-container *ngFor="let col of columns; let i = index">
+        <td *ngIf="!col.hidden">
+          <a
+            [routerLink]=""
+            [ngStyle]="
+              col.icon !== undefined
+                ? col.type === 'status'
+                  ? { 'pointer-events': 'none' }
+                  : ''
                 : ''
             "
-            *ngIf="col.icon !== undefined || col.type === 'run' ? true : false"
-            (click)="onIconPressed(col.type, rowData)"
-          ></i
-        ></a>
-        <button *ngIf="col.type === 'dynamic-button'" [ngClass]="col.button.class" (click)="showDynamicDialog(rowData.id, col.button)"></button>
-        {{
-          col.icon !== undefined
-            ? col.icon.class !== "" && col.icon.withText === false
-              ? ""
-              : col.icon.class !== "" && col.icon.withText
-              ? "- " +
-                (rowData["status"] === "scheduled to run"
-                  ? "pending"
-                  : "stopped")
-              : ""
-            : preprocessColumnField(rowData[col.field], i)
-        }}
-      </td>
+            ><i
+              [ngStyle]="{
+                color:
+                  col.type === 'run'
+                    ? rowData['status'] === 'scheduled to run'
+                      ? 'red'
+                      : 'green'
+                    : col.icon.style !== undefined
+                    ? col.icon.style.color
+                    : rowData['status'] === 'scheduled to run'
+                    ? 'yellow'
+                    : 'red'
+              }"
+              [ngClass]="
+                col.type === 'run'
+                  ? rowData['status'] === 'scheduled to run'
+                    ? 'fas fa-stop'
+                    : 'fas fa-play'
+                  : col.icon !== undefined
+                  ? col.icon.class
+                  : ''
+              "
+              *ngIf="
+                col.icon !== undefined || col.type === 'run' ? true : false
+              "
+              (click)="onIconPressed(col.type, rowData)"
+            ></i
+          ></a>
+          <button
+            *ngIf="col.type === 'dynamic-button'"
+            [ngClass]="col.button.class"
+            (click)="showDynamicDialog(rowData.id, col.button)"
+          ></button>
+          {{
+            col.icon !== undefined
+              ? col.icon.class !== "" && col.icon.withText === false
+                ? ""
+                : col.icon.class !== "" && col.icon.withText
+                ? "- " +
+                  (rowData["status"] === "scheduled to run"
+                    ? "pending"
+                    : "stopped")
+                : ""
+              : preprocessColumnField(rowData[col.field], i)
+          }}
+        </td>
+      </ng-container>
     </tr>
   </ng-template>
   <ng-template pTemplate="emptymessage" let-columns>
@@ -128,4 +150,18 @@
   *ngIf="config.formDialogConfig !== undefined"
 ></app-form-dialog>
 
-<p-toast [style]="{marginTop: '80px'}"></p-toast>
+<app-form-dialog
+  #rd
+  [config]="config.runDialogConfig"
+  *ngIf="config.runDialogConfig !== undefined"
+></app-form-dialog>
+
+<app-select-dialog
+  #csd
+  [config]="columnSelectDialogConfig"
+  (selectionsChanged)="onColumnsSelectionChanged($event)"
+  *ngIf="config.withColumnSelect"
+>
+</app-select-dialog>
+
+<p-toast [style]="{ marginTop: '80px' }"></p-toast>

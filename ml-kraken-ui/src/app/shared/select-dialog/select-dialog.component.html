@@ -1,0 +1,33 @@
+<p-dialog
+  [header]="config.header"
+  [(visible)]="display"
+  [width]="config.width"
+  [style]="{ width: config.width, height: config.height }"
+>
+  <p-header></p-header>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <span (click)="selectAll()">Select all</span>
+    </div>
+    <div class="col-lg-6">
+      <span (click)="clear()">Clear all</span>
+    </div>
+  </div>
+  <br>
+  <div class="row" *ngFor="let field of config.fields">
+    <div class="col-lg-12">
+      <p-checkbox
+        name="selections"
+        [value]="field.columnName"
+        [label]="field.columnName"
+        [(ngModel)]="selections"
+      ></p-checkbox>
+    </div>
+  </div>
+  <br>
+
+  <p-footer>
+    <button type="button" (click)="onSave()">Save</button>
+  </p-footer>
+</p-dialog>

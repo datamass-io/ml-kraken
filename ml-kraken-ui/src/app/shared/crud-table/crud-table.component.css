@@ -9,6 +9,10 @@ div.caption {
   margin-right: auto
 }
 
-div.caption div.center button {
+.editButton {
   margin-left: 5px;
+}
+
+.settingButton {
+  margin-right: 5px;
 }

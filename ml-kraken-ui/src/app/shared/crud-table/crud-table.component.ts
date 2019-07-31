@@ -3,6 +3,8 @@ import { TableConfig } from './table-config.model';
 import { DataService } from '../data-service.service';
 import { FormDialogComponent } from '../form-dialog/form-dialog.component';
 import { DialogService } from 'primeng/api';
+import { SelectDialogComponent } from '../select-dialog/select-dialog.component';
+import { SelectConfig } from '../select-dialog/select-config.model';
 
 @Component({
   selector: 'app-crud-table',
@@ -12,13 +14,16 @@ import { DialogService } from 'primeng/api';
 export class CrudTableComponent implements OnInit {
   @ViewChild('dt', { static: false }) table;
   @ViewChild('fd', { static: false }) dialog: FormDialogComponent;
+  @ViewChild('rd', { static: false }) runDialog: FormDialogComponent;
+  @ViewChild('csd', { static: false }) columnSelectDialog: SelectDialogComponent;
 
   data: any;
   selectedRow: any;
+  columnSelectDialogConfig: SelectConfig;
 
   addButton = {
     icon: 'fas fa-plus',
-    class: '',
+    class: 'editButton',
     callback: () => {
       this.dialog.config.operation = 'new';
       this.dialog.showDialog();
@@ -28,12 +33,28 @@ export class CrudTableComponent implements OnInit {
 
   editButton = {
     icon: 'fas fa-edit',
-    class: '',
+    class: 'editButton',
     callback: () => {
       this.dialog.config.operation = 'edit';
       this.dialog.showDialog(this.selectedRow);
     },
     disabled: true
+  };
+
+  columnSelectButton = {
+    icon: 'fas fa-cog',
+    class: 'settingButton',
+    callback: () => {
+      this.columnSelectDialog.showDialog();
+    },
+    disabled: false
+  };
+
+  refreshButton = {
+    icon: 'fas fa-sync',
+    class: 'settingButton',
+    callback: () => this.loadData(),
+    disabled: false
   };
 
   @Input() config: TableConfig;
@@ -42,9 +63,13 @@ export class CrudTableComponent implements OnInit {
 
   ngOnInit() {
     this.loadData();
+    if (this.config.withColumnSelect) {
+      this.createSelectColumnDialogConfig();
+    }
   }
 
   loadData() {
+    console.log('load data');
     this.editButton.disabled = true;
     this.dataService.get(this.config.getURL)
       .subscribe(items => {
@@ -108,6 +133,7 @@ export class CrudTableComponent implements OnInit {
   }
 
   rowSelected() {
+    console.log(this.selectedRow);
     this.editButton.disabled = false;
   }
 
@@ -123,23 +149,45 @@ export class CrudTableComponent implements OnInit {
           this.loadData();
         });
       } else {
-        this.dataService.post(this.config.runPostURL, {modelId: data.id, action: 'run'})
-        .subscribe(resp => {
-          this.loadData();
-        });
+        this.runDialog.showDialog(data);
       }
     }
   }
 
   showDynamicDialog(id: string, buttonConfig: any) {
-    console.log(id);
-    console.log(buttonConfig);
     const ref = this.dialogService.open(buttonConfig.component, {
       data: {
         id
       },
       header: buttonConfig.dialogHeader,
       width: '70%'
+    });
+  }
+
+  createSelectColumnDialogConfig() {
+    const fields = [];
+
+    this.config.cols.forEach(column => {
+      if (column.field !== '') {
+        fields.push({columnName: column.field, selected: !column.hidden});
+      }
+    });
+
+    this.columnSelectDialogConfig = {
+      header: 'Show/Hide Columns',
+      fields,
+      width: '200px',
+      height: '200px'
+    };
+  }
+
+  onColumnsSelectionChanged(selections: string[]) {
+    this.config.cols.map(col => {
+      if (!selections.includes(col.field) && col.field !== '') {
+        col.hidden = true;
+      } else {
+        col.hidden = false;
+      }
     });
   }
 }

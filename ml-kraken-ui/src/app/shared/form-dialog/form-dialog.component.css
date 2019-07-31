@@ -1,4 +1,15 @@
 .row {
     max-width: 100%;
     overflow-x: hidden;
+    overflow-y: hidden;
+    margin-top: 10px;
 }
+
+.row label {
+    margin-left: 0px;
+    top: 50%;
+    position: absolute;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
