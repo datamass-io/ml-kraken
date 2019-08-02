@@ -11,10 +11,22 @@
       "runtime": "nodejs10.x",
       "region": "eu-west-1",
       "environment": {
-        "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+        "DYNAMODB_MMETA": "ModelMetaTbl",
         "DYNAMODB_MSTATUS": "ModelStatusTbl",
+        "DYNAMODB_MACTION": "ModelActionTbl",
+        "DYNAMODB_MTASK": "ModelTaskTbl",
+        "DYNAMODB_MLOG": "ModelLogTbl",
         "SQS_URL": {
           "Ref": "ActionQueue"
+        },
+        "TaskExecutionRoleArn": {
+          "Ref": "ECSTaskExecutionRole"
+        },
+        "PublicSubnet": {
+          "Ref": "PublicSubnetOne"
+        },
+        "ECS_CLUSTER": {
+          "Ref": "ECSCluster"
         }
       },
       "iamRoleStatements": [
@@ -39,6 +51,49 @@
             "sqs:ListQueues"
           ],
           "Resource": "arn:aws:sqs:eu-west-1:*:*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "ecs:CreateCluster",
+            "ecs:ListServices",
+            "ecs:ListContainerInstances",
+            "ecs:ListTasks",
+            "ecs:DescribeClusters",
+            "ecs:DescribeServices",
+            "ecs:DescribeTaskDefinition",
+            "ecs:DescribeTasks",
+            "ecs:DescribeContainerInstances",
+            "ecs:CreateService",
+            "ecs:DeleteService",
+            "ecs:UpdateService",
+            "ecs:StartTask",
+            "ecs:RegisterTaskDefinition",
+            "ecs:DeregisterTaskDefinition",
+            "ecs:RunTask"
+          ],
+          "Resource": [
+            "*"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "iam:PassRole"
+          ],
+          "Resource": [
+            "*"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "logs:CreateLogGroup",
+            "logs:DescribeLogGroups"
+          ],
+          "Resource": [
+            "*"
+          ]
         }
       ],
       "versionFunctions": true,
@@ -59,6 +114,12 @@
                   }
                 ]
               }
+            }
+          },
+          "TaskDashdefinitionLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/ml-kraken-api-dev-task-definition"
             }
           },
           "SqsDashconsumerLogGroup": {
@@ -172,6 +233,15 @@
                         "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][1]"
                       },
                       {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][2]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][3]"
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][4]"
+                      },
+                      {
                         "Effect": "Allow",
                         "Action": [
                           "sqs:ReceiveMessage",
@@ -207,17 +277,17 @@
               }
             }
           },
-          "SqsDashconsumerLambdaFunction": {
+          "TaskDashdefinitionLambdaFunction": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
               "Code": {
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
               },
-              "FunctionName": "ml-kraken-api-dev-sqs-consumer",
-              "Handler": "model-action/sqsConsumer.consumer",
+              "FunctionName": "ml-kraken-api-dev-task-definition",
+              "Handler": "model-action/taskDefinition.taskDefinition",
               "MemorySize": 1024,
               "Role": {
                 "Fn::GetAtt": [
@@ -229,10 +299,79 @@
               "Timeout": 6,
               "Environment": {
                 "Variables": {
-                  "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+                  "DYNAMODB_MMETA": "ModelMetaTbl",
                   "DYNAMODB_MSTATUS": "ModelStatusTbl",
+                  "DYNAMODB_MACTION": "ModelActionTbl",
+                  "DYNAMODB_MTASK": "ModelTaskTbl",
+                  "DYNAMODB_MLOG": "ModelLogTbl",
                   "SQS_URL": {
                     "Ref": "ActionQueue"
+                  },
+                  "TaskExecutionRoleArn": {
+                    "Ref": "ECSTaskExecutionRole"
+                  },
+                  "PublicSubnet": {
+                    "Ref": "PublicSubnetOne"
+                  },
+                  "ECS_CLUSTER": {
+                    "Ref": "ECSCluster"
+                  }
+                }
+              }
+            },
+            "DependsOn": [
+              "TaskDashdefinitionLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "TaskDashdefinitionLambdaVersionmlxxEWQwgz67RiiRgzimJxw2AHzfxAiCsj07F1Kn1g": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "TaskDashdefinitionLambdaFunction"
+              },
+              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
+            }
+          },
+          "SqsDashconsumerLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
+              },
+              "FunctionName": "ml-kraken-api-dev-sqs-consumer",
+              "Handler": "model-action/sqsTaskConsumer.consumer",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs10.x",
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "DYNAMODB_MMETA": "ModelMetaTbl",
+                  "DYNAMODB_MSTATUS": "ModelStatusTbl",
+                  "DYNAMODB_MACTION": "ModelActionTbl",
+                  "DYNAMODB_MTASK": "ModelTaskTbl",
+                  "DYNAMODB_MLOG": "ModelLogTbl",
+                  "SQS_URL": {
+                    "Ref": "ActionQueue"
+                  },
+                  "TaskExecutionRoleArn": {
+                    "Ref": "ECSTaskExecutionRole"
+                  },
+                  "PublicSubnet": {
+                    "Ref": "PublicSubnetOne"
+                  },
+                  "ECS_CLUSTER": {
+                    "Ref": "ECSCluster"
                   }
                 }
               }
@@ -242,14 +381,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "SqsDashconsumerLambdaVersionEi8WhS480TpO3qnHMTyf6Tllvc5uq6Sc3RfAk6Bi4Q": {
+          "SqsDashconsumerLambdaVersion6riZWaTHsHindttnbdnZDnCPi6riEBrnCURpr4aWI": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "SqsDashconsumerLambdaFunction"
               },
-              "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
+              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
             }
           },
           "ModelDashstatusDashlistLambdaFunction": {
@@ -259,7 +398,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-status-list",
               "Handler": "model-status/listStatuses.listStatuses",
@@ -274,10 +413,22 @@
               "Timeout": 6,
               "Environment": {
                 "Variables": {
-                  "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+                  "DYNAMODB_MMETA": "ModelMetaTbl",
                   "DYNAMODB_MSTATUS": "ModelStatusTbl",
+                  "DYNAMODB_MACTION": "ModelActionTbl",
+                  "DYNAMODB_MTASK": "ModelTaskTbl",
+                  "DYNAMODB_MLOG": "ModelLogTbl",
                   "SQS_URL": {
                     "Ref": "ActionQueue"
+                  },
+                  "TaskExecutionRoleArn": {
+                    "Ref": "ECSTaskExecutionRole"
+                  },
+                  "PublicSubnet": {
+                    "Ref": "PublicSubnetOne"
+                  },
+                  "ECS_CLUSTER": {
+                    "Ref": "ECSCluster"
                   }
                 }
               }
@@ -287,14 +438,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashstatusDashlistLambdaVersionOUTI8aAOz0gL6gZrFKeY95mBSvwkJFWjC2FldNdBfU": {
+          "ModelDashstatusDashlistLambdaVersionMrncm98RmGhCqkoXKw7wwTnBI9IfB1YN46NIE7TgY": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashstatusDashlistLambdaFunction"
               },
-              "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
+              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
             }
           },
           "ModelDashactionDashrunLambdaFunction": {
@@ -304,7 +455,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-action-run",
               "Handler": "model-action/takeAction.takeAction",
@@ -319,10 +470,22 @@
               "Timeout": 6,
               "Environment": {
                 "Variables": {
-                  "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+                  "DYNAMODB_MMETA": "ModelMetaTbl",
                   "DYNAMODB_MSTATUS": "ModelStatusTbl",
+                  "DYNAMODB_MACTION": "ModelActionTbl",
+                  "DYNAMODB_MTASK": "ModelTaskTbl",
+                  "DYNAMODB_MLOG": "ModelLogTbl",
                   "SQS_URL": {
                     "Ref": "ActionQueue"
+                  },
+                  "TaskExecutionRoleArn": {
+                    "Ref": "ECSTaskExecutionRole"
+                  },
+                  "PublicSubnet": {
+                    "Ref": "PublicSubnetOne"
+                  },
+                  "ECS_CLUSTER": {
+                    "Ref": "ECSCluster"
                   }
                 }
               }
@@ -332,14 +495,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashactionDashrunLambdaVersionfPjpgZ9Z2WHEaHh0x1IjgDdTYeDPIojvbx7cut2YsLo": {
+          "ModelDashactionDashrunLambdaVersionpSycUZxf7socKSJjvi8jf5LGVxujnvRykKLphv6OSi8": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashactionDashrunLambdaFunction"
               },
-              "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
+              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
             }
           },
           "ModelDashmetaDashcreateLambdaFunction": {
@@ -349,7 +512,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-create",
               "Handler": "model-meta/create.create",
@@ -364,10 +527,22 @@
               "Timeout": 6,
               "Environment": {
                 "Variables": {
-                  "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+                  "DYNAMODB_MMETA": "ModelMetaTbl",
                   "DYNAMODB_MSTATUS": "ModelStatusTbl",
+                  "DYNAMODB_MACTION": "ModelActionTbl",
+                  "DYNAMODB_MTASK": "ModelTaskTbl",
+                  "DYNAMODB_MLOG": "ModelLogTbl",
                   "SQS_URL": {
                     "Ref": "ActionQueue"
+                  },
+                  "TaskExecutionRoleArn": {
+                    "Ref": "ECSTaskExecutionRole"
+                  },
+                  "PublicSubnet": {
+                    "Ref": "PublicSubnetOne"
+                  },
+                  "ECS_CLUSTER": {
+                    "Ref": "ECSCluster"
                   }
                 }
               }
@@ -377,14 +552,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashcreateLambdaVersionRL1q04AD9bzY0PFreHOuOkAU6z4O3T2Y64zSaw67Jg": {
+          "ModelDashmetaDashcreateLambdaVersionWQNZ923IXqg9UfFl42g4DoqCemk3BxIsUpJCOnEXQ": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashcreateLambdaFunction"
               },
-              "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
+              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
             }
           },
           "ModelDashmetaDashlistLambdaFunction": {
@@ -394,7 +569,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-list",
               "Handler": "model-meta/list.list",
@@ -409,10 +584,22 @@
               "Timeout": 6,
               "Environment": {
                 "Variables": {
-                  "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+                  "DYNAMODB_MMETA": "ModelMetaTbl",
                   "DYNAMODB_MSTATUS": "ModelStatusTbl",
+                  "DYNAMODB_MACTION": "ModelActionTbl",
+                  "DYNAMODB_MTASK": "ModelTaskTbl",
+                  "DYNAMODB_MLOG": "ModelLogTbl",
                   "SQS_URL": {
                     "Ref": "ActionQueue"
+                  },
+                  "TaskExecutionRoleArn": {
+                    "Ref": "ECSTaskExecutionRole"
+                  },
+                  "PublicSubnet": {
+                    "Ref": "PublicSubnetOne"
+                  },
+                  "ECS_CLUSTER": {
+                    "Ref": "ECSCluster"
                   }
                 }
               }
@@ -422,14 +609,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashlistLambdaVersion2hPN3UGjngxtrU9pMWsWTBbGG60NHZmH7QUZfi9iDxk": {
+          "ModelDashmetaDashlistLambdaVersioneOFpliaWVVbBWCjmfKPyGjibC5cgbVQFiLNjbJORQ": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashlistLambdaFunction"
               },
-              "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
+              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
             }
           },
           "ModelDashmetaDashgetLambdaFunction": {
@@ -439,7 +626,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-get",
               "Handler": "model-meta/get.get",
@@ -454,10 +641,22 @@
               "Timeout": 6,
               "Environment": {
                 "Variables": {
-                  "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+                  "DYNAMODB_MMETA": "ModelMetaTbl",
                   "DYNAMODB_MSTATUS": "ModelStatusTbl",
+                  "DYNAMODB_MACTION": "ModelActionTbl",
+                  "DYNAMODB_MTASK": "ModelTaskTbl",
+                  "DYNAMODB_MLOG": "ModelLogTbl",
                   "SQS_URL": {
                     "Ref": "ActionQueue"
+                  },
+                  "TaskExecutionRoleArn": {
+                    "Ref": "ECSTaskExecutionRole"
+                  },
+                  "PublicSubnet": {
+                    "Ref": "PublicSubnetOne"
+                  },
+                  "ECS_CLUSTER": {
+                    "Ref": "ECSCluster"
                   }
                 }
               }
@@ -467,14 +666,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashgetLambdaVersionhFsq2TLeYXl6SpKhB3A59wajuBSywlC0THaWbFOrAso": {
+          "ModelDashmetaDashgetLambdaVersiona4rveQc4ZZq2pi1nVqgOxXLdwPzF0UGH0MpzqaDYjME": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashgetLambdaFunction"
               },
-              "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
+              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
             }
           },
           "ModelDashmetaDashupdateLambdaFunction": {
@@ -484,7 +683,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-update",
               "Handler": "model-meta/update.update",
@@ -499,10 +698,22 @@
               "Timeout": 6,
               "Environment": {
                 "Variables": {
-                  "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+                  "DYNAMODB_MMETA": "ModelMetaTbl",
                   "DYNAMODB_MSTATUS": "ModelStatusTbl",
+                  "DYNAMODB_MACTION": "ModelActionTbl",
+                  "DYNAMODB_MTASK": "ModelTaskTbl",
+                  "DYNAMODB_MLOG": "ModelLogTbl",
                   "SQS_URL": {
                     "Ref": "ActionQueue"
+                  },
+                  "TaskExecutionRoleArn": {
+                    "Ref": "ECSTaskExecutionRole"
+                  },
+                  "PublicSubnet": {
+                    "Ref": "PublicSubnetOne"
+                  },
+                  "ECS_CLUSTER": {
+                    "Ref": "ECSCluster"
                   }
                 }
               }
@@ -512,14 +723,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashupdateLambdaVersionAmHMCCETNVnZngHl9MEfRigMhtv7HXU1av0rpjjy4I": {
+          "ModelDashmetaDashupdateLambdaVersionbq43WvqnNN63SENiA9oFj1oamlRiA7QrBTAkiYA": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashupdateLambdaFunction"
               },
-              "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
+              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
             }
           },
           "ModelDashmetaDashdeleteLambdaFunction": {
@@ -529,7 +740,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-delete",
               "Handler": "model-meta/delete.deleteM",
@@ -544,10 +755,22 @@
               "Timeout": 6,
               "Environment": {
                 "Variables": {
-                  "DYNAMODB_TABLE": "ModelMetaDynamoDbTable",
+                  "DYNAMODB_MMETA": "ModelMetaTbl",
                   "DYNAMODB_MSTATUS": "ModelStatusTbl",
+                  "DYNAMODB_MACTION": "ModelActionTbl",
+                  "DYNAMODB_MTASK": "ModelTaskTbl",
+                  "DYNAMODB_MLOG": "ModelLogTbl",
                   "SQS_URL": {
                     "Ref": "ActionQueue"
+                  },
+                  "TaskExecutionRoleArn": {
+                    "Ref": "ECSTaskExecutionRole"
+                  },
+                  "PublicSubnet": {
+                    "Ref": "PublicSubnetOne"
+                  },
+                  "ECS_CLUSTER": {
+                    "Ref": "ECSCluster"
                   }
                 }
               }
@@ -557,14 +780,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashdeleteLambdaVersion8ABfBTwF4l8ABNpIRXVvA9JmfPxKQpxHd9RQIFKXvMw": {
+          "ModelDashmetaDashdeleteLambdaVersionJtVLoIFfDaaWeSpzWpYMHCgMN216pFlLpn4B865iQdQ": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashdeleteLambdaFunction"
               },
-              "CodeSha256": "/YiQ4MXaUKMHFJRg62BO0FB0psJhhZyIOOwdlDTFx88="
+              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
             }
           },
           "ApiGatewayRestApi": {
@@ -605,6 +828,30 @@
               }
             }
           },
+          "ApiGatewayResourceApiV1ModelDashaction": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceApiV1"
+              },
+              "PathPart": "model-action",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayResourceApiV1ModelDashactionTaskDashdef": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Ref": "ApiGatewayResourceApiV1ModelDashaction"
+              },
+              "PathPart": "task-def",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
           "ApiGatewayResourceApiV1ModelDashstatus": {
             "Type": "AWS::ApiGateway::Resource",
             "Properties": {
@@ -629,18 +876,6 @@
               }
             }
           },
-          "ApiGatewayResourceApiV1ModelDashaction": {
-            "Type": "AWS::ApiGateway::Resource",
-            "Properties": {
-              "ParentId": {
-                "Ref": "ApiGatewayResourceApiV1"
-              },
-              "PathPart": "model-action",
-              "RestApiId": {
-                "Ref": "ApiGatewayRestApi"
-              }
-            }
-          },
           "ApiGatewayResourceApiV1ModelDashmeta": {
             "Type": "AWS::ApiGateway::Resource",
             "Properties": {
@@ -660,6 +895,53 @@
                 "Ref": "ApiGatewayResourceApiV1ModelDashmeta"
               },
               "PathPart": "{id}",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodApiV1ModelDashactionTaskDashdefOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true,
+                    "method.response.header.Access-Control-Allow-Credentials": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'",
+                      "method.response.header.Access-Control-Allow-Credentials": "'false'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": "#set($origin = $input.params(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params(\"origin\")) #end\n#if($origin.matches(\".*\")) #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin) #end"
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceApiV1ModelDashactionTaskDashdef"
+              },
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
               }
@@ -851,6 +1133,192 @@
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
               }
+            }
+          },
+          "ApiGatewayMethodApiV1ModelDashactionTaskDashdefPost": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "POST",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceApiV1ModelDashactionTaskDashdef"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "ApiKeyRequired": false,
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "TaskDashdefinitionLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                },
+                "PassthroughBehavior": "NEVER",
+                "RequestTemplates": {
+                  "application/json": "\n    #set( $body = $input.json(\"$\") )\n\n    \n  #define( $loop )\n    {\n    #foreach($key in $map.keySet())\n        #set( $k = $util.escapeJavaScript($key) )\n        #set( $v = $util.escapeJavaScript($map.get($key)).replaceAll(\"\\\\'\", \"'\") )\n        \"$k\":\n          \"$v\"\n          #if( $foreach.hasNext ) , #end\n    #end\n    }\n  #end\n\n  {\n    \"body\": $body,\n    \"method\": \"$context.httpMethod\",\n    \"principalId\": \"$context.authorizer.principalId\",\n    \"stage\": \"$context.stage\",\n\n    \"cognitoPoolClaims\" : {\n       \n       \"sub\": \"$context.authorizer.claims.sub\"\n    },\n\n    #set( $map = $context.authorizer )\n    \"enhancedAuthContext\": $loop,\n\n    #set( $map = $input.params().header )\n    \"headers\": $loop,\n\n    #set( $map = $input.params().querystring )\n    \"query\": $loop,\n\n    #set( $map = $input.params().path )\n    \"path\": $loop,\n\n    #set( $map = $context.identity )\n    \"identity\": $loop,\n\n    #set( $map = $stageVariables )\n    \"stageVariables\": $loop\n  }\n\n  ",
+                  "application/x-www-form-urlencoded": "\n    #define( $body )\n      {\n      #foreach( $token in $input.path('$').split('&') )\n        #set( $keyVal = $token.split('=') )\n        #set( $keyValSize = $keyVal.size() )\n        #if( $keyValSize >= 1 )\n          #set( $key = $util.escapeJavaScript($util.urlDecode($keyVal[0])) )\n          #if( $keyValSize >= 2 )\n            #set($val = $util.escapeJavaScript($util.urlDecode($keyVal[1])).replaceAll(\"\\\\'\",\"'\"))\n          #else\n            #set( $val = '' )\n          #end\n          \"$key\": \"$val\"#if($foreach.hasNext),#end\n        #end\n      #end\n      }\n    #end\n\n    \n  #define( $loop )\n    {\n    #foreach($key in $map.keySet())\n        #set( $k = $util.escapeJavaScript($key) )\n        #set( $v = $util.escapeJavaScript($map.get($key)).replaceAll(\"\\\\'\", \"'\") )\n        \"$k\":\n          \"$v\"\n          #if( $foreach.hasNext ) , #end\n    #end\n    }\n  #end\n\n  {\n    \"body\": $body,\n    \"method\": \"$context.httpMethod\",\n    \"principalId\": \"$context.authorizer.principalId\",\n    \"stage\": \"$context.stage\",\n\n    \"cognitoPoolClaims\" : {\n       \n       \"sub\": \"$context.authorizer.claims.sub\"\n    },\n\n    #set( $map = $context.authorizer )\n    \"enhancedAuthContext\": $loop,\n\n    #set( $map = $input.params().header )\n    \"headers\": $loop,\n\n    #set( $map = $input.params().querystring )\n    \"query\": $loop,\n\n    #set( $map = $input.params().path )\n    \"path\": $loop,\n\n    #set( $map = $context.identity )\n    \"identity\": $loop,\n\n    #set( $map = $stageVariables )\n    \"stageVariables\": $loop\n  }\n\n  "
+                },
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": 200,
+                    "SelectionPattern": "",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'"
+                    },
+                    "ResponseTemplates": {}
+                  },
+                  {
+                    "StatusCode": 400,
+                    "SelectionPattern": "[\\s\\S]*\\[400\\][\\s\\S]*",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'"
+                    },
+                    "ResponseTemplates": {}
+                  },
+                  {
+                    "StatusCode": 401,
+                    "SelectionPattern": "[\\s\\S]*\\[401\\][\\s\\S]*",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'"
+                    },
+                    "ResponseTemplates": {}
+                  },
+                  {
+                    "StatusCode": 403,
+                    "SelectionPattern": "[\\s\\S]*\\[403\\][\\s\\S]*",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'"
+                    },
+                    "ResponseTemplates": {}
+                  },
+                  {
+                    "StatusCode": 404,
+                    "SelectionPattern": "[\\s\\S]*\\[404\\][\\s\\S]*",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'"
+                    },
+                    "ResponseTemplates": {}
+                  },
+                  {
+                    "StatusCode": 422,
+                    "SelectionPattern": "[\\s\\S]*\\[422\\][\\s\\S]*",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'"
+                    },
+                    "ResponseTemplates": {}
+                  },
+                  {
+                    "StatusCode": 500,
+                    "SelectionPattern": "[\\s\\S]*(Process\\s?exited\\s?before\\s?completing\\s?request|\\[500\\])[\\s\\S]*",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'"
+                    },
+                    "ResponseTemplates": {}
+                  },
+                  {
+                    "StatusCode": 502,
+                    "SelectionPattern": "[\\s\\S]*\\[502\\][\\s\\S]*",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'"
+                    },
+                    "ResponseTemplates": {}
+                  },
+                  {
+                    "StatusCode": 504,
+                    "SelectionPattern": "([\\s\\S]*\\[504\\][\\s\\S]*)|(.*Task timed out after \\d+\\.\\d+ seconds$)",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'"
+                    },
+                    "ResponseTemplates": {}
+                  }
+                ]
+              },
+              "MethodResponses": [
+                {
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true
+                  },
+                  "ResponseModels": {},
+                  "StatusCode": 200
+                },
+                {
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true
+                  },
+                  "ResponseModels": {},
+                  "StatusCode": 400
+                },
+                {
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true
+                  },
+                  "ResponseModels": {},
+                  "StatusCode": 401
+                },
+                {
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true
+                  },
+                  "ResponseModels": {},
+                  "StatusCode": 403
+                },
+                {
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true
+                  },
+                  "ResponseModels": {},
+                  "StatusCode": 404
+                },
+                {
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true
+                  },
+                  "ResponseModels": {},
+                  "StatusCode": 422
+                },
+                {
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true
+                  },
+                  "ResponseModels": {},
+                  "StatusCode": 500
+                },
+                {
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true
+                  },
+                  "ResponseModels": {},
+                  "StatusCode": 502
+                },
+                {
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true
+                  },
+                  "ResponseModels": {},
+                  "StatusCode": 504
+                }
+              ]
             }
           },
           "ApiGatewayMethodApiV1ModelDashstatusIdVarGet": {
@@ -2165,7 +2633,7 @@
               ]
             }
           },
-          "ApiGatewayDeployment1564148323755": {
+          "ApiGatewayDeployment1564673311884": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -2174,10 +2642,12 @@
               "StageName": "dev"
             },
             "DependsOn": [
+              "ApiGatewayMethodApiV1ModelDashactionTaskDashdefOptions",
               "ApiGatewayMethodApiV1ModelDashstatusIdVarOptions",
               "ApiGatewayMethodApiV1ModelDashactionOptions",
               "ApiGatewayMethodApiV1ModelDashmetaOptions",
               "ApiGatewayMethodApiV1ModelDashmetaIdVarOptions",
+              "ApiGatewayMethodApiV1ModelDashactionTaskDashdefPost",
               "ApiGatewayMethodApiV1ModelDashstatusIdVarGet",
               "ApiGatewayMethodApiV1ModelDashactionPost",
               "ApiGatewayMethodApiV1ModelDashmetaPost",
@@ -2186,6 +2656,43 @@
               "ApiGatewayMethodApiV1ModelDashmetaIdVarPut",
               "ApiGatewayMethodApiV1ModelDashmetaIdVarDelete"
             ]
+          },
+          "TaskDashdefinitionLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "TaskDashdefinitionLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
           },
           "ModelDashstatusDashlistLambdaPermissionApiGateway": {
             "Type": "AWS::Lambda::Permission",
@@ -2499,7 +3006,7 @@
               }
             }
           },
-          "ModelMetaDynamoDbTable": {
+          "ModelMetaTbl": {
             "Type": "AWS::DynamoDB::Table",
             "DeletionPolicy": "Retain",
             "Properties": {
@@ -2519,7 +3026,7 @@
                 "ReadCapacityUnits": 1,
                 "WriteCapacityUnits": 1
               },
-              "TableName": "ModelMetaDynamoDbTable"
+              "TableName": "ModelMetaTbl"
             }
           },
           "ModelStatusTbl": {
@@ -2545,10 +3052,271 @@
               "TableName": "ModelStatusTbl"
             }
           },
+          "ModelTaskTbl": {
+            "Type": "AWS::DynamoDB::Table",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "id",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "id",
+                  "KeyType": "HASH"
+                }
+              ],
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+              },
+              "TableName": "ModelTaskTbl"
+            }
+          },
           "ActionQueue": {
             "Type": "AWS::SQS::Queue",
             "Properties": {
               "QueueName": "ActionQueue"
+            }
+          },
+          "ModelLogTbl": {
+            "Type": "AWS::DynamoDB::Table",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "id",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "id",
+                  "KeyType": "HASH"
+                }
+              ],
+              "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1
+              },
+              "TableName": "ModelLogTbl"
+            }
+          },
+          "VPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+              "EnableDnsSupport": true,
+              "EnableDnsHostnames": true,
+              "CidrBlock": "10.0.0.0/16"
+            }
+          },
+          "PublicSubnetOne": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+              "AvailabilityZone": {
+                "Fn::Select": [
+                  0,
+                  {
+                    "Fn::GetAZs": {
+                      "Ref": "AWS::Region"
+                    }
+                  }
+                ]
+              },
+              "VpcId": {
+                "Ref": "VPC"
+              },
+              "CidrBlock": "10.0.0.0/24",
+              "MapPublicIpOnLaunch": true
+            }
+          },
+          "PublicSubnetTwo": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+              "AvailabilityZone": {
+                "Fn::Select": [
+                  1,
+                  {
+                    "Fn::GetAZs": {
+                      "Ref": "AWS::Region"
+                    }
+                  }
+                ]
+              },
+              "VpcId": {
+                "Ref": "VPC"
+              },
+              "CidrBlock": "10.0.1.0/24",
+              "MapPublicIpOnLaunch": true
+            }
+          },
+          "InternetGateway": {
+            "Type": "AWS::EC2::InternetGateway"
+          },
+          "GatewayAttachement": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+              "VpcId": {
+                "Ref": "VPC"
+              },
+              "InternetGatewayId": {
+                "Ref": "InternetGateway"
+              }
+            }
+          },
+          "PublicRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+              "VpcId": {
+                "Ref": "VPC"
+              }
+            }
+          },
+          "PublicRoute": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": "GatewayAttachement",
+            "Properties": {
+              "RouteTableId": {
+                "Ref": "PublicRouteTable"
+              },
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "GatewayId": {
+                "Ref": "InternetGateway"
+              }
+            }
+          },
+          "PublicSubnetOneRouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+              "SubnetId": {
+                "Ref": "PublicSubnetOne"
+              },
+              "RouteTableId": {
+                "Ref": "PublicRouteTable"
+              }
+            }
+          },
+          "PublicSubnetTwoRouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+              "SubnetId": {
+                "Ref": "PublicSubnetTwo"
+              },
+              "RouteTableId": {
+                "Ref": "PublicRouteTable"
+              }
+            }
+          },
+          "ECSCluster": {
+            "Type": "AWS::ECS::Cluster"
+          },
+          "FargateContainerSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+              "GroupDescription": "Access to the Fargate containers",
+              "VpcId": {
+                "Ref": "VPC"
+              }
+            }
+          },
+          "EcsSecurityGroupIngressFromSelf": {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "Properties": {
+              "Description": "Ingress from other containers in the same security group",
+              "GroupId": {
+                "Ref": "FargateContainerSecurityGroup"
+              },
+              "IpProtocol": -1,
+              "SourceSecurityGroupId": {
+                "Ref": "FargateContainerSecurityGroup"
+              }
+            }
+          },
+          "ECSRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "ecs.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Path": "/",
+              "Policies": [
+                {
+                  "PolicyName": "ecs-service",
+                  "PolicyDocument": {
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "ec2:AttachNetworkInterface",
+                          "ec2:CreateNetworkInterface",
+                          "ec2:CreateNetworkInterfacePermission",
+                          "ec2:DeleteNetworkInterface",
+                          "ec2:DeleteNetworkInterfacePermission",
+                          "ec2:Describe*",
+                          "ec2:DetachNetworkInterface"
+                        ],
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "ECSTaskExecutionRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "ecs-tasks.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Path": "/",
+              "Policies": [
+                {
+                  "PolicyName": "AmazonECSTaskExecutionRolePolicy",
+                  "PolicyDocument": {
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "ecr:GetAuthorizationToken",
+                          "ecr:BatchCheckLayerAvailability",
+                          "ecr:GetDownloadUrlForLayer",
+                          "ecr:BatchGetImage",
+                          "logs:CreateLogStream",
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                }
+              ]
             }
           }
         },
@@ -2558,52 +3326,58 @@
               "Ref": "ServerlessDeploymentBucket"
             }
           },
+          "TaskDashdefinitionLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "TaskDashdefinitionLambdaVersionmlxxEWQwgz67RiiRgzimJxw2AHzfxAiCsj07F1Kn1g"
+            }
+          },
           "SqsDashconsumerLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "SqsDashconsumerLambdaVersionEi8WhS480TpO3qnHMTyf6Tllvc5uq6Sc3RfAk6Bi4Q"
+              "Ref": "SqsDashconsumerLambdaVersion6riZWaTHsHindttnbdnZDnCPi6riEBrnCURpr4aWI"
             }
           },
           "ModelDashstatusDashlistLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashstatusDashlistLambdaVersionOUTI8aAOz0gL6gZrFKeY95mBSvwkJFWjC2FldNdBfU"
+              "Ref": "ModelDashstatusDashlistLambdaVersionMrncm98RmGhCqkoXKw7wwTnBI9IfB1YN46NIE7TgY"
             }
           },
           "ModelDashactionDashrunLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashactionDashrunLambdaVersionfPjpgZ9Z2WHEaHh0x1IjgDdTYeDPIojvbx7cut2YsLo"
+              "Ref": "ModelDashactionDashrunLambdaVersionpSycUZxf7socKSJjvi8jf5LGVxujnvRykKLphv6OSi8"
             }
           },
           "ModelDashmetaDashcreateLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashcreateLambdaVersionRL1q04AD9bzY0PFreHOuOkAU6z4O3T2Y64zSaw67Jg"
+              "Ref": "ModelDashmetaDashcreateLambdaVersionWQNZ923IXqg9UfFl42g4DoqCemk3BxIsUpJCOnEXQ"
             }
           },
           "ModelDashmetaDashlistLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashlistLambdaVersion2hPN3UGjngxtrU9pMWsWTBbGG60NHZmH7QUZfi9iDxk"
+              "Ref": "ModelDashmetaDashlistLambdaVersioneOFpliaWVVbBWCjmfKPyGjibC5cgbVQFiLNjbJORQ"
             }
           },
           "ModelDashmetaDashgetLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashgetLambdaVersionhFsq2TLeYXl6SpKhB3A59wajuBSywlC0THaWbFOrAso"
+              "Ref": "ModelDashmetaDashgetLambdaVersiona4rveQc4ZZq2pi1nVqgOxXLdwPzF0UGH0MpzqaDYjME"
             }
           },
           "ModelDashmetaDashupdateLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashupdateLambdaVersionAmHMCCETNVnZngHl9MEfRigMhtv7HXU1av0rpjjy4I"
+              "Ref": "ModelDashmetaDashupdateLambdaVersionbq43WvqnNN63SENiA9oFj1oamlRiA7QrBTAkiYA"
             }
           },
           "ModelDashmetaDashdeleteLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashdeleteLambdaVersion8ABfBTwF4l8ABNpIRXVvA9JmfPxKQpxHd9RQIFKXvMw"
+              "Ref": "ModelDashmetaDashdeleteLambdaVersionJtVLoIFfDaaWeSpzWpYMHCgMN216pFlLpn4B865iQdQ"
             }
           },
           "ServiceEndpoint": {
@@ -2634,6 +3408,67 @@
             "Value": {
               "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"MessageResponseModel\"][\"Properties\"][\"RestApiId\"]"
             }
+          }
+        },
+        "Parameters": {
+          "ServiceName": {
+            "Type": "String",
+            "Default": "dockerFargate",
+            "Description": "A name for the service"
+          },
+          "ImageUrl": {
+            "Type": "String",
+            "Default": "stepfunctiontest:latest",
+            "Description": "The url of a docker image that contains the application process that will handle the traffic for this service"
+          },
+          "ContainerPort": {
+            "Type": "Number",
+            "Default": 80,
+            "Description": "What port number the application inside the docker container is binding to"
+          },
+          "ContainerCpu": {
+            "Type": "Number",
+            "Default": 256,
+            "Description": "How much CPU to give the container. 1024 is 1 CPU"
+          },
+          "ContainerMemory": {
+            "Type": "Number",
+            "Default": 512,
+            "Description": "How much memory in megabytes to give the container"
+          },
+          "Path": {
+            "Type": "String",
+            "Default": "*",
+            "Description": "A path on the public load balancer that this service should be connected to. Use * to send all load balancer traffic to this service."
+          },
+          "Priority": {
+            "Type": "Number",
+            "Default": 1,
+            "Description": "The priority for the routing rule added to the load balancer. This only applies if your have multiple services which have been assigned to different paths on the load balancer."
+          },
+          "DesiredCount": {
+            "Type": "Number",
+            "Default": 0,
+            "Description": "How many copies of the service task to run"
+          },
+          "Role": {
+            "Type": "String",
+            "Default": "",
+            "Description": "(Optional) An IAM role to give the service's containers if the code within needs to access other AWS resources like S3 buckets, DynamoDB tables, etc"
+          }
+        },
+        "Conditions": {
+          "HasCustomRole": {
+            "Fn::Not": [
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "Role"
+                  },
+                  ""
+                ]
+              }
+            ]
           }
         }
       },
@@ -2726,31 +3561,13 @@
     ],
     "pluginsData": {},
     "functions": {
-      "sqs-consumer": {
-        "handler": "model-action/sqsConsumer.consumer",
-        "events": [
-          {
-            "sqs": {
-              "arn": {
-                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"IamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][4][\"Resource\"][0]"
-              }
-            }
-          }
-        ],
-        "name": "ml-kraken-api-dev-sqs-consumer",
-        "package": {},
-        "memory": 1024,
-        "timeout": 6,
-        "runtime": "nodejs10.x",
-        "vpc": {}
-      },
-      "model-status-list": {
-        "handler": "model-status/listStatuses.listStatuses",
+      "task-definition": {
+        "handler": "model-action/taskDefinition.taskDefinition",
         "events": [
           {
             "http": {
-              "path": "api/v1/model-status/{id}",
-              "method": "get",
+              "path": "api/v1/model-action/task-def",
+              "method": "post",
               "integration": "AWS",
               "cors": {
                 "origins": [
@@ -2759,7 +3576,7 @@
                 "origin": "*",
                 "methods": [
                   "OPTIONS",
-                  "GET"
+                  "POST"
                 ],
                 "headers": [
                   "Content-Type",
@@ -2808,6 +3625,69 @@
             }
           }
         ],
+        "name": "ml-kraken-api-dev-task-definition",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs10.x",
+        "vpc": {}
+      },
+      "sqs-consumer": {
+        "handler": "model-action/sqsTaskConsumer.consumer",
+        "events": [
+          {
+            "sqs": {
+              "arn": {
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"IamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][7][\"Resource\"][0]"
+              }
+            }
+          }
+        ],
+        "name": "ml-kraken-api-dev-sqs-consumer",
+        "package": {},
+        "memory": 1024,
+        "timeout": 6,
+        "runtime": "nodejs10.x",
+        "vpc": {}
+      },
+      "model-status-list": {
+        "handler": "model-status/listStatuses.listStatuses",
+        "events": [
+          {
+            "http": {
+              "path": "api/v1/model-status/{id}",
+              "method": "get",
+              "integration": "AWS",
+              "cors": {
+                "origins": [
+                  "*"
+                ],
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "GET"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "request": {
+                "passThrough": "NEVER"
+              },
+              "response": {
+                "statusCodes": {
+                  "$ref": "$[\"service\"][\"functions\"][\"task-definition\"][\"events\"][0][\"http\"][\"response\"][\"statusCodes\"]"
+                }
+              }
+            }
+          }
+        ],
         "name": "ml-kraken-api-dev-model-status-list",
         "package": {},
         "memory": 1024,
@@ -2847,7 +3727,7 @@
               },
               "response": {
                 "statusCodes": {
-                  "$ref": "$[\"service\"][\"functions\"][\"model-status-list\"][\"events\"][0][\"http\"][\"response\"][\"statusCodes\"]"
+                  "$ref": "$[\"service\"][\"functions\"][\"task-definition\"][\"events\"][0][\"http\"][\"response\"][\"statusCodes\"]"
                 }
               }
             }
@@ -2921,7 +3801,7 @@
               },
               "response": {
                 "statusCodes": {
-                  "$ref": "$[\"service\"][\"functions\"][\"model-status-list\"][\"events\"][0][\"http\"][\"response\"][\"statusCodes\"]"
+                  "$ref": "$[\"service\"][\"functions\"][\"task-definition\"][\"events\"][0][\"http\"][\"response\"][\"statusCodes\"]"
                 }
               }
             }
@@ -2966,7 +3846,7 @@
               },
               "response": {
                 "statusCodes": {
-                  "$ref": "$[\"service\"][\"functions\"][\"model-status-list\"][\"events\"][0][\"http\"][\"response\"][\"statusCodes\"]"
+                  "$ref": "$[\"service\"][\"functions\"][\"task-definition\"][\"events\"][0][\"http\"][\"response\"][\"statusCodes\"]"
                 }
               }
             }
@@ -3011,7 +3891,7 @@
               },
               "response": {
                 "statusCodes": {
-                  "$ref": "$[\"service\"][\"functions\"][\"model-status-list\"][\"events\"][0][\"http\"][\"response\"][\"statusCodes\"]"
+                  "$ref": "$[\"service\"][\"functions\"][\"task-definition\"][\"events\"][0][\"http\"][\"response\"][\"statusCodes\"]"
                 }
               }
             }
@@ -3056,7 +3936,7 @@
               },
               "response": {
                 "statusCodes": {
-                  "$ref": "$[\"service\"][\"functions\"][\"model-status-list\"][\"events\"][0][\"http\"][\"response\"][\"statusCodes\"]"
+                  "$ref": "$[\"service\"][\"functions\"][\"task-definition\"][\"events\"][0][\"http\"][\"response\"][\"statusCodes\"]"
                 }
               }
             }
@@ -3101,7 +3981,7 @@
               },
               "response": {
                 "statusCodes": {
-                  "$ref": "$[\"service\"][\"functions\"][\"model-status-list\"][\"events\"][0][\"http\"][\"response\"][\"statusCodes\"]"
+                  "$ref": "$[\"service\"][\"functions\"][\"task-definition\"][\"events\"][0][\"http\"][\"response\"][\"statusCodes\"]"
                 }
               }
             }
@@ -3116,8 +3996,69 @@
       }
     },
     "resources": {
+      "Parameters": {
+        "ServiceName": {
+          "Type": "String",
+          "Default": "dockerFargate",
+          "Description": "A name for the service"
+        },
+        "ImageUrl": {
+          "Type": "String",
+          "Default": "stepfunctiontest:latest",
+          "Description": "The url of a docker image that contains the application process that will handle the traffic for this service"
+        },
+        "ContainerPort": {
+          "Type": "Number",
+          "Default": 80,
+          "Description": "What port number the application inside the docker container is binding to"
+        },
+        "ContainerCpu": {
+          "Type": "Number",
+          "Default": 256,
+          "Description": "How much CPU to give the container. 1024 is 1 CPU"
+        },
+        "ContainerMemory": {
+          "Type": "Number",
+          "Default": 512,
+          "Description": "How much memory in megabytes to give the container"
+        },
+        "Path": {
+          "Type": "String",
+          "Default": "*",
+          "Description": "A path on the public load balancer that this service should be connected to. Use * to send all load balancer traffic to this service."
+        },
+        "Priority": {
+          "Type": "Number",
+          "Default": 1,
+          "Description": "The priority for the routing rule added to the load balancer. This only applies if your have multiple services which have been assigned to different paths on the load balancer."
+        },
+        "DesiredCount": {
+          "Type": "Number",
+          "Default": 0,
+          "Description": "How many copies of the service task to run"
+        },
+        "Role": {
+          "Type": "String",
+          "Default": "",
+          "Description": "(Optional) An IAM role to give the service's containers if the code within needs to access other AWS resources like S3 buckets, DynamoDB tables, etc"
+        }
+      },
+      "Conditions": {
+        "HasCustomRole": {
+          "Fn::Not": [
+            {
+              "Fn::Equals": [
+                {
+                  "Ref": "Role"
+                },
+                ""
+              ]
+            }
+          ]
+        }
+      },
       "Resources": {
-        "ModelMetaDynamoDbTable": {
+        "ModelMetaTbl": {
           "Type": "AWS::DynamoDB::Table",
           "DeletionPolicy": "Retain",
           "Properties": {
@@ -3137,7 +4078,7 @@
               "ReadCapacityUnits": 1,
               "WriteCapacityUnits": 1
             },
-            "TableName": "ModelMetaDynamoDbTable"
+            "TableName": "ModelMetaTbl"
           }
         },
         "ModelStatusTbl": {
@@ -3163,10 +4104,271 @@
             "TableName": "ModelStatusTbl"
           }
         },
+        "ModelTaskTbl": {
+          "Type": "AWS::DynamoDB::Table",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "id",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "id",
+                "KeyType": "HASH"
+              }
+            ],
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 1,
+              "WriteCapacityUnits": 1
+            },
+            "TableName": "ModelTaskTbl"
+          }
+        },
         "ActionQueue": {
           "Type": "AWS::SQS::Queue",
           "Properties": {
             "QueueName": "ActionQueue"
+          }
+        },
+        "ModelLogTbl": {
+          "Type": "AWS::DynamoDB::Table",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "id",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "id",
+                "KeyType": "HASH"
+              }
+            ],
+            "ProvisionedThroughput": {
+              "ReadCapacityUnits": 1,
+              "WriteCapacityUnits": 1
+            },
+            "TableName": "ModelLogTbl"
+          }
+        },
+        "VPC": {
+          "Type": "AWS::EC2::VPC",
+          "Properties": {
+            "EnableDnsSupport": true,
+            "EnableDnsHostnames": true,
+            "CidrBlock": "10.0.0.0/16"
+          }
+        },
+        "PublicSubnetOne": {
+          "Type": "AWS::EC2::Subnet",
+          "Properties": {
+            "AvailabilityZone": {
+              "Fn::Select": [
+                0,
+                {
+                  "Fn::GetAZs": {
+                    "Ref": "AWS::Region"
+                  }
+                }
+              ]
+            },
+            "VpcId": {
+              "Ref": "VPC"
+            },
+            "CidrBlock": "10.0.0.0/24",
+            "MapPublicIpOnLaunch": true
+          }
+        },
+        "PublicSubnetTwo": {
+          "Type": "AWS::EC2::Subnet",
+          "Properties": {
+            "AvailabilityZone": {
+              "Fn::Select": [
+                1,
+                {
+                  "Fn::GetAZs": {
+                    "Ref": "AWS::Region"
+                  }
+                }
+              ]
+            },
+            "VpcId": {
+              "Ref": "VPC"
+            },
+            "CidrBlock": "10.0.1.0/24",
+            "MapPublicIpOnLaunch": true
+          }
+        },
+        "InternetGateway": {
+          "Type": "AWS::EC2::InternetGateway"
+        },
+        "GatewayAttachement": {
+          "Type": "AWS::EC2::VPCGatewayAttachment",
+          "Properties": {
+            "VpcId": {
+              "Ref": "VPC"
+            },
+            "InternetGatewayId": {
+              "Ref": "InternetGateway"
+            }
+          }
+        },
+        "PublicRouteTable": {
+          "Type": "AWS::EC2::RouteTable",
+          "Properties": {
+            "VpcId": {
+              "Ref": "VPC"
+            }
+          }
+        },
+        "PublicRoute": {
+          "Type": "AWS::EC2::Route",
+          "DependsOn": "GatewayAttachement",
+          "Properties": {
+            "RouteTableId": {
+              "Ref": "PublicRouteTable"
+            },
+            "DestinationCidrBlock": "0.0.0.0/0",
+            "GatewayId": {
+              "Ref": "InternetGateway"
+            }
+          }
+        },
+        "PublicSubnetOneRouteTableAssociation": {
+          "Type": "AWS::EC2::SubnetRouteTableAssociation",
+          "Properties": {
+            "SubnetId": {
+              "Ref": "PublicSubnetOne"
+            },
+            "RouteTableId": {
+              "Ref": "PublicRouteTable"
+            }
+          }
+        },
+        "PublicSubnetTwoRouteTableAssociation": {
+          "Type": "AWS::EC2::SubnetRouteTableAssociation",
+          "Properties": {
+            "SubnetId": {
+              "Ref": "PublicSubnetTwo"
+            },
+            "RouteTableId": {
+              "Ref": "PublicRouteTable"
+            }
+          }
+        },
+        "ECSCluster": {
+          "Type": "AWS::ECS::Cluster"
+        },
+        "FargateContainerSecurityGroup": {
+          "Type": "AWS::EC2::SecurityGroup",
+          "Properties": {
+            "GroupDescription": "Access to the Fargate containers",
+            "VpcId": {
+              "Ref": "VPC"
+            }
+          }
+        },
+        "EcsSecurityGroupIngressFromSelf": {
+          "Type": "AWS::EC2::SecurityGroupIngress",
+          "Properties": {
+            "Description": "Ingress from other containers in the same security group",
+            "GroupId": {
+              "Ref": "FargateContainerSecurityGroup"
+            },
+            "IpProtocol": -1,
+            "SourceSecurityGroupId": {
+              "Ref": "FargateContainerSecurityGroup"
+            }
+          }
+        },
+        "ECSRole": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "AssumeRolePolicyDocument": {
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": [
+                      "ecs.amazonaws.com"
+                    ]
+                  },
+                  "Action": [
+                    "sts:AssumeRole"
+                  ]
+                }
+              ]
+            },
+            "Path": "/",
+            "Policies": [
+              {
+                "PolicyName": "ecs-service",
+                "PolicyDocument": {
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "ec2:AttachNetworkInterface",
+                        "ec2:CreateNetworkInterface",
+                        "ec2:CreateNetworkInterfacePermission",
+                        "ec2:DeleteNetworkInterface",
+                        "ec2:DeleteNetworkInterfacePermission",
+                        "ec2:Describe*",
+                        "ec2:DetachNetworkInterface"
+                      ],
+                      "Resource": "*"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "ECSTaskExecutionRole": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "AssumeRolePolicyDocument": {
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": [
+                      "ecs-tasks.amazonaws.com"
+                    ]
+                  },
+                  "Action": [
+                    "sts:AssumeRole"
+                  ]
+                }
+              ]
+            },
+            "Path": "/",
+            "Policies": [
+              {
+                "PolicyName": "AmazonECSTaskExecutionRolePolicy",
+                "PolicyDocument": {
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "ecr:GetAuthorizationToken",
+                        "ecr:BatchCheckLayerAvailability",
+                        "ecr:GetDownloadUrlForLayer",
+                        "ecr:BatchGetImage",
+                        "logs:CreateLogStream",
+                        "logs:PutLogEvents"
+                      ],
+                      "Resource": "*"
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       },
@@ -3177,7 +4379,7 @@
     "artifact": "/Users/jwszol/Documents/workspace-git/ml-kraken/ml-kraken-api/.serverless/ml-kraken-api.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/ml-kraken-api/dev/1564148329430-2019-07-26T13:38:49.430Z",
+    "artifactDirectoryName": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z",
     "artifact": "ml-kraken-api.zip"
   }
 }

@@ -6,7 +6,7 @@ const { cors } = require('middy/middlewares');
 
 const listModels = (event, context, callback) => {
     const params = {
-        TableName: process.env.DYNAMODB_TABLE,
+        TableName: process.env.DYNAMODB_MMETA,
     };
 
     // fetch all todos from the database
