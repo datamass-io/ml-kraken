@@ -5,9 +5,11 @@ const { cors } = require('middy/middlewares');
 var AWS = require('aws-sdk');
 
 
+
 const taskDef = async (event, context) => {
     var ecs = new AWS.ECS({apiVersion: '2014-11-13'});
     var cloudwatchlogs = new AWS.CloudWatchLogs({apiVersion: '2014-03-28'});
+    var ec2 = new AWS.EC2({apiVersion: '2016-11-15'});
 
     let familyName = 'ml-kraken-models';
     let logName = '/ecs/' + familyName;
@@ -68,6 +70,17 @@ const taskDef = async (event, context) => {
     console.log(task);
 
     let taskName = task.taskDefinition.family+":"+task.taskDefinition.revision;
+
+
+    var paramsSecurityGroup = {
+        Description: 'ml-kraken-sec',
+        GroupName: taskName + "-" + Math.random().toString(36).substring(7),
+        VpcId: process.env.VPC
+    };
+
+    const secGroup = await ec2.createSecurityGroup(paramsSecurityGroup).promise();
+    console.log(secGroup);
+
     var taskParams = {
         cluster: "ml-kraken-dev",
         taskDefinition: taskName,
@@ -76,6 +89,9 @@ const taskDef = async (event, context) => {
             awsvpcConfiguration: {
                 subnets: [process.env.PublicSubnet],
                 assignPublicIp: "ENABLED",
+                securityGroups: [
+                    "sg-0dd6b1851b3979566"
+                    ],
             }
         }
     };

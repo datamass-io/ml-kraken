@@ -23,10 +23,13 @@
           "Ref": "ECSTaskExecutionRole"
         },
         "PublicSubnet": {
-          "Ref": "PublicSubnetOne"
+          "Ref": "PublicSubnetTwo"
         },
         "ECS_CLUSTER": {
           "Ref": "ECSCluster"
+        },
+        "VPC": {
+          "Ref": "VPC"
         }
       },
       "iamRoleStatements": [
@@ -90,6 +93,17 @@
           "Action": [
             "logs:CreateLogGroup",
             "logs:DescribeLogGroups"
+          ],
+          "Resource": [
+            "*"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "ec2:AuthorizeSecurityGroupEgress",
+            "ec2:AuthorizeSecurityGroupIngress",
+            "ec2:CreateSecurityGroup"
           ],
           "Resource": [
             "*"
@@ -242,6 +256,9 @@
                         "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][4]"
                       },
                       {
+                        "$ref": "$[\"service\"][\"provider\"][\"iamRoleStatements\"][5]"
+                      },
+                      {
                         "Effect": "Allow",
                         "Action": [
                           "sqs:ReceiveMessage",
@@ -284,7 +301,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1565700297870-2019-08-13T12:44:57.870Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-task-definition",
               "Handler": "model-action/taskDefinition.taskDefinition",
@@ -311,10 +328,13 @@
                     "Ref": "ECSTaskExecutionRole"
                   },
                   "PublicSubnet": {
-                    "Ref": "PublicSubnetOne"
+                    "Ref": "PublicSubnetTwo"
                   },
                   "ECS_CLUSTER": {
                     "Ref": "ECSCluster"
+                  },
+                  "VPC": {
+                    "Ref": "VPC"
                   }
                 }
               }
@@ -324,14 +344,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "TaskDashdefinitionLambdaVersionmlxxEWQwgz67RiiRgzimJxw2AHzfxAiCsj07F1Kn1g": {
+          "TaskDashdefinitionLambdaVersionvOvVkBwGVjQs2fa9u20M7Ey3Lx6fRnumfYXah1hzp8": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "TaskDashdefinitionLambdaFunction"
               },
-              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
+              "CodeSha256": "zrhjYBiM+xOgDCHPVEJDwgVji1xMJuD038cucJkqw7U="
             }
           },
           "SqsDashconsumerLambdaFunction": {
@@ -341,7 +361,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1565700297870-2019-08-13T12:44:57.870Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-sqs-consumer",
               "Handler": "model-action/sqsTaskConsumer.consumer",
@@ -368,10 +388,13 @@
                     "Ref": "ECSTaskExecutionRole"
                   },
                   "PublicSubnet": {
-                    "Ref": "PublicSubnetOne"
+                    "Ref": "PublicSubnetTwo"
                   },
                   "ECS_CLUSTER": {
                     "Ref": "ECSCluster"
+                  },
+                  "VPC": {
+                    "Ref": "VPC"
                   }
                 }
               }
@@ -381,14 +404,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "SqsDashconsumerLambdaVersion6riZWaTHsHindttnbdnZDnCPi6riEBrnCURpr4aWI": {
+          "SqsDashconsumerLambdaVersionfwwcNfkb8A9PlsdwtcnDEbd4Nl8dR6WXlfpXBFSTDI": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "SqsDashconsumerLambdaFunction"
               },
-              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
+              "CodeSha256": "zrhjYBiM+xOgDCHPVEJDwgVji1xMJuD038cucJkqw7U="
             }
           },
           "ModelDashstatusDashlistLambdaFunction": {
@@ -398,7 +421,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1565700297870-2019-08-13T12:44:57.870Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-status-list",
               "Handler": "model-status/listStatuses.listStatuses",
@@ -425,10 +448,13 @@
                     "Ref": "ECSTaskExecutionRole"
                   },
                   "PublicSubnet": {
-                    "Ref": "PublicSubnetOne"
+                    "Ref": "PublicSubnetTwo"
                   },
                   "ECS_CLUSTER": {
                     "Ref": "ECSCluster"
+                  },
+                  "VPC": {
+                    "Ref": "VPC"
                   }
                 }
               }
@@ -438,14 +464,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashstatusDashlistLambdaVersionMrncm98RmGhCqkoXKw7wwTnBI9IfB1YN46NIE7TgY": {
+          "ModelDashstatusDashlistLambdaVersionElcyTcB4jfSbD2pZKF9mEqRoWqb32m6Kcxg0AoxdbZg": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashstatusDashlistLambdaFunction"
               },
-              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
+              "CodeSha256": "zrhjYBiM+xOgDCHPVEJDwgVji1xMJuD038cucJkqw7U="
             }
           },
           "ModelDashactionDashrunLambdaFunction": {
@@ -455,7 +481,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1565700297870-2019-08-13T12:44:57.870Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-action-run",
               "Handler": "model-action/takeAction.takeAction",
@@ -482,10 +508,13 @@
                     "Ref": "ECSTaskExecutionRole"
                   },
                   "PublicSubnet": {
-                    "Ref": "PublicSubnetOne"
+                    "Ref": "PublicSubnetTwo"
                   },
                   "ECS_CLUSTER": {
                     "Ref": "ECSCluster"
+                  },
+                  "VPC": {
+                    "Ref": "VPC"
                   }
                 }
               }
@@ -495,14 +524,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashactionDashrunLambdaVersionpSycUZxf7socKSJjvi8jf5LGVxujnvRykKLphv6OSi8": {
+          "ModelDashactionDashrunLambdaVersiont4Z0ULb1WdwMlS0WS4z62cvddCIW2joLimgEFheiBjo": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashactionDashrunLambdaFunction"
               },
-              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
+              "CodeSha256": "zrhjYBiM+xOgDCHPVEJDwgVji1xMJuD038cucJkqw7U="
             }
           },
           "ModelDashmetaDashcreateLambdaFunction": {
@@ -512,7 +541,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1565700297870-2019-08-13T12:44:57.870Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-create",
               "Handler": "model-meta/create.create",
@@ -539,10 +568,13 @@
                     "Ref": "ECSTaskExecutionRole"
                   },
                   "PublicSubnet": {
-                    "Ref": "PublicSubnetOne"
+                    "Ref": "PublicSubnetTwo"
                   },
                   "ECS_CLUSTER": {
                     "Ref": "ECSCluster"
+                  },
+                  "VPC": {
+                    "Ref": "VPC"
                   }
                 }
               }
@@ -552,14 +584,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashcreateLambdaVersionWQNZ923IXqg9UfFl42g4DoqCemk3BxIsUpJCOnEXQ": {
+          "ModelDashmetaDashcreateLambdaVersionUOiLwcp1Aq3hM6op82E6zBjesQJAYTK3aEthHJ7SDo": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashcreateLambdaFunction"
               },
-              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
+              "CodeSha256": "zrhjYBiM+xOgDCHPVEJDwgVji1xMJuD038cucJkqw7U="
             }
           },
           "ModelDashmetaDashlistLambdaFunction": {
@@ -569,7 +601,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1565700297870-2019-08-13T12:44:57.870Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-list",
               "Handler": "model-meta/list.list",
@@ -596,10 +628,13 @@
                     "Ref": "ECSTaskExecutionRole"
                   },
                   "PublicSubnet": {
-                    "Ref": "PublicSubnetOne"
+                    "Ref": "PublicSubnetTwo"
                   },
                   "ECS_CLUSTER": {
                     "Ref": "ECSCluster"
+                  },
+                  "VPC": {
+                    "Ref": "VPC"
                   }
                 }
               }
@@ -609,14 +644,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashlistLambdaVersioneOFpliaWVVbBWCjmfKPyGjibC5cgbVQFiLNjbJORQ": {
+          "ModelDashmetaDashlistLambdaVersionW7hM5Thi4H0u7Zhe4IqCA48tGeF5SJde2MnO32CZ5sI": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashlistLambdaFunction"
               },
-              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
+              "CodeSha256": "zrhjYBiM+xOgDCHPVEJDwgVji1xMJuD038cucJkqw7U="
             }
           },
           "ModelDashmetaDashgetLambdaFunction": {
@@ -626,7 +661,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1565700297870-2019-08-13T12:44:57.870Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-get",
               "Handler": "model-meta/get.get",
@@ -653,10 +688,13 @@
                     "Ref": "ECSTaskExecutionRole"
                   },
                   "PublicSubnet": {
-                    "Ref": "PublicSubnetOne"
+                    "Ref": "PublicSubnetTwo"
                   },
                   "ECS_CLUSTER": {
                     "Ref": "ECSCluster"
+                  },
+                  "VPC": {
+                    "Ref": "VPC"
                   }
                 }
               }
@@ -666,14 +704,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashgetLambdaVersiona4rveQc4ZZq2pi1nVqgOxXLdwPzF0UGH0MpzqaDYjME": {
+          "ModelDashmetaDashgetLambdaVersionbQJAMH2SMpICMbWOhdM4AoetBX97cgMGqJv4ybG4sl4": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashgetLambdaFunction"
               },
-              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
+              "CodeSha256": "zrhjYBiM+xOgDCHPVEJDwgVji1xMJuD038cucJkqw7U="
             }
           },
           "ModelDashmetaDashupdateLambdaFunction": {
@@ -683,7 +721,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1565700297870-2019-08-13T12:44:57.870Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-update",
               "Handler": "model-meta/update.update",
@@ -710,10 +748,13 @@
                     "Ref": "ECSTaskExecutionRole"
                   },
                   "PublicSubnet": {
-                    "Ref": "PublicSubnetOne"
+                    "Ref": "PublicSubnetTwo"
                   },
                   "ECS_CLUSTER": {
                     "Ref": "ECSCluster"
+                  },
+                  "VPC": {
+                    "Ref": "VPC"
                   }
                 }
               }
@@ -723,14 +764,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashupdateLambdaVersionbq43WvqnNN63SENiA9oFj1oamlRiA7QrBTAkiYA": {
+          "ModelDashmetaDashupdateLambdaVersion6eDuz9OKakKVv4eDyrNyAAIU2SWnvj5jjoIJwQrUs": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashupdateLambdaFunction"
               },
-              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
+              "CodeSha256": "zrhjYBiM+xOgDCHPVEJDwgVji1xMJuD038cucJkqw7U="
             }
           },
           "ModelDashmetaDashdeleteLambdaFunction": {
@@ -740,7 +781,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z/ml-kraken-api.zip"
+                "S3Key": "serverless/ml-kraken-api/dev/1565700297870-2019-08-13T12:44:57.870Z/ml-kraken-api.zip"
               },
               "FunctionName": "ml-kraken-api-dev-model-meta-delete",
               "Handler": "model-meta/delete.deleteM",
@@ -767,10 +808,13 @@
                     "Ref": "ECSTaskExecutionRole"
                   },
                   "PublicSubnet": {
-                    "Ref": "PublicSubnetOne"
+                    "Ref": "PublicSubnetTwo"
                   },
                   "ECS_CLUSTER": {
                     "Ref": "ECSCluster"
+                  },
+                  "VPC": {
+                    "Ref": "VPC"
                   }
                 }
               }
@@ -780,14 +824,14 @@
               "IamRoleLambdaExecution"
             ]
           },
-          "ModelDashmetaDashdeleteLambdaVersionJtVLoIFfDaaWeSpzWpYMHCgMN216pFlLpn4B865iQdQ": {
+          "ModelDashmetaDashdeleteLambdaVersionSXQ5SnT7TKpZ2bAZJXSFnm19WWot9ieGFQDyEFvTas": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ModelDashmetaDashdeleteLambdaFunction"
               },
-              "CodeSha256": "sqbUIYt5hBveXBqPO0DWyEqJQd8AuSC675POwJU/f8k="
+              "CodeSha256": "zrhjYBiM+xOgDCHPVEJDwgVji1xMJuD038cucJkqw7U="
             }
           },
           "ApiGatewayRestApi": {
@@ -2633,7 +2677,7 @@
               ]
             }
           },
-          "ApiGatewayDeployment1564673311884": {
+          "ApiGatewayDeployment1565700291259": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -3329,55 +3373,55 @@
           "TaskDashdefinitionLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "TaskDashdefinitionLambdaVersionmlxxEWQwgz67RiiRgzimJxw2AHzfxAiCsj07F1Kn1g"
+              "Ref": "TaskDashdefinitionLambdaVersionvOvVkBwGVjQs2fa9u20M7Ey3Lx6fRnumfYXah1hzp8"
             }
           },
           "SqsDashconsumerLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "SqsDashconsumerLambdaVersion6riZWaTHsHindttnbdnZDnCPi6riEBrnCURpr4aWI"
+              "Ref": "SqsDashconsumerLambdaVersionfwwcNfkb8A9PlsdwtcnDEbd4Nl8dR6WXlfpXBFSTDI"
             }
           },
           "ModelDashstatusDashlistLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashstatusDashlistLambdaVersionMrncm98RmGhCqkoXKw7wwTnBI9IfB1YN46NIE7TgY"
+              "Ref": "ModelDashstatusDashlistLambdaVersionElcyTcB4jfSbD2pZKF9mEqRoWqb32m6Kcxg0AoxdbZg"
             }
           },
           "ModelDashactionDashrunLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashactionDashrunLambdaVersionpSycUZxf7socKSJjvi8jf5LGVxujnvRykKLphv6OSi8"
+              "Ref": "ModelDashactionDashrunLambdaVersiont4Z0ULb1WdwMlS0WS4z62cvddCIW2joLimgEFheiBjo"
             }
           },
           "ModelDashmetaDashcreateLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashcreateLambdaVersionWQNZ923IXqg9UfFl42g4DoqCemk3BxIsUpJCOnEXQ"
+              "Ref": "ModelDashmetaDashcreateLambdaVersionUOiLwcp1Aq3hM6op82E6zBjesQJAYTK3aEthHJ7SDo"
             }
           },
           "ModelDashmetaDashlistLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashlistLambdaVersioneOFpliaWVVbBWCjmfKPyGjibC5cgbVQFiLNjbJORQ"
+              "Ref": "ModelDashmetaDashlistLambdaVersionW7hM5Thi4H0u7Zhe4IqCA48tGeF5SJde2MnO32CZ5sI"
             }
           },
           "ModelDashmetaDashgetLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashgetLambdaVersiona4rveQc4ZZq2pi1nVqgOxXLdwPzF0UGH0MpzqaDYjME"
+              "Ref": "ModelDashmetaDashgetLambdaVersionbQJAMH2SMpICMbWOhdM4AoetBX97cgMGqJv4ybG4sl4"
             }
           },
           "ModelDashmetaDashupdateLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashupdateLambdaVersionbq43WvqnNN63SENiA9oFj1oamlRiA7QrBTAkiYA"
+              "Ref": "ModelDashmetaDashupdateLambdaVersion6eDuz9OKakKVv4eDyrNyAAIU2SWnvj5jjoIJwQrUs"
             }
           },
           "ModelDashmetaDashdeleteLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ModelDashmetaDashdeleteLambdaVersionJtVLoIFfDaaWeSpzWpYMHCgMN216pFlLpn4B865iQdQ"
+              "Ref": "ModelDashmetaDashdeleteLambdaVersionSXQ5SnT7TKpZ2bAZJXSFnm19WWot9ieGFQDyEFvTas"
             }
           },
           "ServiceEndpoint": {
@@ -3638,7 +3682,7 @@
           {
             "sqs": {
               "arn": {
-                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"IamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][7][\"Resource\"][0]"
+                "$ref": "$[\"service\"][\"provider\"][\"compiledCloudFormationTemplate\"][\"Resources\"][\"IamRoleLambdaExecution\"][\"Properties\"][\"Policies\"][0][\"PolicyDocument\"][\"Statement\"][8][\"Resource\"][0]"
               }
             }
           }
@@ -4379,7 +4423,7 @@
     "artifact": "/Users/jwszol/Documents/workspace-git/ml-kraken/ml-kraken-api/.serverless/ml-kraken-api.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/ml-kraken-api/dev/1564673317365-2019-08-01T15:28:37.365Z",
+    "artifactDirectoryName": "serverless/ml-kraken-api/dev/1565700297870-2019-08-13T12:44:57.870Z",
     "artifact": "ml-kraken-api.zip"
   }
 }

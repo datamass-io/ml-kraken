@@ -14,6 +14,10 @@ const consumer = async (event, context) => {
     console.log("consumed message: " + JSON.parse(event.Records[0].body).modelId);
     let modelAct = new modelAction(JSON.parse(event.Records[0].body));
     console.log(modelAct);
+    var ec2 = new AWS.EC2({apiVersion: '2016-11-15'});
+    var ecs = new AWS.ECS({apiVersion: '2014-11-13'});
+    var cloudwatchlogs = new AWS.CloudWatchLogs({apiVersion: '2014-03-28'});
+
 
     const modelParams = {
         TableName: process.env.DYNAMODB_MMETA,
@@ -36,9 +40,6 @@ const consumer = async (event, context) => {
 
         console.log(modelMetaInfo);
         let logName = '/ecs/' + modelMetaInfo.name;
-
-        var ecs = new AWS.ECS({apiVersion: '2014-11-13'});
-        var cloudwatchlogs = new AWS.CloudWatchLogs({apiVersion: '2014-03-28'});
 
         const searchLogParams = {
             limit: '5',
@@ -63,17 +64,18 @@ const consumer = async (event, context) => {
                     essential: true,
                     cpu: 0,
                     image: "655908530487.dkr.ecr.eu-west-1.amazonaws.com/jwszol-nginx:latest",
-                    "portMappings": [
+                    memoryReservation: 128,
+                    portMappings: [
                         {
-                            "hostPort": 80,
-                            "protocol": "tcp",
-                            "containerPort": 80,
+                            hostPort: 80,
+                            protocol: "tcp",
+                            containerPort: 80,
                         }
                     ],
-                    "logConfiguration": {
-                        "logDriver": "awslogs",
-                        "secretOptions": null,
-                        "options": {
+                    logConfiguration: {
+                        logDriver: "awslogs",
+                        secretOptions: null,
+                        options: {
                             "awslogs-group": logName,
                             "awslogs-region": "eu-west-1",
                             "awslogs-stream-prefix": "ecs"
@@ -97,17 +99,49 @@ const consumer = async (event, context) => {
         await logs.addToLog(modelAct.modelId, 'task definition added');
         await logs.addToLog(modelAct.modelId, JSON.stringify(task));
 
+        let taskName = task.taskDefinition.family + ":" + task.taskDefinition.revision;
+        var paramsSecurityGroup = {
+            Description: 'ml-kraken-sec',
+            GroupName: taskName + "-" + Math.random().toString(36).substring(7),
+            VpcId: process.env.VPC
+        };
+
+        const secGroup = await ec2.createSecurityGroup(paramsSecurityGroup).promise();
+
+        var paramsIngress = {
+            GroupId: secGroup.GroupId,
+            IpPermissions:[
+                {
+                    IpProtocol: "tcp",
+                    FromPort: 80,
+                    ToPort: 80,
+                    IpRanges: [{"CidrIp":"0.0.0.0/0"}]
+                },
+            ]
+        };
+
+        await ec2.authorizeSecurityGroupIngress(paramsIngress).promise();
+
+        await logs.addToLog(modelAct.modelId, 'sec group was added');
+        await logs.addToLog(modelAct.modelId, JSON.stringify(secGroup));
+
         let taskParams = {
             cluster: process.env.ECS_CLUSTER,
-            taskDefinition: task.taskDefinition.family + ":" + task.taskDefinition.revision,
+            taskDefinition: taskName,
             launchType: "FARGATE",
             networkConfiguration: {
                 awsvpcConfiguration: {
                     subnets: [process.env.PublicSubnet],
                     assignPublicIp: "ENABLED",
+                    securityGroups: [
+                        secGroup.GroupId
+                    ],
                 }
             }
         };
+
+
+
 
         const taskRun = await ecs.runTask(taskParams).promise();
         console.log(taskRun);

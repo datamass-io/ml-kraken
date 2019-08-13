@@ -79,9 +79,11 @@ provider:
     TaskExecutionRoleArn:
       Ref: ECSTaskExecutionRole
     PublicSubnet:
-      Ref: PublicSubnetOne
+      Ref: PublicSubnetTwo
     ECS_CLUSTER:
       Ref: ECSCluster
+    VPC:
+      Ref: VPC
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -130,9 +132,19 @@ provider:
         - logs:DescribeLogGroups
       Resource:
         - "*"
+    - Effect: Allow
+      Action:
+        - ec2:AuthorizeSecurityGroupEgress
+        - ec2:AuthorizeSecurityGroupIngress
+        - ec2:CreateSecurityGroup
+      Resource:
+        - "*"
 
 
 functions:
+
+  ecs-cloudwatch:
+    handler:
 
   task-definition:
     handler: model-action/taskDefinition.taskDefinition
