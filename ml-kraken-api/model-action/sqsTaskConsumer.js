@@ -6,6 +6,7 @@ var MlModel = require('../models/ml-model');
 const logs = require('../dynamo-utils/addToLog');
 const modelMeta = require('../dynamo-utils/getModelMeta');
 const taskInfo = require('../dynamo-utils/addTaskInfo');
+const lastTask = require('../dynamo-utils/getLastTaskByModelId');
 const taskInfoModel = require('../models/task-info');
 
 const consumer = async (event, context) => {
@@ -164,9 +165,31 @@ const consumer = async (event, context) => {
         //let taskName = task.taskDefinition.family + ":" + task.taskDefinition.revision;
     }
 
+    if(modelAct.action === 'stop') {
+
+        await logs.addToLog(modelAct.modelId, 'processing SQS message');
+        const modelMetaOut = await modelMeta.getModelMeta(modelAct.modelId);
+        console.log(modelMetaOut);
+        if (typeof modelMetaOut === 'undefined') {
+            return {message: 'Missing modelId!'};
+        }
+        const modelMetaInfo = new MlModel(modelMetaOut);
+
+        const taskId = await lastTask.getTaskId(modelMetaInfo.id);
+        console.log(taskId);
+
+        var stopTaskParams = {
+            task: taskId,
+            cluster: process.env.ECS_CLUSTER
+        };
+
+        await ecs.stopTask(stopTaskParams).promise();
+    }
 
 
-};
+
+
+    };
 
 
 module.exports = {consumer}

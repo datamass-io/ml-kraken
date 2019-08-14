@@ -119,6 +119,7 @@ provider:
         - ecs:RegisterTaskDefinition
         - ecs:DeregisterTaskDefinition
         - ecs:RunTask
+        - ecs:StopTask
       Resource:
         - "*"
     - Effect: Allow
