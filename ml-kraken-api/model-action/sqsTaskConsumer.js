@@ -164,9 +164,22 @@ const consumer = async (event, context) => {
         //let taskName = task.taskDefinition.family + ":" + task.taskDefinition.revision;
     }
 
+    if(modelAct.action === 'stop') {
+
+        await logs.addToLog(modelAct.modelId, 'processing SQS message');
+        const modelMetaOut = await modelMeta.getModelMeta(modelAct.modelId);
+        console.log(modelMetaOut);
+        if (typeof modelMetaOut === 'undefined') {
+            return {message: 'Missing modelId!'};
+        }
+        const modelMetaInfo = new MlModel(modelMetaOut);
+        
+    }
 
 
-};
+
+
+    };
 
 
 module.exports = {consumer}
