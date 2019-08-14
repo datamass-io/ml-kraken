@@ -137,6 +137,7 @@ provider:
         - ec2:AuthorizeSecurityGroupEgress
         - ec2:AuthorizeSecurityGroupIngress
         - ec2:CreateSecurityGroup
+        - ec2:DescribeNetworkInterfaces
       Resource:
         - "*"
 
@@ -144,7 +145,15 @@ provider:
 functions:
 
   ecs-cloudwatch:
-    handler:
+    handler: model-action/ecsWatchMonitor.ecsCloudWatch
+    events:
+      - cloudwatchEvent:
+          event:
+            source:
+              - 'aws.ecs'
+            detail-type:
+              - "ECS Task State Change"
+              - "ECS Container Instance State Change"
 
   task-definition:
     handler: model-action/taskDefinition.taskDefinition
