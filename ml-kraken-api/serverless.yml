@@ -156,20 +156,11 @@ functions:
               - "ECS Task State Change"
               - "ECS Container Instance State Change"
 
-  task-definition:
-    handler: model-action/taskDefinition.taskDefinition
-    events:
-      - http:
-          path: api/v1/model-action/task-def
-          method: post
-          integration: lambda
-          cors: true
-
-#  task-run:
+#  task-definition:
 #    handler: model-action/taskDefinition.taskDefinition
 #    events:
 #      - http:
-#          path: api/v1/model-docker/run
+#          path: api/v1/model-action/task-def
 #          method: post
 #          integration: lambda
 #          cors: true
@@ -182,11 +173,11 @@ functions:
           arn:
             Fn::GetAtt: [ActionQueue, Arn]
 
-  model-status-list:
-    handler: model-status/listStatuses.listStatuses
+  model-logs-list:
+    handler: model-logs/listLogs.listLogs
     events:
       - http:
-          path: api/v1/model-status/{id}
+          path: api/v1/model-logs/{id}
           method: get
           integration: lambda
           cors: true
@@ -369,20 +360,20 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.DYNAMODB_MMETA}
-    ModelStatusTbl:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.DYNAMODB_MSTATUS}
+#    ModelStatusTbl:
+#      Type: 'AWS::DynamoDB::Table'
+#      DeletionPolicy: Retain
+#      Properties:
+#        AttributeDefinitions:
+#          - AttributeName: id
+#            AttributeType: S
+#        KeySchema:
+#          - AttributeName: id
+#            KeyType: HASH
+#        ProvisionedThroughput:
+#          ReadCapacityUnits: 1
+#          WriteCapacityUnits: 1
+#        TableName: ${self:provider.environment.DYNAMODB_MSTATUS}
     ModelTaskTbl:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
@@ -565,95 +556,4 @@ resources:
                     - 'logs:PutLogEvents'
                   Resource: '*'
 
-    # The task definition. This is a simple metadata description of what
-    # container to run, and what resource requirements it has.
-#    FargateTaskDefinition:
-#      Type: AWS::ECS::TaskDefinition
-#      Properties:
-#        Family: !Ref 'ServiceName'
-#        Cpu: !Ref 'ContainerCpu'
-#        Memory: !Ref 'ContainerMemory'
-#        NetworkMode: awsvpc
-#        RequiresCompatibilities:
-#          - FARGATE
-#        ExecutionRoleArn: !Ref ECSTaskExecutionRole
-#        TaskRoleArn:
-#          Fn::If:
-#            - 'HasCustomRole'
-#            - !Ref 'Role'
-#            - !Ref "AWS::NoValue"
-#        ContainerDefinitions:
-#          - Name: !Ref 'ServiceName'
-#            Cpu: !Ref 'ContainerCpu'
-#            Memory: !Ref 'ContainerMemory'
-#            Image: '#{AWS::AccountId}.dkr.ecr.#{AWS::Region}.amazonaws.com/#{ImageUrl}'
-#            PortMappings:
-#              - ContainerPort: !Ref 'ContainerPort'
-#            LogConfiguration:
-#              LogDriver: awslogs
-#              Options:
-#                awslogs-group: /ecs/first-run-task-definition
-#                awslogs-region: '#{AWS::Region}'
-#                awslogs-stream-prefix: ecs
-
-    # The service. The service is a resource which allows you to run multiple
-    # copies of a type of task, and gather up their logs and metrics, as well
-    # as monitor the number of running tasks and replace any that have crashed
-#    Service:
-#      Type: AWS::ECS::Service
-#      Properties:
-#        ServiceName: !Ref 'ServiceName'
-#        Cluster: !Ref 'ECSCluster'
-#        LaunchType: FARGATE
-#        DeploymentConfiguration:
-#          MaximumPercent: 200
-#          MinimumHealthyPercent: 75
-#        DesiredCount: !Ref 'DesiredCount'
-#        NetworkConfiguration:
-#          AwsvpcConfiguration:
-#            AssignPublicIp: ENABLED
-#            SecurityGroups:
-#              - !Ref FargateContainerSecurityGroup
-#            Subnets:
-#              - !Ref PublicSubnetOne
-#              - !Ref PublicSubnetTwo
-#        TaskDefinition: !Ref 'FargateTaskDefinition'
-#
-#    ECSPassRole:
-#      Type: AWS::IAM::Role
-#      Properties:
-#        AssumeRolePolicyDocument:
-#          Statement:
-#            - Effect: Allow
-#              Principal:
-#                Service: ['states.#{AWS::Region}.amazonaws.com']
-#              Action: ['sts:AssumeRole']
-#        Path: /
-#        Policies:
-#          - PolicyName: AmazonECSPassRolePolicy
-#            PolicyDocument:
-#              Statement:
-#                - Effect: Allow
-#                  Action:
-#                    - 'iam:PassRole'
-#                  Resource: '*'
-#                - Effect: Allow
-#                  Action:
-#                    - 'lambda:InvokeFunction'
-#                  Resource:
-#                    - 'arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:#{AWS::StackName}-branch'
-#                    - 'arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:#{AWS::StackName}-map'
-#                    - 'arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:#{AWS::StackName}-reduce'
-#                - Effect: Allow
-#                  Action:
-#                    - 'ecs:RunTask'
-#                    - 'ecs:StopTask'
-#                    - 'ecs:DescribeTasks'
-#                  Resource: '*'
-#                - Effect: Allow
-#                  Action:
-#                    - 'events:PutTargets'
-#                    - 'events:PutRule'
-#                    - 'events:DescribeRule'
-#                  Resource: 'arn:aws:events:#{AWS::Region}:#{AWS::AccountId}:rule/StepFunctionsGetEventsForECSTaskRule'
 
