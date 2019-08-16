@@ -1,44 +1,181 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { TableConfig } from '../../shared/crud-table/table-config.model';
-import { Table } from 'primeng/table';
+import { DataService } from 'src/app/shared/data-service.service';
+import { CrudTableComponent } from 'src/app/shared/crud-table/crud-table.component';
+import { FormConfig } from 'src/app/shared/form-dialog/form-config.model';
+import { ModelStatusComponent } from '../model-status/model-status.component';
 
 @Component({
-    selector: 'app-models-list',
-    templateUrl: './models-list.component.html',
-    styles: ['./models-list.component.css']
+  selector: 'app-models-list',
+  templateUrl: './models-list.component.html',
+  styleUrls: ['./models-list.component.css']
 })
-export class ModelsListComponent implements OnInit {
+export class ModelsListComponent implements OnInit, AfterViewInit {
+  constructor(private dataService: DataService) {}
 
-    @ViewChild('table', {static: false}) table;
-    config: TableConfig;
+  @ViewChild('table', { static: false }) table: CrudTableComponent;
 
-    ngOnInit() {
-        this.createTableConfig();
-        console.log(this.table);
-    }
+  tableConfig: TableConfig = {} as any;
+  dialogConfig: FormConfig;
+  runDialogConfig: FormConfig;
 
-    createTableConfig() {
+  ngOnInit() {
+    this.createDialogConfig();
+    this.createRunDialogConfig();
+    this.createTableConfig();
+  }
 
-        this.config = {
-            header: 'Modele',
-            cols: [
-                {field: 'name', header: 'Nazwa', withFilter: false},
-                {field: 'ver', header: 'Wersja'},
-                {field: 'uri', header: 'URI'},
-                {field: 'user', header: 'Dodał'},
-                {field: 'createdAt', header: 'Data utworzenia'},
-                {field: 'updatedAt', header: 'Data aktualizacji'}
-            ],
-            buttons: [],
-            withAdd: true,
-            withEdit: false,
-            withDelete: true,
-            withExport: false,
-            paging: true,
-            globalFilter: false,
-            emptyMessage: 'Brak modeli',
-            subscriber: null,
-            globalFF: []
-        };
-    }
+  ngAfterViewInit() {
+  }
+
+  createTableConfig() {
+    this.tableConfig = {
+      header: 'Models',
+      cols: [
+        {
+          field: 'name',
+          header: 'Name',
+          type: 'string',
+          withFilter: false,
+          sortable: true,
+          hidden: false,
+          icon: undefined,
+          button: undefined
+        },
+        {
+          field: 'ver',
+          header: 'Version',
+          type: 'string',
+          withFilter: false,
+          sortable: true,
+          hidden: false,
+          icon: undefined,
+          button: undefined
+        },
+        {
+          field: 'user',
+          header: 'Created by',
+          type: 'string',
+          withFilter: false,
+          sortable: true,
+          hidden: false,
+          icon: undefined,
+          button: undefined
+        },
+        {
+          field: 'createdAt',
+          header: 'Date of creation',
+          type: 'unix',
+          withFilter: false,
+          sortable: true,
+          hidden: false,
+          icon: undefined,
+          button: undefined
+        },
+        {
+          field: 'updatedAt',
+          header: 'Date of update',
+          type: 'unix',
+          withFilter: false,
+          sortable: true,
+          hidden: false,
+          icon: undefined,
+          button: undefined
+        },
+        {
+          field: '',
+          header: 'Status',
+          type: 'status',
+          withFilter: false,
+          sortable: false,
+          hidden: false,
+          icon: {
+            class: 'fas fa-circle',
+            style: undefined,
+            withText: true,
+            clickable: false,
+          },
+          button: undefined
+        },
+        {
+          field: '',
+          header: '',
+          type: 'run',
+          withFilter: false,
+          sortable: false,
+          hidden: false,
+          icon: undefined,
+          button: undefined
+        },
+        {
+          field: '',
+          header: '',
+          type: 'dynamic-button',
+          withFilter: false,
+          sortable: false,
+          hidden: false,
+          icon: undefined,
+          button: {
+            class: 'fas fa-search',
+            component: ModelStatusComponent,
+            dialogHeader: 'Model statuses'
+          }
+        }
+      ],
+      buttons: [],
+      errors: {
+        load: ''
+      },
+      formDialogConfig: this.dialogConfig,
+      runDialogConfig: this.runDialogConfig,
+      withAdd: true,
+      withEdit: true,
+      withColumnSelect: true,
+      withRefresh: true,
+      withGlobalFilter: true,
+      paging: true,
+      emptyMessage: 'No models',
+      getURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
+      statusGetURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-status',
+      runPostURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-action',
+      globalFF: ['name', 'ver', 'uri', 'user'],
+      sortField: undefined
+    };
+  }
+
+  createDialogConfig() {
+    this.dialogConfig = {
+      header: 'model',
+      fields: [
+        { label: 'Name', type: 'text', endpoint: 'name' },
+        { label: 'Version', type: 'text', endpoint: 'ver' },
+        { label: 'User', type: 'text', endpoint: 'user' },
+        { label: 'Docker image', type: 'text', endpoint: 'dockerImage' },
+        { label: 'Container memory (GB)', type: 'spinner', endpoint: 'containerMemory', minValue: 1, maxValue: 3, stepValue: 0.1},
+        { label: 'Container CPU (vCPU)', type: 'spinner', endpoint: 'containerCpu', minValue: 1, maxValue: 4, stepValue: 0.1},
+        { label: 'Container Port', type: 'text', endpoint: 'containerPort'}
+      ],
+      width: '400px',
+      height: '200px',
+      operation: '',
+      postURL:
+        'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
+      withDelete: true
+    };
+  }
+
+  createRunDialogConfig() {
+    this.runDialogConfig = {
+      header: 'Set container IP address',
+      fields: [
+        {label: 'Container IP address', type: 'text', endpoint: 'containerIP'}
+      ],
+      width: '400px',
+      height: '100px',
+      operation: 'run',
+      postURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
+      runPostURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-action',
+      withDelete: false
+    };
+  }
 }

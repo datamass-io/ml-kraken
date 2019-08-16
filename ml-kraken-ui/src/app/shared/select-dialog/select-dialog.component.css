@@ -1,0 +1,5 @@
+span:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    color: #0000EE;
+}

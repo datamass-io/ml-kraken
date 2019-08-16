@@ -6,6 +6,18 @@ import { BrowserModule } from '@angular/platform-browser';
 import { SliderModule } from 'primeng/slider';
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { FormDialogComponent } from './form-dialog/form-dialog.component';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { RouterModule } from '@angular/router';
+import { ConfirmationService, DialogService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DynamicDialogModule } from 'primeng/components/dynamicdialog/dynamicdialog';
+import { ToastModule } from 'primeng/toast';
+import { ModelStatusComponent } from '../models/model-status/model-status.component';
+import { SpinnerModule } from 'primeng/spinner';
+import { SelectDialogComponent } from './select-dialog/select-dialog.component';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @NgModule({
     imports: [
@@ -14,13 +26,26 @@ import { MultiSelectModule } from 'primeng/multiselect';
         BrowserModule,
         SliderModule,
         DropdownModule,
-        MultiSelectModule
+        MultiSelectModule,
+        DialogModule,
+        InputTextModule,
+        RouterModule,
+        ConfirmDialogModule,
+        DynamicDialogModule,
+        ToastModule,
+        SpinnerModule,
+        CheckboxModule
     ],
     declarations: [
-        CrudTableComponent
+        CrudTableComponent,
+        FormDialogComponent,
+        SelectDialogComponent
     ],
-    exports: [CrudTableComponent],
-    providers: []
+    entryComponents: [
+        ModelStatusComponent
+    ],
+    exports: [CrudTableComponent, FormDialogComponent, SelectDialogComponent],
+    providers: [ConfirmationService, DialogService, MessageService]
 })
 export class UniversalComponentsModule {
 }

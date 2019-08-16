@@ -3,29 +3,25 @@ import { MainLayoutComponent } from 'src/app/layout/main-layout/main-layout.comp
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ModelsListComponent } from '../models-list/models-list.component';
+import { AuthGuard } from 'src/app/auth/auth.guard';
 
 const routes: Routes = [
-    {
-        path: 'models', component: MainLayoutComponent,
-        children: [
-            {
-                path: 'list',
-                component: ModelsListComponent
-            }
-        ]
-    }
+  {
+    path: 'models',
+    canActivate: [AuthGuard],
+    component: MainLayoutComponent,
+    children: [
+      {
+        path: 'list',
+        component: ModelsListComponent
+      }
+    ]
+  }
 ];
 
 @NgModule({
-    imports: [
-        CommonModule,
-        RouterModule.forRoot(routes)
-    ],
-    exports: [
-        RouterModule
-    ],
-    declarations: []
+  imports: [CommonModule, RouterModule.forRoot(routes)],
+  exports: [RouterModule],
+  declarations: []
 })
-export class ModelsRoutingModule {
-
-}
+export class ModelsRoutingModule {}

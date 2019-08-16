@@ -1,18 +1,13 @@
 import { NgModule } from '@angular/core';
 import { ModelsRoutingModule } from './routing/routing.module';
-import { TableModule } from 'primeng/table';
 import { ModelsListComponent } from './models-list/models-list.component';
 import { UniversalComponentsModule } from '../shared/universal-components.module';
+import { ModelStatusComponent } from './model-status/model-status.component';
 
 @NgModule({
-    imports: [
-        UniversalComponentsModule
-    ],
-    declarations: [
-        ModelsListComponent
-    ],
-    exports: [ModelsRoutingModule],
-    providers: []
+  imports: [UniversalComponentsModule],
+  declarations: [ModelsListComponent, ModelStatusComponent],
+  exports: [ModelsRoutingModule],
+  providers: []
 })
-export class ModelsModule {
-}
+export class ModelsModule {}

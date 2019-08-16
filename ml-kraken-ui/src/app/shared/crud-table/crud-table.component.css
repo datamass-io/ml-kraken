@@ -1,0 +1,18 @@
+div.caption {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.center {
+  margin-right: auto
+}
+
+.editButton {
+  margin-left: 5px;
+}
+
+.settingButton {
+  margin-right: 5px;
+}

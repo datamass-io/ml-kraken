@@ -1,44 +1,43 @@
 <div class="wrapper">
-        <!-- Sidebar  -->
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <h3>{{ title }}</h3>
-                <strong>{{ abbreviation }}</strong>
-            </div>
-    
-            <ul class="list-unstyled components">
-                <li class="active">
-                    <a href="#">
-                        <i class="pi pi-sign-in"></i>
-                        Sign in
-                    </a>
-                </li>
-                <hr>
-                <li class="active">
-                    <a href="#">
-                        <i class="pi pi-home"></i>
-                        Home
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    
-        <!-- Page Content  -->
-        <div id="content">
-    
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <div class="container-fluid">
-    
-                    <button type="button" id="sidebarCollapse" class="btn btn-info">
-                        <i class="fas fa-align-left"></i>
-                        <span>Toggle Sidebar</span>
-                    </button>
-                    <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <i class="fas fa-align-justify"></i>
-                    </button>
-                </div>
-            </nav>
-            <router-outlet></router-outlet>
-        </div>
+  <!-- Sidebar  -->
+  <nav id="sidebar" class="active">
+    <div class="sidebar-header" style="text-align: center">
+      <img class="logo" width="90px" src="../../../assets/images/image_wbg.png">
+      <div>
+        <!--<button
+        type="button"
+        id="sidebarCollapse"
+        class="btn btn-info"
+        (click)="active = !active"
+      >
+        <i class="fas fa-align-left"></i>
+      </button>-->
+      </div>
+
     </div>
-    
+
+    <ul class="list-unstyled components">
+      <li class="active">
+        <a [routerLink]="['/login']">
+          <i class="fas fa-sign-out-alt"></i>
+          Sign out
+        </a>
+      </li>
+      <hr />
+      <li class="active">
+        <a href="#">
+          <i class="fas fa-home"></i>
+          Home
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Page Content  -->
+  <div id="content">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid"></div>
+    </nav>
+    <router-outlet></router-outlet>
+  </div>
+</div>
