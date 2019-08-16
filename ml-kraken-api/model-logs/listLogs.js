@@ -2,10 +2,10 @@ const dynamodb = require('../dynamo-utils/dynamodb');
 const middy = require('middy/index');
 const { cors } = require('middy/middlewares');
 
-const listStatus = async (event, context) => {
+const listAllLogs = async (event, context) => {
 
     const params = {
-        TableName: process.env.DYNAMODB_MSTATUS,
+        TableName: process.env.DYNAMODB_MLOG,
         ExpressionAttributeValues: {
             ':modelId': event.path.id,
         },
@@ -22,5 +22,5 @@ const listStatus = async (event, context) => {
 }
 
 // Adds CORS headers to responses
-const listStatuses = middy(listStatus).use(cors())
-module.exports = {listStatuses}
+const listLogs = middy(listAllLogs).use(cors())
+module.exports = {listLogs}

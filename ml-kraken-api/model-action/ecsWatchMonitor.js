@@ -5,7 +5,7 @@ const modelStatusEnum = require('../models/model-status');
 const modelIp = require('../dynamo-utils/updateModelIp');
 
 const ecsCloudWatch = async (event, context) => {
-    console.log(event);
+
     if(event.detail.desiredStatus === "RUNNING" && event.detail.lastStatus === "RUNNING"){
         console.log(event);
         let taskId = event.resources[0].split('/')[1];
@@ -35,8 +35,17 @@ const ecsCloudWatch = async (event, context) => {
         let interfaceInfo =await ec2.describeNetworkInterfaces(networkParams).promise();
         let publicIp = interfaceInfo.NetworkInterfaces[0].Association.PublicIp;
         await modelIp.updateIp(modelId, publicIp);
-
     }
+
+    if(event.detail.desiredStatus === "STOPPED" && event.detail.lastStatus === "STOPPED"){
+        let taskId = event.resources[0].split('/')[1];
+        console.log(taskId);
+        const modelId = await modelTask.getModelId(taskId);
+        console.log(modelId);
+        await modelStatus.updateStatus(modelId, modelStatusEnum.STOPPED);
+        await modelIp.updateIp(modelId, '0.0.0.0');
+    }
+
 };
 
 
