@@ -89,18 +89,22 @@
               [ngStyle]="{
                 color:
                   col.type === 'run'
-                    ? rowData['status'] === 'scheduled to run'
+                    ? rowData['status'] === 'RUNNING'
                       ? 'red'
-                      : 'green'
+                      : rowData['status'] === 'STOPPED'
+                      ? 'green'
+                      : 'gray'
                     : col.icon.style !== undefined
                     ? col.icon.style.color
-                    : rowData['status'] === 'scheduled to run'
+                    : rowData['status'] === 'STOPPED'
+                    ? 'red'
+                    : rowData['status'] === 'PENDING'
                     ? 'yellow'
-                    : 'red'
+                    : 'green'
               }"
               [ngClass]="
                 col.type === 'run'
-                  ? rowData['status'] === 'scheduled to run'
+                  ? rowData['status'] === 'RUNNING'
                     ? 'fas fa-stop'
                     : 'fas fa-play'
                   : col.icon !== undefined
@@ -118,15 +122,22 @@
             [ngClass]="col.button.class"
             (click)="showDynamicDialog(rowData.id, col.button)"
           ></button>
+          <button
+            *ngIf="col.type === 'view-button'"
+            [ngClass]="col.button.class"
+            (click)="col.button.callback(rowData)"
+          ></button>
           {{
             col.icon !== undefined
               ? col.icon.class !== "" && col.icon.withText === false
                 ? ""
                 : col.icon.class !== "" && col.icon.withText
                 ? "- " +
-                  (rowData["status"] === "scheduled to run"
+                  (rowData["status"] === "STOPPED"
+                    ? "stopped"
+                    : rowData["status"] === "PENDING"
                     ? "pending"
-                    : "stopped")
+                    : "running")
                 : ""
               : preprocessColumnField(rowData[col.field], i)
           }}
@@ -148,12 +159,6 @@
   [config]="config.formDialogConfig"
   (entryAdded)="loadData()"
   *ngIf="config.formDialogConfig !== undefined"
-></app-form-dialog>
-
-<app-form-dialog
-  #rd
-  [config]="config.runDialogConfig"
-  *ngIf="config.runDialogConfig !== undefined"
 ></app-form-dialog>
 
 <app-select-dialog

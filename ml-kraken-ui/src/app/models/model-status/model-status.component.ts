@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/api';
 import { TableConfig } from 'src/app/shared/crud-table/table-config.model';
+import { environment } from 'src/environments/environment';
+import { DetailsConfig } from 'src/app/shared/details-dialog/details-config.model';
+import { DetailsDialogComponent } from 'src/app/shared/details-dialog/details-dialog.component';
 
 @Component({
   templateUrl: './model-status.component.html',
@@ -8,6 +11,9 @@ import { TableConfig } from 'src/app/shared/crud-table/table-config.model';
 })
 export class ModelStatusComponent implements OnInit {
   tableConfig: TableConfig;
+  dialogConfig: DetailsConfig;
+
+  @ViewChild('dialog', {static: false}) dialog: DetailsDialogComponent;
 
   constructor(
     public ref: DynamicDialogRef,
@@ -16,33 +22,44 @@ export class ModelStatusComponent implements OnInit {
 
   ngOnInit() {
     this.createTableConfig();
+    this.createDialogConfig();
   }
 
   createTableConfig() {
     const id = this.config.data.id;
 
     this.tableConfig = {
-      header: 'Statuses',
+      header: 'Logs',
       cols: [
         {
-          field: 'action',
-          header: 'Action',
+          field: 'log',
+          header: 'Log',
           type: 'string',
           withFilter: false,
           sortable: true,
           hidden: false,
-          icon: undefined,
-          button: undefined
         },
         {
-          field: 'updatedAt',
-          header: 'Date of action',
+          field: 'createdAt',
+          header: 'Date of log',
           type: 'unix',
           withFilter: false,
           sortable: true,
           hidden: false,
-          icon: undefined,
-          button: undefined
+        },
+        {
+          field: '',
+          header: '',
+          type: 'view-button',
+          withFilter: false,
+          sortable: false,
+          hidden: false,
+          button: {
+            class: 'fas fa-search',
+            callback: (value?) => {
+              this.dialog.showDialog(value.log);
+            }
+          }
         }
       ],
       buttons: [],
@@ -50,23 +67,30 @@ export class ModelStatusComponent implements OnInit {
         load: ''
       },
       formDialogConfig: undefined,
-      runDialogConfig: undefined,
       withAdd: false,
       withEdit: false,
       withColumnSelect: false,
       withRefresh: false,
       withGlobalFilter: true,
       paging: true,
-      emptyMessage: 'No statuses',
+      emptyMessage: 'No logs',
       getURL:
         id !== undefined && id !== null
-          ? 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-status/' +
+          ? environment.endpointsUrl + 'model-logs/' +
             id
           : '',
       statusGetURL: undefined,
       runPostURL: undefined,
-      globalFF: ['action'],
-      sortField: 'updatedAt'
+      globalFF: ['log'],
+      sortField: 'createdAt'
+    };
+  }
+
+  createDialogConfig() {
+    this.dialogConfig = {
+      header: 'Log details',
+      width: '400px',
+      height: '300px'
     };
   }
 }

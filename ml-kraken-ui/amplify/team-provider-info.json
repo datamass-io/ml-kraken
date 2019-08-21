@@ -1,0 +1,19 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "ml-kraken-ui-dev-20190812135749-authRole",
+            "UnauthRoleArn": "arn:aws:iam::655908530487:role/ml-kraken-ui-dev-20190812135749-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::655908530487:role/ml-kraken-ui-dev-20190812135749-authRole",
+            "Region": "us-east-2",
+            "DeploymentBucketName": "ml-kraken-ui-dev-20190812135749-deployment",
+            "UnauthRoleName": "ml-kraken-ui-dev-20190812135749-unauthRole",
+            "StackName": "ml-kraken-ui-dev-20190812135749",
+            "StackId": "arn:aws:cloudformation:us-east-2:655908530487:stack/ml-kraken-ui-dev-20190812135749/689d95a0-bcf8-11e9-a581-0626229bfdda"
+        },
+        "categories": {
+            "auth": {
+                "mlkrakenui4cfe68af": {}
+            }
+        }
+    }
+}

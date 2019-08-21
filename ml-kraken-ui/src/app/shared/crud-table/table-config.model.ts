@@ -10,16 +10,17 @@ export interface TableConfig {
     withFilter: boolean;
     sortable: boolean;
     hidden: boolean;
-    icon: {
+    icon?: {
       class: string;
       style: { color: string };
       withText: boolean;
       clickable: boolean;
     };
-    button: {
+    button?: {
       class: string;
-      component: Type<any>;
-      dialogHeader: string;
+      component?: Type<any>;
+      dialogHeader?: string;
+      callback?: () => void;
     }
   }[];
   buttons:
@@ -31,7 +32,6 @@ export interface TableConfig {
       disabled: boolean;
     }[];
   formDialogConfig: FormConfig;
-  runDialogConfig: FormConfig;
   withAdd: boolean;
   withEdit: boolean;
   withColumnSelect: boolean;

@@ -14,7 +14,6 @@ import { SelectConfig } from '../select-dialog/select-config.model';
 export class CrudTableComponent implements OnInit {
   @ViewChild('dt', { static: false }) table;
   @ViewChild('fd', { static: false }) dialog: FormDialogComponent;
-  @ViewChild('rd', { static: false }) runDialog: FormDialogComponent;
   @ViewChild('csd', { static: false }) columnSelectDialog: SelectDialogComponent;
 
   data: any;
@@ -69,17 +68,18 @@ export class CrudTableComponent implements OnInit {
   }
 
   loadData() {
-    console.log('load data');
     this.editButton.disabled = true;
     this.dataService.get(this.config.getURL)
       .subscribe(items => {
         this.data = JSON.parse(items.body);
+        console.log(this.data);
         this.data = [...this.data];
+        console.log(this.data);
         if (this.config.sortField !== undefined) {
           (this.data as Array<any>).sort((a, b) => (a[this.config.sortField] > b[this.config.sortField]) ? -1 : 1);
         }
         if (this.config.statusGetURL !== undefined) {
-          this.getStatusForData();
+           // this.getStatusForData();
         }
         this.table.reset();
       });
@@ -105,7 +105,7 @@ export class CrudTableComponent implements OnInit {
       const date = new Date(data);
 
       const year = date.getFullYear();
-      const month = '0' + date.getMonth();
+      const month = '0' + (date.getMonth() + 1);
       const day = '0' + date.getDate();
 
       const hours = date.getHours();
@@ -128,6 +128,12 @@ export class CrudTableComponent implements OnInit {
     } else if (this.config.cols[columnIndex].type === 'status' || this.config.cols[columnIndex].type === 'button') {
       return '';
     } else {
+      if (typeof(data) === 'string') {
+        if (data.length >= 100) {
+          data = data.substr(0, 100);
+          data += ' ...';
+        }
+      }
       return data;
     }
   }
@@ -143,13 +149,16 @@ export class CrudTableComponent implements OnInit {
 
   onIconPressed(columnType, data) {
     if (columnType === 'run') {
-      if (data.status === 'scheduled to run') {
+      if (data.status === 'RUNNING') {
         this.dataService.post(this.config.runPostURL, {modelId: data.id, action: 'stop'})
-        .subscribe(resp => {
-          this.loadData();
-        });
-      } else {
-        this.runDialog.showDialog(data);
+                        .subscribe(resp => {
+                          this.loadData();
+                        });
+      } else if (data.status === 'STOPPED') {
+        this.dataService.post(this.config.runPostURL, {modelId: data.id, action: 'run'})
+                        .subscribe(resp => {
+                          this.loadData();
+                        });
       }
     }
   }

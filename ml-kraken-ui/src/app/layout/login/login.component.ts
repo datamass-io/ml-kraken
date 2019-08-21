@@ -1,15 +1,38 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { AuthService } from 'src/app/auth/auth.service';
+
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
-  constructor(private router: Router, private route: ActivatedRoute) {}
+export class LoginComponent implements OnInit {
+  credentials = {
+    username: '',
+    password: ''
+  };
+
+  constructor(private router: Router, private route: ActivatedRoute, private authService: AuthService) {}
+
+  ngOnInit() {
+    this.authService.isLoggedIn$.subscribe(
+      isLoggedIn => {
+        if (isLoggedIn) {
+          this.router.navigate(['/models/list'], { relativeTo: this.route });
+        }
+      }
+    );
+  }
 
   onLogin() {
-    this.router.navigate(['/models/list'], { relativeTo: this.route });
+    this.authService.signIn(this.credentials.username, this.credentials.password)
+                    .then(res => console.log(res))
+                    .catch(err => {
+                      this.credentials.username = '';
+                      this.credentials.password = '';
+                      console.log(err);
+                    });
   }
 }
