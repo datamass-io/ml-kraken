@@ -1,0 +1,59 @@
+{
+    "identityPoolName": "mlkrakenui4cfe68af_identitypool_4cfe68af",
+    "allowUnauthenticatedIdentities": false,
+    "openIdLambdaRoleName": "mlkrak4cfe68af_openid_lambda_role",
+    "resourceNameTruncated": "mlkrak4cfe68af",
+    "userPoolName": "mlkrakenui4cfe68af_userpool_4cfe68af",
+    "autoVerifiedAttributes": [
+        "email"
+    ],
+    "mfaConfiguration": "OFF",
+    "mfaTypes": [
+        "SMS Text Message"
+    ],
+    "smsAuthenticationMessage": "Your authentication code is {####}",
+    "smsVerificationMessage": "Your verification code is {####}",
+    "emailVerificationSubject": "Your verification code",
+    "emailVerificationMessage": "Your verification code is {####}",
+    "defaultPasswordPolicy": false,
+    "passwordPolicyMinLength": 8,
+    "passwordPolicyCharacters": [],
+    "requiredAttributes": [
+        "email"
+    ],
+    "userpoolClientName": "mlkrak4cfe68af_app_client",
+    "userpoolClientGenerateSecret": true,
+    "userpoolClientRefreshTokenValidity": 30,
+    "userpoolClientWriteAttributes": [
+        "email"
+    ],
+    "userpoolClientReadAttributes": [
+        "email"
+    ],
+    "mfaLambdaRole": "mlkrak4cfe68af_totp_lambda_role",
+    "userpoolClientLambdaRole": "mlkrak4cfe68af_userpoolclient_lambda_role",
+    "userpoolClientSetAttributes": false,
+    "resourceName": "mlkrakenui4cfe68af",
+    "authSelections": "identityPoolAndUserPool",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    },
+    "unauthRoleArn": {
+        "Fn::GetAtt": [
+            "UnauthRole",
+            "Arn"
+        ]
+    },
+    "useDefault": "default",
+    "additionalQuestions": [],
+    "dependsOn": []
+}

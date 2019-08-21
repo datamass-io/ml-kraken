@@ -18,6 +18,8 @@ import { ModelStatusComponent } from '../models/model-status/model-status.compon
 import { SpinnerModule } from 'primeng/spinner';
 import { SelectDialogComponent } from './select-dialog/select-dialog.component';
 import { CheckboxModule } from 'primeng/checkbox';
+import { DetailsDialogComponent } from './details-dialog/details-dialog.component';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 
 @NgModule({
     imports: [
@@ -34,17 +36,19 @@ import { CheckboxModule } from 'primeng/checkbox';
         DynamicDialogModule,
         ToastModule,
         SpinnerModule,
-        CheckboxModule
+        CheckboxModule,
+        InputTextareaModule
     ],
     declarations: [
         CrudTableComponent,
         FormDialogComponent,
-        SelectDialogComponent
+        SelectDialogComponent,
+        DetailsDialogComponent
     ],
     entryComponents: [
         ModelStatusComponent
     ],
-    exports: [CrudTableComponent, FormDialogComponent, SelectDialogComponent],
+    exports: [CrudTableComponent, FormDialogComponent, SelectDialogComponent, DetailsDialogComponent],
     providers: [ConfirmationService, DialogService, MessageService]
 })
 export class UniversalComponentsModule {

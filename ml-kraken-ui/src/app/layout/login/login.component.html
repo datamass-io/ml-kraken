@@ -15,6 +15,7 @@
         class="fadeIn second"
         name="login"
         placeholder="login"
+        [(ngModel)]="credentials.username"
       />
       <input
         type="password"
@@ -22,6 +23,7 @@
         class="fadeIn third"
         name="login"
         placeholder="password"
+        [(ngModel)]="credentials.password"
       />
       <input
         type="button"

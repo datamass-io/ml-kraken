@@ -4,6 +4,7 @@ import { DataService } from 'src/app/shared/data-service.service';
 import { CrudTableComponent } from 'src/app/shared/crud-table/crud-table.component';
 import { FormConfig } from 'src/app/shared/form-dialog/form-config.model';
 import { ModelStatusComponent } from '../model-status/model-status.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-models-list',
@@ -17,11 +18,9 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
 
   tableConfig: TableConfig = {} as any;
   dialogConfig: FormConfig;
-  runDialogConfig: FormConfig;
 
   ngOnInit() {
     this.createDialogConfig();
-    this.createRunDialogConfig();
     this.createTableConfig();
   }
 
@@ -39,8 +38,6 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           withFilter: false,
           sortable: true,
           hidden: false,
-          icon: undefined,
-          button: undefined
         },
         {
           field: 'ver',
@@ -49,8 +46,46 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           withFilter: false,
           sortable: true,
           hidden: false,
-          icon: undefined,
-          button: undefined
+        },
+        {
+          field: 'containerCpu',
+          header: 'vCPU',
+          type: 'string',
+          withFilter: false,
+          sortable: true,
+          hidden: false,
+        },
+        {
+          field: 'containerIP',
+          header: 'IP address',
+          type: 'string',
+          withFilter: false,
+          sortable: true,
+          hidden: false,
+        },
+        {
+          field: 'containerMemory',
+          header: 'Memory [GB]',
+          type: 'string',
+          withFilter: false,
+          sortable: true,
+          hidden: false,
+        },
+        {
+          field: 'containerPort',
+          header: 'Port',
+          type: 'string',
+          withFilter: false,
+          sortable: true,
+          hidden: false,
+        },
+        {
+          field: 'dockerImage',
+          header: 'Docker image',
+          type: 'string',
+          withFilter: false,
+          sortable: true,
+          hidden: false,
         },
         {
           field: 'user',
@@ -59,8 +94,6 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           withFilter: false,
           sortable: true,
           hidden: false,
-          icon: undefined,
-          button: undefined
         },
         {
           field: 'createdAt',
@@ -69,8 +102,6 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           withFilter: false,
           sortable: true,
           hidden: false,
-          icon: undefined,
-          button: undefined
         },
         {
           field: 'updatedAt',
@@ -79,8 +110,6 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           withFilter: false,
           sortable: true,
           hidden: false,
-          icon: undefined,
-          button: undefined
         },
         {
           field: '',
@@ -95,7 +124,6 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
             withText: true,
             clickable: false,
           },
-          button: undefined
         },
         {
           field: '',
@@ -104,8 +132,6 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           withFilter: false,
           sortable: false,
           hidden: false,
-          icon: undefined,
-          button: undefined
         },
         {
           field: '',
@@ -114,11 +140,10 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           withFilter: false,
           sortable: false,
           hidden: false,
-          icon: undefined,
           button: {
             class: 'fas fa-search',
             component: ModelStatusComponent,
-            dialogHeader: 'Model statuses'
+            dialogHeader: 'Model logs'
           }
         }
       ],
@@ -127,7 +152,6 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
         load: ''
       },
       formDialogConfig: this.dialogConfig,
-      runDialogConfig: this.runDialogConfig,
       withAdd: true,
       withEdit: true,
       withColumnSelect: true,
@@ -135,9 +159,9 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
       withGlobalFilter: true,
       paging: true,
       emptyMessage: 'No models',
-      getURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
-      statusGetURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-status',
-      runPostURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-action',
+      getURL: environment.endpointsUrl + 'model-meta',
+      statusGetURL: environment.endpointsUrl + 'model-logs',
+      runPostURL: environment.endpointsUrl + 'model-action',
       globalFF: ['name', 'ver', 'uri', 'user'],
       sortField: undefined
     };
@@ -159,23 +183,8 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
       height: '200px',
       operation: '',
       postURL:
-        'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
+        environment.endpointsUrl + 'model-meta',
       withDelete: true
-    };
-  }
-
-  createRunDialogConfig() {
-    this.runDialogConfig = {
-      header: 'Set container IP address',
-      fields: [
-        {label: 'Container IP address', type: 'text', endpoint: 'containerIP'}
-      ],
-      width: '400px',
-      height: '100px',
-      operation: 'run',
-      postURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-meta',
-      runPostURL: 'https://0yctop0h6b.execute-api.eu-west-1.amazonaws.com/dev/api/v1/model-action',
-      withDelete: false
     };
   }
 }

@@ -1,0 +1,20 @@
+<p-dialog 
+    [header]="config.header"
+    [(visible)]="display"
+    [width]="config.width"
+    [style]="{ width: config.width, height: config.height }"
+    [draggable]="false"
+    appendTo="body">
+
+    <p-header></p-header>
+
+    <div class="row">
+        <div class="col-lg-12" style="text-align: center">
+            <textarea pInputTextearea [(ngModel)]="text" 
+            [rows]="10" 
+            [cols]="50"
+            disabled="true"></textarea>
+        </div>
+    </div>
+
+</p-dialog>

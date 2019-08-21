@@ -9,6 +9,8 @@ import { ModelsModule } from './models/models.module';
 import { UniversalComponentsModule } from './shared/universal-components.module';
 import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './layout/login/login.component';
+import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -22,9 +24,11 @@ import { LoginComponent } from './layout/login/login.component';
     AppRoutingModule,
     ModelsModule,
     UniversalComponentsModule,
-    HttpClientModule
+    HttpClientModule,
+    AmplifyAngularModule,
+    FormsModule
   ],
-  providers: [],
+  providers: [ AmplifyService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
