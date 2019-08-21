@@ -5,9 +5,10 @@ const dynamodb = require('../dynamo-utils/dynamodb');
 var MlModel = require('../models/ml-model');
 const middy = require('middy');
 const { cors } = require('middy/middlewares');
+const logs = require('../dynamo-utils/addToLog');
 
 //module.exports.create = (event, context, callback) => {
-const createModel = (event, context, callback) => {
+const createModel = async (event, context, callback) => {
     console.log(event.body);
     //const data = JSON.parse(event.body);
     const data = event.body;
@@ -29,32 +30,18 @@ const createModel = (event, context, callback) => {
     console.log(model);
 
     const params = {
-        TableName: process.env.DYNAMODB_TABLE,
+        TableName: process.env.DYNAMODB_MMETA,
         Item: model,
     };
 
-    // write the todo to the database
-    dynamodb.put(params, (error) => {
-        // handle potential errors
-        if (error) {
-            console.error(error);
-            callback(null, {
-                statusCode: error.statusCode || 501,
-                headers: {
-                    'Content-Type': 'text/plain'
-                },
-                body: 'Couldn\'t create the todo item.',
-            });
-            return;
-        }
+    await dynamodb.put(params).promise();
+    await logs.addToLog(params.Item.id, "Model created");
 
-        // create a response
-        const response = {
-            statusCode: 200,
-            body: JSON.stringify(params.Item),
-        };
-        callback(null, response);
-    });
+    return {
+        statusCode: 200,
+        body: JSON.stringify(params.Item),
+    };
+
 };
 
 // Adds CORS headers to responses

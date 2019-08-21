@@ -69,10 +69,21 @@ provider:
   runtime: nodejs10.x
   region: eu-west-1
   environment:
-    DYNAMODB_TABLE: ModelMetaDynamoDbTable
+    DYNAMODB_MMETA: ModelMetaTbl
     DYNAMODB_MSTATUS: ModelStatusTbl
+    DYNAMODB_MACTION: ModelActionTbl
+    DYNAMODB_MTASK: ModelTaskTbl
+    DYNAMODB_MLOG: ModelLogTbl
     SQS_URL:
       Ref: ActionQueue
+    TaskExecutionRoleArn:
+      Ref: ECSTaskExecutionRole
+    PublicSubnet:
+      Ref: PublicSubnetTwo
+    ECS_CLUSTER:
+      Ref: ECSCluster
+    VPC:
+      Ref: VPC
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -90,22 +101,83 @@ provider:
         - sqs:GetQueueUrl
         - sqs:ListQueues
       Resource: "arn:aws:sqs:eu-west-1:*:*"
+    - Effect: Allow
+      Action:
+        - ecs:CreateCluster
+        - ecs:ListServices
+        - ecs:ListContainerInstances
+        - ecs:ListTasks
+        - ecs:DescribeClusters
+        - ecs:DescribeServices
+        - ecs:DescribeTaskDefinition
+        - ecs:DescribeTasks
+        - ecs:DescribeContainerInstances
+        - ecs:CreateService
+        - ecs:DeleteService
+        - ecs:UpdateService
+        - ecs:StartTask
+        - ecs:RegisterTaskDefinition
+        - ecs:DeregisterTaskDefinition
+        - ecs:RunTask
+        - ecs:StopTask
+      Resource:
+        - "*"
+    - Effect: Allow
+      Action:
+        - iam:PassRole
+      Resource:
+        - "*"
+    - Effect: Allow
+      Action:
+        - logs:CreateLogGroup
+        - logs:DescribeLogGroups
+      Resource:
+        - "*"
+    - Effect: Allow
+      Action:
+        - ec2:AuthorizeSecurityGroupEgress
+        - ec2:AuthorizeSecurityGroupIngress
+        - ec2:CreateSecurityGroup
+        - ec2:DescribeNetworkInterfaces
+      Resource:
+        - "*"
 
 
 functions:
+
+  ecs-cloudwatch:
+    handler: model-action/ecsWatchMonitor.ecsCloudWatch
+    events:
+      - cloudwatchEvent:
+          event:
+            source:
+              - 'aws.ecs'
+            detail-type:
+              - "ECS Task State Change"
+              - "ECS Container Instance State Change"
+
+#  task-definition:
+#    handler: model-action/taskDefinition.taskDefinition
+#    events:
+#      - http:
+#          path: api/v1/model-action/task-def
+#          method: post
+#          integration: lambda
+#          cors: true
+
   sqs-consumer:
-    handler: model-action/sqsConsumer.consumer
+    handler: model-action/sqsTaskConsumer.consumer
     events:
       - sqs:
 #          arn: rn:aws:sqs:region:XXXXXX:default
           arn:
             Fn::GetAtt: [ActionQueue, Arn]
 
-  model-status-list:
-    handler: model-status/listStatuses.listStatuses
+  model-logs-list:
+    handler: model-logs/listLogs.listLogs
     events:
       - http:
-          path: api/v1/model-status/{id}
+          path: api/v1/model-logs/{id}
           method: get
           integration: lambda
           cors: true
@@ -223,8 +295,56 @@ functions:
 
 
 resources:
+  ## FARGATE ECS cluster setup - params
+  Parameters:
+    ServiceName:
+      Type: String
+      Default: dockerFargate
+      Description: A name for the service
+    ImageUrl:
+      Type: String
+      Default: stepfunctiontest:latest
+      Description: The url of a docker image that contains the application process that
+        will handle the traffic for this service
+    ContainerPort:
+      Type: Number
+      Default: 80
+      Description: What port number the application inside the docker container is binding to
+    ContainerCpu:
+      Type: Number
+      Default: 256
+      Description: How much CPU to give the container. 1024 is 1 CPU
+    ContainerMemory:
+      Type: Number
+      Default: 512
+      Description: How much memory in megabytes to give the container
+    Path:
+      Type: String
+      Default: "*"
+      Description: A path on the public load balancer that this service
+        should be connected to. Use * to send all load balancer
+        traffic to this service.
+    Priority:
+      Type: Number
+      Default: 1
+      Description: The priority for the routing rule added to the load balancer.
+        This only applies if your have multiple services which have been
+        assigned to different paths on the load balancer.
+    DesiredCount:
+      Type: Number
+      Default: 0
+      Description: How many copies of the service task to run
+    Role:
+      Type: String
+      Default: ""
+      Description: (Optional) An IAM role to give the service's containers if the code within needs to
+        access other AWS resources like S3 buckets, DynamoDB tables, etc
+
+  Conditions:
+    HasCustomRole: !Not [ !Equals [!Ref 'Role', ''] ]
+
   Resources:
-    ModelMetaDynamoDbTable:
+    ModelMetaTbl:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
@@ -239,8 +359,22 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.DYNAMODB_TABLE}
-    ModelStatusTbl:
+        TableName: ${self:provider.environment.DYNAMODB_MMETA}
+#    ModelStatusTbl:
+#      Type: 'AWS::DynamoDB::Table'
+#      DeletionPolicy: Retain
+#      Properties:
+#        AttributeDefinitions:
+#          - AttributeName: id
+#            AttributeType: S
+#        KeySchema:
+#          - AttributeName: id
+#            KeyType: HASH
+#        ProvisionedThroughput:
+#          ReadCapacityUnits: 1
+#          WriteCapacityUnits: 1
+#        TableName: ${self:provider.environment.DYNAMODB_MSTATUS}
+    ModelTaskTbl:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
@@ -253,9 +387,173 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.DYNAMODB_MSTATUS}
+        TableName: ${self:provider.environment.DYNAMODB_MTASK}
     ActionQueue:
       Type: "AWS::SQS::Queue"
       Properties:
         QueueName: "ActionQueue"
+    ModelLogTbl:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_MLOG}
+
+
+    # VPC in which containers will be networked.
+    # It has two public subnets
+    # We distribute the subnets across the first two available subnets
+    # for the region, for high availability.
+    VPC:
+      Type: AWS::EC2::VPC
+      Properties:
+        EnableDnsSupport: true
+        EnableDnsHostnames: true
+        CidrBlock: '10.0.0.0/16'
+
+    # Two public subnets, where containers can have public IP addresses
+    PublicSubnetOne:
+      Type: AWS::EC2::Subnet
+      Properties:
+        AvailabilityZone:
+          Fn::Select:
+            - 0
+            - Fn::GetAZs: {Ref: 'AWS::Region'}
+        VpcId: !Ref 'VPC'
+        CidrBlock: '10.0.0.0/24'
+        MapPublicIpOnLaunch: true
+    PublicSubnetTwo:
+      Type: AWS::EC2::Subnet
+      Properties:
+        AvailabilityZone:
+          Fn::Select:
+            - 1
+            - Fn::GetAZs: {Ref: 'AWS::Region'}
+        VpcId: !Ref 'VPC'
+        CidrBlock: '10.0.1.0/24'
+        MapPublicIpOnLaunch: true
+
+    # Setup networking resources for the public subnets. Containers
+    # in the public subnets have public IP addresses and the routing table
+    # sends network traffic via the internet gateway.
+    InternetGateway:
+      Type: AWS::EC2::InternetGateway
+    GatewayAttachement:
+      Type: AWS::EC2::VPCGatewayAttachment
+      Properties:
+        VpcId: !Ref 'VPC'
+        InternetGatewayId: !Ref 'InternetGateway'
+    PublicRouteTable:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId: !Ref 'VPC'
+    PublicRoute:
+      Type: AWS::EC2::Route
+      DependsOn: GatewayAttachement
+      Properties:
+        RouteTableId: !Ref 'PublicRouteTable'
+        DestinationCidrBlock: '0.0.0.0/0'
+        GatewayId: !Ref 'InternetGateway'
+    PublicSubnetOneRouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref PublicSubnetOne
+        RouteTableId: !Ref PublicRouteTable
+    PublicSubnetTwoRouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref PublicSubnetTwo
+        RouteTableId: !Ref PublicRouteTable
+
+    # ECS Resources
+    ECSCluster:
+      Type: AWS::ECS::Cluster
+
+    # A security group for the containers we will run in Fargate.
+    # Two rules, allowing network traffic from a public facing load
+    # balancer and from other members of the security group.
+    #
+    # Remove any of the following ingress rules that are not needed.
+    # If you want to make direct requests to a container using its
+    # public IP address you'll need to add a security group rule
+    # to allow traffic from all IP addresses.
+    FargateContainerSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Access to the Fargate containers
+        VpcId: !Ref 'VPC'
+    EcsSecurityGroupIngressFromSelf:
+      Type: AWS::EC2::SecurityGroupIngress
+      Properties:
+        Description: Ingress from other containers in the same security group
+        GroupId: !Ref 'FargateContainerSecurityGroup'
+        IpProtocol: -1
+        SourceSecurityGroupId: !Ref 'FargateContainerSecurityGroup'
+    # This is an IAM role which authorizes ECS to manage resources on your
+    # account on your behalf, such as updating your load balancer with the
+    # details of where your containers are, so that traffic can reach your
+    # containers.
+    ECSRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: [ecs.amazonaws.com]
+              Action: ['sts:AssumeRole']
+        Path: /
+        Policies:
+          - PolicyName: ecs-service
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action:
+                    # Rules which allow ECS to attach network interfaces to instances
+                    # on your behalf in order for awsvpc networking mode to work right
+                    - 'ec2:AttachNetworkInterface'
+                    - 'ec2:CreateNetworkInterface'
+                    - 'ec2:CreateNetworkInterfacePermission'
+                    - 'ec2:DeleteNetworkInterface'
+                    - 'ec2:DeleteNetworkInterfacePermission'
+                    - 'ec2:Describe*'
+                    - 'ec2:DetachNetworkInterface'
+                  Resource: '*'
+
+    # This is a role which is used by the ECS tasks themselves.
+    ECSTaskExecutionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: [ecs-tasks.amazonaws.com]
+              Action: ['sts:AssumeRole']
+        Path: /
+        Policies:
+          - PolicyName: AmazonECSTaskExecutionRolePolicy
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action:
+                    # Allow the ECS Tasks to download images from ECR
+                    - 'ecr:GetAuthorizationToken'
+                    - 'ecr:BatchCheckLayerAvailability'
+                    - 'ecr:GetDownloadUrlForLayer'
+                    - 'ecr:BatchGetImage'
+
+                    # Allow the ECS tasks to upload logs to CloudWatch
+                    - 'logs:CreateLogStream'
+                    - 'logs:PutLogEvents'
+                  Resource: '*'
+
 
