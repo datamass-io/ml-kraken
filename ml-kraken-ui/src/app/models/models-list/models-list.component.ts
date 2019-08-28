@@ -145,6 +145,21 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
             component: ModelStatusComponent,
             dialogHeader: 'Model logs'
           }
+        },
+        {
+          field: '',
+          header: '',
+          type: 'view-button',
+          withFilter: false,
+          sortable: false,
+          hidden: false,
+          button: {
+            class: 'fas fa-edit',
+            callback: (value?) => {
+              this.table.dialog.config.operation = 'edit';
+              this.table.dialog.showDialog(value);
+            }
+          }
         }
       ],
       buttons: [],
@@ -153,7 +168,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
       },
       formDialogConfig: this.dialogConfig,
       withAdd: true,
-      withEdit: true,
+      withEdit: false,
       withColumnSelect: true,
       withRefresh: true,
       withGlobalFilter: true,

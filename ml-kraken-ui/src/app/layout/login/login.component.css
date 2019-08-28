@@ -275,5 +275,8 @@ input[type="text"]:placeholder {
 }
 
 #icon {
-  width: 60%;
+  width: 25%;
+  height: auto;
+  margin-top: 10px;
+  margin-bottom: 5px;
 }
