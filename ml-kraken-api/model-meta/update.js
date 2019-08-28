@@ -33,16 +33,15 @@ const updateModel = (event, context, callback) => {
         ExpressionAttributeValues: {
             ':name': model.name,
             ':ver': model.ver,
-            ':uri': model.dockerImage,
+            ':dockerImage': model.dockerImage,
             ':user': model.user,
-            ':status': model.status,
             ':containerCpu': model.containerCpu,
             ':containerPort': model.containerPort,
             ':containerMemory': model.containerMemory,
             ':updatedAt': timestamp,
         },
         UpdateExpression: 'SET #model_name = :name, ver = :ver, containerCpu = :containerCpu, containerPort = :containerPort, containerMemory = :containerMemory, ' +
-            'dockerImage = :uri, #model_user = :user, status = :status, updatedAt = :updatedAt',
+            'dockerImage = :dockerImage, #model_user = :user, updatedAt = :updatedAt',
         ReturnValues: 'ALL_NEW',
     };
 
