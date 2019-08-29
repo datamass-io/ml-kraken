@@ -2,6 +2,17 @@
 
 ML-Kraken is a fully cloud-based solution designed and built to improve models management process.
 
-## Build
+
+
+## Requirements
+
+
+
+## Cloud install
 
 ``` npm install ```
+
+## Running a simple R model
+
+
+## Contributing
