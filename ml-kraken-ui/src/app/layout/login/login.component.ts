@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.service';
 
@@ -34,5 +34,12 @@ export class LoginComponent implements OnInit {
                       this.credentials.password = '';
                       console.log(err);
                     });
+  }
+
+  @HostListener('document:keypress', ['$event'])
+  onEnterPressed(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.onLogin();
+    }
   }
 }
