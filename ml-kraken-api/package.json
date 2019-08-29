@@ -6,8 +6,11 @@
   "author": "Jakub Wszolek <j.wszolek@datamass.io>",
   "license": "MIT",
   "dependencies": {
-    "uuid": "^3.3.2",
-    "middy": "^0.28.4"
+    "amazon-cognito-identity-js": "^3.0.15",
+    "middy": "^0.28.4",
+    "node-fetch": "^2.6.0",
+    "serverless-plugin-scripts": "^1.0.2",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "aws-sdk": "^2.496.0",
