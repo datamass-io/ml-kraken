@@ -40,19 +40,21 @@ export class LoginComponent implements OnInit {
                       this.credentials.username = '';
                       this.credentials.password = '';
                       console.log(err);
-                      if (err === 'Username cannot be empty') {
-                        this.error = 'EMPTY';
-                      } else if (err.code !== undefined) {
-                        if (err.code === 'UnexpectedLambdaException' || err.code === 'NotAuthorizedException' || 
-                            err.code === 'UserNotFoundException') {
-                          this.error = 'INCORRECT';
+                      if (this.error === '') {
+                        if (err === 'Username cannot be empty') {
+                          this.error = 'EMPTY';
+                        } else if (err.code !== undefined) {
+                          if (err.code === 'UnexpectedLambdaException' || err.code === 'NotAuthorizedException' || 
+                              err.code === 'UserNotFoundException') {
+                            this.error = 'INCORRECT';
+                          }
                         }
-                      }
 
-                      if (err !== '') {
-                        setTimeout(() => {
-                          this.error = '';
-                        }, 3000);
+                        if (err !== '') {
+                          setTimeout(() => {
+                            this.error = '';
+                          }, 3000);
+                        }
                       }
                     });
   }
