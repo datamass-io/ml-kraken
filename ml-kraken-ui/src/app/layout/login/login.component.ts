@@ -43,7 +43,8 @@ export class LoginComponent implements OnInit {
                       if (err === 'Username cannot be empty') {
                         this.error = 'EMPTY';
                       } else if (err.code !== undefined) {
-                        if (err.code === 'UnexpectedLambdaException' || err.code === 'NotAuthorizedException') {
+                        if (err.code === 'UnexpectedLambdaException' || err.code === 'NotAuthorizedException' || 
+                            err.code === 'UserNotFoundException') {
                           this.error = 'INCORRECT';
                         }
                       }
