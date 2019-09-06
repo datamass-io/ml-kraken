@@ -1,10 +1,25 @@
+<div *ngIf="error !== ''" id="errorContainer">
+    <div id="errorInfo" class="fadeIn">
+        <h3>{{
+            error !== ""
+              ? error === "EMPTY"
+                ? 'Please fill in your credentials'
+                : error === 'INCORRECT' ? 'Invalid credentials' : ""
+              : ""
+          }}</h3>
+      </div>
+</div>
 <div class="wrapper fadeInDown">
   <div id="formContent">
     <!-- Tabs Titles -->
 
     <!-- Icon -->
     <div class="fadeIn first">
-      <img src="./../../assets/images/image_wbg.png" id="icon" alt="User Icon" />
+      <img
+        src="./../../assets/images/image_wbg.png"
+        id="icon"
+        alt="User Icon"
+      />
     </div>
 
     <!-- Login Form -->
@@ -27,13 +42,21 @@
       />
       <input
         type="button"
-        class="fadeIn fourth"
+        [class]="'fadeIn fourth' + (error !== '' ? ' error' : '')"
         value="Log In"
         (click)="onLogin()"
       />
+      <div *ngIf="isLoading" class="lds-ring"><div></div><div></div><div></div><div></div></div>
+      <!-- <span [class]="'tooltiptext' + (error !== '' ? ' error' : '')">{{
+        error !== ""
+          ? error === "EMPTY"
+            ? 'Please fill in your credentials'
+            : error === 'INCORRECT' ? 'Invalid credentials' : ""
+          : ""
+      }}</span> -->
     </form>
 
-    <!-- Remind Passowrd -->
+    <!-- Remind Password -->
     <div id="formFooter">
       <a class="underlineHover" href="#">Forgot Password?</a>
     </div>

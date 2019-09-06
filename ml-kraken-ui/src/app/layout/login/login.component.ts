@@ -13,6 +13,8 @@ export class LoginComponent implements OnInit {
     username: '',
     password: ''
   };
+  error = '';
+  isLoading = false;
 
   constructor(private router: Router, private route: ActivatedRoute, private authService: AuthService) {}
 
@@ -27,12 +29,30 @@ export class LoginComponent implements OnInit {
   }
 
   onLogin() {
+    this.isLoading = true;
     this.authService.signIn(this.credentials.username, this.credentials.password)
-                    .then(res => console.log(res))
+                    .then(res => {
+                      this.isLoading = false;
+                      console.log(res);
+                    })
                     .catch(err => {
+                      this.isLoading = false;
                       this.credentials.username = '';
                       this.credentials.password = '';
                       console.log(err);
+                      if (err === 'Username cannot be empty') {
+                        this.error = 'EMPTY';
+                      } else if (err.code !== undefined) {
+                        if (err.code === 'UnexpectedLambdaException' || err.code === 'NotAuthorizedException') {
+                          this.error = 'INCORRECT';
+                        }
+                      }
+
+                      if (err !== '') {
+                        setTimeout(() => {
+                          this.error = '';
+                        }, 3000);
+                      }
                     });
   }
 
