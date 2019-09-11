@@ -100,6 +100,8 @@ const createUser  = async (event, context, callback) => {
                 callback(null, data);
             }
         }).promise();
+    } else {
+        console.log('Admin user already exists');
     }
 };
 
