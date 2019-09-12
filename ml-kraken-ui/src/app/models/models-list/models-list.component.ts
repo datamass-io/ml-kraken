@@ -36,6 +36,9 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
           header: 'Name',
           type: 'string',
           withFilter: false,
+          withCopy: {
+            property: 'id'
+          },
           sortable: true,
           hidden: false,
         },

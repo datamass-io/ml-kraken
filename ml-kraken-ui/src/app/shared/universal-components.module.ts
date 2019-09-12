@@ -20,6 +20,7 @@ import { SelectDialogComponent } from './select-dialog/select-dialog.component';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DetailsDialogComponent } from './details-dialog/details-dialog.component';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { ClipboardModule } from 'ngx-clipboard';
 
 @NgModule({
     imports: [
@@ -37,7 +38,8 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
         ToastModule,
         SpinnerModule,
         CheckboxModule,
-        InputTextareaModule
+        InputTextareaModule,
+        ClipboardModule,
     ],
     declarations: [
         CrudTableComponent,

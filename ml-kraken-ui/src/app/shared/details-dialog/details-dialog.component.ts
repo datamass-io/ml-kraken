@@ -9,11 +9,13 @@ import { DetailsConfig } from './details-config.model';
 export class DetailsDialogComponent {
     display = false;
     text: string;
+    secondText: string;
 
     @Input() config: DetailsConfig;
 
-    showDialog(text: string) {
+    showDialog(text: string, secondText?: string) {
         this.text = text;
+        this.secondText = secondText;
         this.display = true;
     }
 

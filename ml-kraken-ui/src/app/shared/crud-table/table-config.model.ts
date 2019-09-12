@@ -8,6 +8,9 @@ export interface TableConfig {
     header: string;
     type: string;
     withFilter: boolean;
+    withCopy?: {
+      property: string;
+    }
     sortable: boolean;
     hidden: boolean;
     icon?: {
@@ -36,6 +39,12 @@ export interface TableConfig {
   withEdit: boolean;
   withColumnSelect: boolean;
   withRefresh: boolean;
+  withSelect?: {
+    options: {
+      label: string;
+      value: string;
+    }[]
+  };
   withGlobalFilter: boolean;
   errors: {
     load: string;
@@ -47,4 +56,24 @@ export interface TableConfig {
   runPostURL: string;
   globalFF: string[];
   sortField: string;
+  groupTable?: {
+    by: string;
+    groupKey: string;
+    customColumns: {
+      type: string;
+      name: string;
+      minuend?: {
+        field: string;
+        forOption: string;
+      };
+      subtrahend?: {
+        field: string;
+        forOption: string;
+      };
+      splitColumn?: {
+        field: string;
+        forOption: string;
+      };
+    }[];
+  };
 }
