@@ -51,6 +51,12 @@
         [disabled]="refreshButton.disabled"
         (click)="refreshButton.callback()"
       ></button>
+      <p-dropdown
+        *ngIf="config.withSelect"
+        [options]="config.withSelect.options"
+        [(ngModel)]="selectedTable"
+        (onChange)="onSelectedTableChanged()"
+      ></p-dropdown>
     </div>
   </ng-template>
   <ng-template pTemplate="header" let-columns>
@@ -141,6 +147,14 @@
                 : ""
               : preprocessColumnField(rowData[col.field], i)
           }}
+          <button
+            *ngIf="col.withCopy"
+            style="margin-left: 5px"
+            class="far fa-copy"
+            [title]="'Copy ' + col.withCopy.property + ' to clipboard'"
+            ngxClipboard
+            [cbContent]="rowData[col.withCopy.property]"
+          ></button>
         </td>
       </ng-container>
     </tr>
