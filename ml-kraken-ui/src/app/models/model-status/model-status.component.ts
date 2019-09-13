@@ -4,7 +4,6 @@ import { TableConfig } from 'src/app/shared/crud-table/table-config.model';
 import { environment } from 'src/environments/environment';
 import { DetailsConfig } from 'src/app/shared/details-dialog/details-config.model';
 import { DetailsDialogComponent } from 'src/app/shared/details-dialog/details-dialog.component';
-import { CrudTableComponent } from 'src/app/shared/crud-table/crud-table.component';
 
 @Component({
   templateUrl: './model-status.component.html',

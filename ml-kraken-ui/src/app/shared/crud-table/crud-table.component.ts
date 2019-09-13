@@ -1,10 +1,11 @@
 import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
 import { TableConfig } from './table-config.model';
-import { DataService } from '../data-service.service';
+import { DataService } from '../utils/services/data-service.service';
 import { FormDialogComponent } from '../form-dialog/form-dialog.component';
 import { DialogService } from 'primeng/api';
 import { SelectDialogComponent } from '../select-dialog/select-dialog.component';
 import { SelectConfig } from '../select-dialog/select-config.model';
+import { parseUnix } from '../utils/functions/parsers.functions';
 
 @Component({
   selector: 'app-crud-table',
@@ -166,29 +167,7 @@ export class CrudTableComponent implements OnInit {
 
   preprocessColumnField(data, columnIndex): string {
     if (this.config.cols[columnIndex].type === 'unix') {
-      const date = new Date(data);
-
-      const year = date.getFullYear();
-      const month = '0' + (date.getMonth() + 1);
-      const day = '0' + date.getDate();
-
-      const hours = date.getHours();
-      const minutes = '0' + date.getMinutes();
-      const seconds = '0' + date.getSeconds();
-      const formattedTime =
-        year +
-        '-' +
-        month.substr(-2) +
-        '-' +
-        day.substr(-2) +
-        ' ' +
-        hours +
-        ':' +
-        minutes.substr(-2) +
-        ':' +
-        seconds.substr(-2);
-
-      return formattedTime;
+      return parseUnix(data);
     } else if (this.config.cols[columnIndex].type === 'status' || this.config.cols[columnIndex].type === 'button') {
       return '';
     } else if (this.config.cols[columnIndex].type === 'object') {
