@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { TableConfig } from '../../shared/crud-table/table-config.model';
-import { DataService } from 'src/app/shared/data-service.service';
+import { DataService } from 'src/app/shared/utils/services/data-service.service';
 import { CrudTableComponent } from 'src/app/shared/crud-table/crud-table.component';
 import { FormConfig } from 'src/app/shared/form-dialog/form-config.model';
 import { ModelStatusComponent } from '../model-status/model-status.component';
 import { environment } from 'src/environments/environment';
+import { ModelChartComponent } from '../model-chart/model-chart.component';
 
 @Component({
   selector: 'app-models-list',
@@ -152,6 +153,19 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
         {
           field: '',
           header: '',
+          type: 'dynamic-button',
+          withFilter: false,
+          sortable: false,
+          hidden: false,
+          button: {
+            class: 'fas fa-chart-line',
+            component: ModelChartComponent,
+            dialogHeader: 'Model chart'
+          }
+        },
+        {
+          field: '',
+          header: '',
           type: 'view-button',
           withFilter: false,
           sortable: false,
@@ -181,7 +195,7 @@ export class ModelsListComponent implements OnInit, AfterViewInit {
       statusGetURL: environment.endpointsUrl + 'model-logs',
       runPostURL: environment.endpointsUrl + 'model-action',
       globalFF: ['name', 'ver', 'uri', 'user'],
-      sortField: undefined
+      sortField: 'createdAt'
     };
   }
 

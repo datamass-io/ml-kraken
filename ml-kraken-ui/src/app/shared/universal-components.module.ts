@@ -21,6 +21,9 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DetailsDialogComponent } from './details-dialog/details-dialog.component';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ClipboardModule } from 'ngx-clipboard';
+import { ChartModule } from 'primeng/chart';
+import { ChartComponent } from './chart/chart.component';
+import { ModelChartComponent } from '../models/model-chart/model-chart.component';
 
 @NgModule({
     imports: [
@@ -40,17 +43,20 @@ import { ClipboardModule } from 'ngx-clipboard';
         CheckboxModule,
         InputTextareaModule,
         ClipboardModule,
+        ChartModule
     ],
     declarations: [
         CrudTableComponent,
         FormDialogComponent,
         SelectDialogComponent,
-        DetailsDialogComponent
+        DetailsDialogComponent,
+        ChartComponent
     ],
     entryComponents: [
-        ModelStatusComponent
+        ModelStatusComponent,
+        ModelChartComponent
     ],
-    exports: [CrudTableComponent, FormDialogComponent, SelectDialogComponent, DetailsDialogComponent],
+    exports: [CrudTableComponent, FormDialogComponent, SelectDialogComponent, DetailsDialogComponent, ChartComponent],
     providers: [ConfirmationService, DialogService, MessageService]
 })
 export class UniversalComponentsModule {
