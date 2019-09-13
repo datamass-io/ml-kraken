@@ -64,13 +64,14 @@ const consumer = async (event, context) => {
                     name: "ml-kraken-container",
                     essential: true,
                     cpu: 0,
-                    image: "655908530487.dkr.ecr.eu-west-1.amazonaws.com/jwszol-nginx:latest",
+                    // image: "655908530487.dkr.ecr.eu-west-1.amazonaws.com/jwszol-nginx:latest",
+                    image: modelMetaInfo.dockerImage,
                     memoryReservation: 128,
                     portMappings: [
                         {
-                            hostPort: 80,
+                            hostPort: modelMetaInfo.containerPort,
                             protocol: "tcp",
-                            containerPort: 80,
+                            containerPort: modelMetaInfo.containerPort,
                         }
                     ],
                     logConfiguration: {
@@ -114,8 +115,8 @@ const consumer = async (event, context) => {
             IpPermissions:[
                 {
                     IpProtocol: "tcp",
-                    FromPort: 80,
-                    ToPort: 80,
+                    FromPort: modelMetaInfo.containerPort,
+                    ToPort: modelMetaInfo.containerPort,
                     IpRanges: [{"CidrIp":"0.0.0.0/0"}]
                 },
             ]

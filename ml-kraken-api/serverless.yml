@@ -78,6 +78,7 @@ provider:
     DYNAMODB_MACTION: ModelActionTbl
     DYNAMODB_MTASK: ModelTaskTbl
     DYNAMODB_MLOG: ModelLogTbl
+    DYNAMODB_MACTIONLOG: ModelActionLogTbl
     SQS_URL:
       Ref: ActionQueue
     TaskExecutionRoleArn:
@@ -176,6 +177,24 @@ functions:
 #          arn: rn:aws:sqs:region:XXXXXX:default
           arn:
             Fn::GetAtt: [ActionQueue, Arn]
+
+  model-action-add-to-log:
+    handler: model-logs/addToActionLog.addToActionLog
+    events:
+      - http:
+          path: api/v1/model-action-log
+          method: post
+          integration: lambda
+          cors: true
+  
+  model-action-list-log:
+    handler: model-logs/listActionLogs.listActionLog
+    events:
+      - http:
+          path: api/v1/model-action-log/{id}
+          method: get
+          integration: lambda
+          cors: true
 
   model-logs-list:
     handler: model-logs/listLogs.listLogs
@@ -439,6 +458,20 @@ resources:
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.DYNAMODB_MLOG}
 
+    ModelActionLogTbl:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_MACTIONLOG}
 
     # VPC in which containers will be networked.
     # It has two public subnets
