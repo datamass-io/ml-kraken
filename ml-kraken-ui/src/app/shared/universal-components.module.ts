@@ -18,6 +18,12 @@ import { ModelStatusComponent } from '../models/model-status/model-status.compon
 import { SpinnerModule } from 'primeng/spinner';
 import { SelectDialogComponent } from './select-dialog/select-dialog.component';
 import { CheckboxModule } from 'primeng/checkbox';
+import { DetailsDialogComponent } from './details-dialog/details-dialog.component';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { ClipboardModule } from 'ngx-clipboard';
+import { ChartModule } from 'primeng/chart';
+import { ChartComponent } from './chart/chart.component';
+import { ModelChartComponent } from '../models/model-chart/model-chart.component';
 
 @NgModule({
     imports: [
@@ -34,17 +40,23 @@ import { CheckboxModule } from 'primeng/checkbox';
         DynamicDialogModule,
         ToastModule,
         SpinnerModule,
-        CheckboxModule
+        CheckboxModule,
+        InputTextareaModule,
+        ClipboardModule,
+        ChartModule
     ],
     declarations: [
         CrudTableComponent,
         FormDialogComponent,
-        SelectDialogComponent
+        SelectDialogComponent,
+        DetailsDialogComponent,
+        ChartComponent
     ],
     entryComponents: [
-        ModelStatusComponent
+        ModelStatusComponent,
+        ModelChartComponent
     ],
-    exports: [CrudTableComponent, FormDialogComponent, SelectDialogComponent],
+    exports: [CrudTableComponent, FormDialogComponent, SelectDialogComponent, DetailsDialogComponent, ChartComponent],
     providers: [ConfirmationService, DialogService, MessageService]
 })
 export class UniversalComponentsModule {

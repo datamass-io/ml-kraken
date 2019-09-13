@@ -1,10 +1,11 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
 import { TableConfig } from './table-config.model';
-import { DataService } from '../data-service.service';
+import { DataService } from '../utils/services/data-service.service';
 import { FormDialogComponent } from '../form-dialog/form-dialog.component';
 import { DialogService } from 'primeng/api';
 import { SelectDialogComponent } from '../select-dialog/select-dialog.component';
 import { SelectConfig } from '../select-dialog/select-config.model';
+import { parseUnix } from '../utils/functions/parsers.functions';
 
 @Component({
   selector: 'app-crud-table',
@@ -14,12 +15,12 @@ import { SelectConfig } from '../select-dialog/select-config.model';
 export class CrudTableComponent implements OnInit {
   @ViewChild('dt', { static: false }) table;
   @ViewChild('fd', { static: false }) dialog: FormDialogComponent;
-  @ViewChild('rd', { static: false }) runDialog: FormDialogComponent;
   @ViewChild('csd', { static: false }) columnSelectDialog: SelectDialogComponent;
 
   data: any;
   selectedRow: any;
   columnSelectDialogConfig: SelectConfig;
+  selectedTable: string;
 
   addButton = {
     icon: 'fas fa-plus',
@@ -59,6 +60,8 @@ export class CrudTableComponent implements OnInit {
 
   @Input() config: TableConfig;
 
+  @Output() selectedTableChanged: EventEmitter<string> = new EventEmitter<string>();
+
   constructor(private dataService: DataService, public dialogService: DialogService) {}
 
   ngOnInit() {
@@ -69,19 +72,81 @@ export class CrudTableComponent implements OnInit {
   }
 
   loadData() {
-    console.log('load data');
     this.editButton.disabled = true;
     this.dataService.get(this.config.getURL)
       .subscribe(items => {
-        this.data = JSON.parse(items.body);
-        this.data = [...this.data];
-        if (this.config.sortField !== undefined) {
-          (this.data as Array<any>).sort((a, b) => (a[this.config.sortField] > b[this.config.sortField]) ? -1 : 1);
+
+        const parsedItems = JSON.parse(items.body);
+
+        if (this.config.groupTable !== undefined && this.config.groupTable !== null) {
+
+          if (this.config.sortField !== undefined) {
+            (parsedItems as Array<any>).sort((a, b) => (a[this.config.sortField] > b[this.config.sortField]) ? -1 : 1);
+          }
+
+          const groupedItems: any[] = [];
+          (parsedItems as Array<any>).forEach(parsedItem => {
+            const index = groupedItems.findIndex(item => {
+              return item[this.config.groupTable.by] === parsedItem[this.config.groupTable.by];
+            });
+
+            const data = {};
+
+            this.config.groupTable.customColumns.forEach(customColumn => {
+              if (customColumn.type === 'split') {
+                if (customColumn.splitColumn.forOption.toUpperCase() === parsedItem.actionType.toUpperCase()) {
+                  data[customColumn.name] = parsedItem[customColumn.splitColumn.field];
+                }
+              } else if (customColumn.type === 'diff') {
+                if (customColumn.minuend.forOption.toUpperCase() === parsedItem.actionType.toUpperCase()) {
+                  Object.assign(data, {minuend: parsedItem[customColumn.minuend.field]});
+                } else if (customColumn.subtrahend.forOption.toUpperCase() === parsedItem.actionType.toUpperCase()) {
+                  Object.assign(data, {subtrahend: parsedItem[customColumn.subtrahend.field]});
+                }
+              }
+            });
+
+            if (index === -1) {
+              const groupedItem: any = {};
+              groupedItem[this.config.groupTable.by] = parsedItem[this.config.groupTable.by];
+              groupedItem.data = data;
+              groupedItems.push(groupedItem);
+            } else {
+              Object.assign(groupedItems[index].data, data);
+              const groupedItemData = groupedItems[index].data;
+              if (groupedItemData.minuend !== undefined && groupedItemData.minuend !== null
+                && groupedItemData.subtrahend !== undefined && groupedItemData.subtrahend !== null) {
+                  let diff = groupedItemData.minuend - groupedItemData.subtrahend;
+                  diff = diff;
+                  delete groupedItems[index].data.minuend;
+                  delete groupedItems[index].data.subtrahend;
+                  Object.assign(groupedItems[index].data, {diffTime: diff});
+              }
+            }
+          });
+
+          groupedItems.map(groupedItem => {
+            delete groupedItem.id;
+            const groupedItemData = groupedItem.data;
+            delete groupedItem.data;
+            Object.assign(groupedItem, groupedItemData);
+          });
+
+          console.log(groupedItems);
+          this.data = groupedItems;
+          this.data = [...this.data];
+          this.table.reset();
+        } else {
+          this.data = parsedItems;
+          this.data = [...this.data];
+          if (this.config.sortField !== undefined) {
+            (this.data as Array<any>).sort((a, b) => (a[this.config.sortField] > b[this.config.sortField]) ? -1 : 1);
+          }
+          if (this.config.statusGetURL !== undefined) {
+             // this.getStatusForData();
+          }
+          this.table.reset();
         }
-        if (this.config.statusGetURL !== undefined) {
-          this.getStatusForData();
-        }
-        this.table.reset();
       });
   }
 
@@ -102,32 +167,25 @@ export class CrudTableComponent implements OnInit {
 
   preprocessColumnField(data, columnIndex): string {
     if (this.config.cols[columnIndex].type === 'unix') {
-      const date = new Date(data);
-
-      const year = date.getFullYear();
-      const month = '0' + date.getMonth();
-      const day = '0' + date.getDate();
-
-      const hours = date.getHours();
-      const minutes = '0' + date.getMinutes();
-      const seconds = '0' + date.getSeconds();
-      const formattedTime =
-        year +
-        '-' +
-        month.substr(-2) +
-        '-' +
-        day.substr(-2) +
-        ' ' +
-        hours +
-        ':' +
-        minutes.substr(-2) +
-        ':' +
-        seconds.substr(-2);
-
-      return formattedTime;
+      return parseUnix(data);
     } else if (this.config.cols[columnIndex].type === 'status' || this.config.cols[columnIndex].type === 'button') {
       return '';
+    } else if (this.config.cols[columnIndex].type === 'object') {
+      let stringifiedData = JSON.stringify(data);
+      if (stringifiedData !== undefined) {
+        if (stringifiedData.length >= 100) {
+          stringifiedData = stringifiedData.substr(0, 100);
+          stringifiedData += ' ...';
+        }
+      }
+      return stringifiedData;
     } else {
+      if (typeof(data) === 'string') {
+        if (data.length >= 100) {
+          data = data.substr(0, 100);
+          data += ' ...';
+        }
+      }
       return data;
     }
   }
@@ -143,13 +201,16 @@ export class CrudTableComponent implements OnInit {
 
   onIconPressed(columnType, data) {
     if (columnType === 'run') {
-      if (data.status === 'scheduled to run') {
+      if (data.status === 'RUNNING') {
         this.dataService.post(this.config.runPostURL, {modelId: data.id, action: 'stop'})
-        .subscribe(resp => {
-          this.loadData();
-        });
-      } else {
-        this.runDialog.showDialog(data);
+                        .subscribe(resp => {
+                          this.loadData();
+                        });
+      } else if (data.status === 'STOPPED') {
+        this.dataService.post(this.config.runPostURL, {modelId: data.id, action: 'run'})
+                        .subscribe(resp => {
+                          this.loadData();
+                        });
       }
     }
   }
@@ -189,5 +250,9 @@ export class CrudTableComponent implements OnInit {
         col.hidden = false;
       }
     });
+  }
+
+  onSelectedTableChanged() {
+    this.selectedTableChanged.emit(this.selectedTable);
   }
 }

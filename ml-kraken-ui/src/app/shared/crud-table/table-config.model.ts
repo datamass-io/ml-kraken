@@ -8,18 +8,22 @@ export interface TableConfig {
     header: string;
     type: string;
     withFilter: boolean;
+    withCopy?: {
+      property: string;
+    }
     sortable: boolean;
     hidden: boolean;
-    icon: {
+    icon?: {
       class: string;
       style: { color: string };
       withText: boolean;
       clickable: boolean;
     };
-    button: {
+    button?: {
       class: string;
-      component: Type<any>;
-      dialogHeader: string;
+      component?: Type<any>;
+      dialogHeader?: string;
+      callback?: () => void;
     }
   }[];
   buttons:
@@ -31,11 +35,16 @@ export interface TableConfig {
       disabled: boolean;
     }[];
   formDialogConfig: FormConfig;
-  runDialogConfig: FormConfig;
   withAdd: boolean;
   withEdit: boolean;
   withColumnSelect: boolean;
   withRefresh: boolean;
+  withSelect?: {
+    options: {
+      label: string;
+      value: string;
+    }[]
+  };
   withGlobalFilter: boolean;
   errors: {
     load: string;
@@ -47,4 +56,24 @@ export interface TableConfig {
   runPostURL: string;
   globalFF: string[];
   sortField: string;
+  groupTable?: {
+    by: string;
+    groupKey: string;
+    customColumns: {
+      type: string;
+      name: string;
+      minuend?: {
+        field: string;
+        forOption: string;
+      };
+      subtrahend?: {
+        field: string;
+        forOption: string;
+      };
+      splitColumn?: {
+        field: string;
+        forOption: string;
+      };
+    }[];
+  };
 }

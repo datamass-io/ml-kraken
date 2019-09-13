@@ -1,1 +1,4 @@
-<app-crud-table #table [config]="tableConfig"></app-crud-table>
+<app-crud-table *ngIf="showLogs" #logsTable [config]="logsTableConfig" (selectedTableChanged)="onSelectedTableChanged($event)"></app-crud-table>
+<app-crud-table *ngIf="showActions" #actionsTable [config]="actionsLogsTableConfig" (selectedTableChanged)="onSelectedTableChanged($event)"></app-crud-table>
+
+<app-details-dialog #dialog [config]="dialogConfig"></app-details-dialog>

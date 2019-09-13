@@ -51,6 +51,12 @@
         [disabled]="refreshButton.disabled"
         (click)="refreshButton.callback()"
       ></button>
+      <p-dropdown
+        *ngIf="config.withSelect"
+        [options]="config.withSelect.options"
+        [(ngModel)]="selectedTable"
+        (onChange)="onSelectedTableChanged()"
+      ></p-dropdown>
     </div>
   </ng-template>
   <ng-template pTemplate="header" let-columns>
@@ -89,18 +95,22 @@
               [ngStyle]="{
                 color:
                   col.type === 'run'
-                    ? rowData['status'] === 'scheduled to run'
+                    ? rowData['status'] === 'RUNNING'
                       ? 'red'
-                      : 'green'
+                      : rowData['status'] === 'STOPPED'
+                      ? 'green'
+                      : 'gray'
                     : col.icon.style !== undefined
                     ? col.icon.style.color
-                    : rowData['status'] === 'scheduled to run'
+                    : rowData['status'] === 'STOPPED'
+                    ? 'red'
+                    : rowData['status'] === 'PENDING'
                     ? 'yellow'
-                    : 'red'
+                    : 'green'
               }"
               [ngClass]="
                 col.type === 'run'
-                  ? rowData['status'] === 'scheduled to run'
+                  ? rowData['status'] === 'RUNNING'
                     ? 'fas fa-stop'
                     : 'fas fa-play'
                   : col.icon !== undefined
@@ -118,18 +128,33 @@
             [ngClass]="col.button.class"
             (click)="showDynamicDialog(rowData.id, col.button)"
           ></button>
+          <button
+            *ngIf="col.type === 'view-button'"
+            [ngClass]="col.button.class"
+            (click)="col.button.callback(rowData)"
+          ></button>
           {{
             col.icon !== undefined
               ? col.icon.class !== "" && col.icon.withText === false
                 ? ""
                 : col.icon.class !== "" && col.icon.withText
                 ? "- " +
-                  (rowData["status"] === "scheduled to run"
+                  (rowData["status"] === "STOPPED"
+                    ? "stopped"
+                    : rowData["status"] === "PENDING"
                     ? "pending"
-                    : "stopped")
+                    : "running")
                 : ""
               : preprocessColumnField(rowData[col.field], i)
           }}
+          <button
+            *ngIf="col.withCopy"
+            style="margin-left: 5px"
+            class="far fa-copy"
+            [title]="'Copy ' + col.withCopy.property + ' to clipboard'"
+            ngxClipboard
+            [cbContent]="rowData[col.withCopy.property]"
+          ></button>
         </td>
       </ng-container>
     </tr>
@@ -148,12 +173,6 @@
   [config]="config.formDialogConfig"
   (entryAdded)="loadData()"
   *ngIf="config.formDialogConfig !== undefined"
-></app-form-dialog>
-
-<app-form-dialog
-  #rd
-  [config]="config.runDialogConfig"
-  *ngIf="config.runDialogConfig !== undefined"
 ></app-form-dialog>
 
 <app-select-dialog

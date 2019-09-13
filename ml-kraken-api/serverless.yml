@@ -7,6 +7,7 @@ plugins:
   - serverless-offline
   - serverless-aws-documentation
   - serverless-offline-sqs
+  - serverless-plugin-scripts
 
 custom:
   dynamodb:
@@ -63,6 +64,9 @@ custom:
               type: string
             updatedAt:
               type: string
+  scripts:
+    hooks:
+      'deploy:finalize': sls invoke -f cognito-user-create; cd ../ml-kraken-ui && ng build && sls deploy && sls s3deploy
 
 provider:
   name: aws
@@ -313,6 +317,10 @@ functions:
 #                  "application/json": MessageResponse
 
 
+  cognito-user-create:
+    handler: cognito/createUser.createUser
+          
+
 resources:
   ## FARGATE ECS cluster setup - params
   Parameters:
@@ -363,6 +371,30 @@ resources:
     HasCustomRole: !Not [ !Equals [!Ref 'Role', ''] ]
 
   Resources:
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: kraken_user_pool
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 6
+            RequireLowercase: false
+            RequireNumbers: false
+            RequireSymbols: false
+            RequireUppercase: false
+            TemporaryPasswordValidityDays: 7
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        AllowedOAuthFlows: ['implicit']
+        AllowedOAuthFlowsUserPoolClient: true
+        AllowedOAuthScopes: ['phone', 'email', 'openid', 'aws.cognito.signin.user.admin']
+        CallbackURLs: ['http://localhost:4200']
+        ClientName: kraken_client
+        GenerateSecret: false
+        LogoutURLs: ['http://localhost:4200']
+        UserPoolId:
+          Ref: CognitoUserPool
     ModelMetaTbl:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain

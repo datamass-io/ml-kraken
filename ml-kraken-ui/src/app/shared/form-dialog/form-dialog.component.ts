@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormConfig } from './form-config.model';
-import { DataService } from '../data-service.service';
+import { DataService } from '../utils/services/data-service.service';
 import { ConfirmationService } from 'primeng/api';
 
 @Component({
