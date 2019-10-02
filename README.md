@@ -7,6 +7,10 @@ ML-kraken combines two pieces, backend based on serverless solution and frontend
 
 ## Requirements
 
+* AWS account created
+* serverless installed
+* npm installed
+
 
 
 ## Cloud install
