@@ -4,6 +4,11 @@ ML-Kraken is a fully cloud-based solution designed and built to improve models m
 
 ML-kraken combines two pieces, backend based on serverless solution and frontend which is an Angular based app. As a native execution platform, we decided to use AWS public cloud. 
 
+<p align="center">
+  <img src="readme-media/ml-kraken.png?raw=true" alt="ELK"/>
+</p>
+
+
 
 ## Requirements
 
