@@ -16,8 +16,8 @@ ML-kraken combines two pieces, backend based on serverless solution and frontend
 * models exposed under REST services
 * easy integration with real-time analytical systems
 * environment that easly scale-up
-* ability to many many model versions in one place
-* Plugin to jupyterhub to communicate with ML-Kraken  
+* ability to keep many model versions in one place
+* jupyterhub plugin to communicate with ML-Kraken  
 
 ## Demo
 
