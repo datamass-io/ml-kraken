@@ -9,6 +9,22 @@ ML-kraken combines two pieces, backend based on serverless solution and frontend
 </p>
 
 
+## Main features
+
+* R/Spark/Python models deployment
+* MaaS (model as a service) - networked models
+* models exposed under REST services
+* easy integration with real-time analytical systems
+* environment that easly scale-up
+* ability to many many model versions in one place
+* Plugin to jupyterhub to communicate with ML-Kraken  
+
+## Demo
+
+<p align="center">
+  <img src="readme-media/demo.gif" alt="demo"/>
+</p>
+
 
 ## Requirements
 
