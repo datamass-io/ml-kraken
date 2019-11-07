@@ -55,7 +55,7 @@ Each ML-Kraken model created has an assigned docker container from Amazon ECS. A
 Performing calculations on a running model requires sending a POST request with the body containing data in JSON format. Example POST request using Postman:
 
 <p align="center">
-  <img src="readme-media/query.png" alt="request"/>
+  <img src="readme-media/request.png" alt="request"/>
 </p>
 
 As above, JSON should contain:
