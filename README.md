@@ -92,6 +92,13 @@ The fragments marked in the picture are designed to:
   <li>Display log details</li>
 </ol>
 
+### Model chart
+ML Kraken allows to display a graph of response time versus time. On its basis, you can determine the current model load and the level of complexity of the calculations. An example chart is presented below.
+
+<p align="center">
+  <img src="readme-media/model_chart.png" alt="model_chart"/>
+</p>
+
 ## Running a simple R model
 
 Each ML-Kraken model created has an assigned docker container from Amazon ECS. As a result, it is possible to run independent models that can be addressed with REST queries. After clicking the model start button, it takes a while for the container to become operational and establish an external IP. 
