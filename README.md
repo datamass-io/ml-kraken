@@ -82,7 +82,7 @@ This table stores entries about what operations were performed on the backend si
 </p>
 
 <p align="center">
-  <img src="readme-media/action_table.png" alt="action_table"/>
+  <img src="readme-media/actions_table.png" alt="actions_table"/>
 </p>
 
 The fragments marked in the picture are designed to:
