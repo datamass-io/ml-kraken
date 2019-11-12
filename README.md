@@ -49,7 +49,7 @@ cd ./ml-kraken
 Each ML-Kraken model created has an assigned docker container from Amazon ECS. As a result, it is possible to run independent models that can be addressed with REST queries. After clicking the model start button, it takes a while for the container to become operational and establish an external IP. 
 
 <p align="center">
-  <img src="readme-media/model_run.gif" alt="request"/>
+  <img src="readme-media/model_run.gif" alt="model_run"/>
 </p>
 
 Performing calculations on a running model requires sending a POST request with the body containing data in JSON format. Example POST request using Postman:
