@@ -74,6 +74,24 @@ Functions of selected table fragments:
   <li>Refreshes the model table</li>
 </ol>
 
+### Logs table
+This table stores entries about what operations were performed on the backend side. It is also possible to view the request and response history.
+
+<p align="center">
+  <img src="readme-media/logs_table.png" alt="logs_table"/>
+</p>
+
+<p align="center">
+  <img src="readme-media/action_table.png" alt="action_table"/>
+</p>
+
+The fragments marked in the picture are designed to:
+<ol>
+  <li>Allow filtering of logs in the table</li>
+  <li>Change the type of displayed logs from/to backend logs to/from request and response logs</li>
+  <li>Display log details</li>
+</ol>
+
 ## Running a simple R model
 
 Each ML-Kraken model created has an assigned docker container from Amazon ECS. As a result, it is possible to run independent models that can be addressed with REST queries. After clicking the model start button, it takes a while for the container to become operational and establish an external IP. 
